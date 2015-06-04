@@ -7,8 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		22282969EB49BE126E533C74 /* Pods_NHRecorder_Tests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A5168764717F4320258D20D8 /* Pods_NHRecorder_Tests.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		22AF7D453DD571F46FA8FA01 /* Pods_NHRecorder_Example.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 591B29F26A2F438867F45C31 /* Pods_NHRecorder_Example.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
+		51AF5A470E6127DD52D897C8 /* libPods-NHRecorder_Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ED6E7AD3E24FF549CCB9BC86 /* libPods-NHRecorder_Tests.a */; };
 		6003F58E195388D20070C39A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58D195388D20070C39A /* Foundation.framework */; };
 		6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F58F195388D20070C39A /* CoreGraphics.framework */; };
 		6003F592195388D20070C39A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6003F591195388D20070C39A /* UIKit.framework */; };
@@ -23,6 +22,7 @@
 		6003F5BA195388D20070C39A /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 6003F5B8195388D20070C39A /* InfoPlist.strings */; };
 		6003F5BC195388D20070C39A /* Tests.m in Sources */ = {isa = PBXBuildFile; fileRef = 6003F5BB195388D20070C39A /* Tests.m */; };
 		873B8AEB1B1F5CCA007FD442 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 873B8AEA1B1F5CCA007FD442 /* Main.storyboard */; };
+		CA7C2D17C764CD925FEBB703 /* libPods-NHRecorder_Example.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 93CBA2DCA2D41EAF944F2E52 /* libPods-NHRecorder_Example.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -39,8 +39,7 @@
 		147A69CC1448CDB51FAA81C0 /* Pods-NHRecorder_Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NHRecorder_Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NHRecorder_Tests/Pods-NHRecorder_Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		2CC8DF20566994194A6DBA76 /* README.md */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../README.md; sourceTree = "<group>"; };
 		4A2BB84FB88C94DB8B7A1554 /* Pods-NHRecorder_Example.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NHRecorder_Example.debug.xcconfig"; path = "Pods/Target Support Files/Pods-NHRecorder_Example/Pods-NHRecorder_Example.debug.xcconfig"; sourceTree = "<group>"; };
-		591B29F26A2F438867F45C31 /* Pods_NHRecorder_Example.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NHRecorder_Example.framework; sourceTree = BUILT_PRODUCTS_DIR; };
-		6003F58A195388D20070C39A /* NHRecorder.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; name = NHRecorder.app; path = NHRecorder_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		6003F58A195388D20070C39A /* NHRecorder_Example.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NHRecorder_Example.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F58D195388D20070C39A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		6003F58F195388D20070C39A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		6003F591195388D20070C39A /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -53,7 +52,7 @@
 		6003F5A5195388D20070C39A /* NViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NViewController.h; sourceTree = "<group>"; };
 		6003F5A6195388D20070C39A /* NViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NViewController.m; sourceTree = "<group>"; };
 		6003F5A8195388D20070C39A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
-		6003F5AE195388D20070C39A /* Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = Tests.xctest; path = NHRecorder_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		6003F5AE195388D20070C39A /* NHRecorder_Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = NHRecorder_Tests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		6003F5AF195388D20070C39A /* XCTest.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XCTest.framework; path = Library/Frameworks/XCTest.framework; sourceTree = DEVELOPER_DIR; };
 		6003F5B7195388D20070C39A /* Tests-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Tests-Info.plist"; sourceTree = "<group>"; };
 		6003F5B9195388D20070C39A /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
@@ -63,8 +62,9 @@
 		76E470701BA058578D71C1FC /* NHRecorder.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = NHRecorder.podspec; path = ../NHRecorder.podspec; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
 		9243E7DC05B79E2A47F4B91D /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
-		A5168764717F4320258D20D8 /* Pods_NHRecorder_Tests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_NHRecorder_Tests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		93CBA2DCA2D41EAF944F2E52 /* libPods-NHRecorder_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NHRecorder_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B25BB1E33595DEED1DAE7741 /* Pods-NHRecorder_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NHRecorder_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-NHRecorder_Tests/Pods-NHRecorder_Tests.release.xcconfig"; sourceTree = "<group>"; };
+		ED6E7AD3E24FF549CCB9BC86 /* libPods-NHRecorder_Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NHRecorder_Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,7 +75,7 @@
 				6003F590195388D20070C39A /* CoreGraphics.framework in Frameworks */,
 				6003F592195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F58E195388D20070C39A /* Foundation.framework in Frameworks */,
-				22AF7D453DD571F46FA8FA01 /* Pods_NHRecorder_Example.framework in Frameworks */,
+				CA7C2D17C764CD925FEBB703 /* libPods-NHRecorder_Example.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -86,7 +86,7 @@
 				6003F5B0195388D20070C39A /* XCTest.framework in Frameworks */,
 				6003F5B2195388D20070C39A /* UIKit.framework in Frameworks */,
 				6003F5B1195388D20070C39A /* Foundation.framework in Frameworks */,
-				22282969EB49BE126E533C74 /* Pods_NHRecorder_Tests.framework in Frameworks */,
+				51AF5A470E6127DD52D897C8 /* libPods-NHRecorder_Tests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -108,8 +108,8 @@
 		6003F58B195388D20070C39A /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				6003F58A195388D20070C39A /* NHRecorder.app */,
-				6003F5AE195388D20070C39A /* Tests.xctest */,
+				6003F58A195388D20070C39A /* NHRecorder_Example.app */,
+				6003F5AE195388D20070C39A /* NHRecorder_Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -121,8 +121,8 @@
 				6003F58F195388D20070C39A /* CoreGraphics.framework */,
 				6003F591195388D20070C39A /* UIKit.framework */,
 				6003F5AF195388D20070C39A /* XCTest.framework */,
-				591B29F26A2F438867F45C31 /* Pods_NHRecorder_Example.framework */,
-				A5168764717F4320258D20D8 /* Pods_NHRecorder_Tests.framework */,
+				93CBA2DCA2D41EAF944F2E52 /* libPods-NHRecorder_Example.a */,
+				ED6E7AD3E24FF549CCB9BC86 /* libPods-NHRecorder_Tests.a */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -204,7 +204,6 @@
 				6003F586195388D20070C39A /* Sources */,
 				6003F587195388D20070C39A /* Frameworks */,
 				6003F588195388D20070C39A /* Resources */,
-				99E899F83890D6914942DBEE /* Embed Pods Frameworks */,
 				D634B026F914EC78848EDD1D /* Copy Pods Resources */,
 			);
 			buildRules = (
@@ -213,7 +212,7 @@
 			);
 			name = NHRecorder_Example;
 			productName = NHRecorder;
-			productReference = 6003F58A195388D20070C39A /* NHRecorder.app */;
+			productReference = 6003F58A195388D20070C39A /* NHRecorder_Example.app */;
 			productType = "com.apple.product-type.application";
 		};
 		6003F5AD195388D20070C39A /* NHRecorder_Tests */ = {
@@ -224,7 +223,6 @@
 				6003F5AA195388D20070C39A /* Sources */,
 				6003F5AB195388D20070C39A /* Frameworks */,
 				6003F5AC195388D20070C39A /* Resources */,
-				2905E7E2A70DBE9B1FBF969D /* Embed Pods Frameworks */,
 				AE3BDC23E24C8E59432D2D27 /* Copy Pods Resources */,
 			);
 			buildRules = (
@@ -234,7 +232,7 @@
 			);
 			name = NHRecorder_Tests;
 			productName = NHRecorderTests;
-			productReference = 6003F5AE195388D20070C39A /* Tests.xctest */;
+			productReference = 6003F5AE195388D20070C39A /* NHRecorder_Tests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 /* End PBXNativeTarget section */
@@ -293,21 +291,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		2905E7E2A70DBE9B1FBF969D /* Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-NHRecorder_Tests/Pods-NHRecorder_Tests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		63FAB8389DC451589E86368C /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -321,21 +304,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
-			showEnvVarsInLog = 0;
-		};
-		99E899F83890D6914942DBEE /* Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Embed Pods Frameworks";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-NHRecorder_Example/Pods-NHRecorder_Example-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		AE3BDC23E24C8E59432D2D27 /* Copy Pods Resources */ = {
