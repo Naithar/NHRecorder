@@ -68,6 +68,7 @@
         self.flashMode = SCFlashModeAuto;
     }
     
+    
     //video configuration
     self.cameraRecorder.videoConfiguration.sizeAsSquare = NO;
     //photo configuration
@@ -84,6 +85,8 @@
     [self setupMenuContentView];
     [self setupGridView];
     [self setupMenuView];
+    
+    [self resetCameraMode];
     
     [self.cameraRecorder prepare:nil];
 }
@@ -379,9 +382,13 @@
     
     self.libraryButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.libraryButton setTranslatesAutoresizingMaskIntoConstraints:NO];
+    self.libraryButton.imageView.contentMode = UIViewContentModeScaleAspectFill;
+    self.libraryButton.contentVerticalAlignment = UIControlContentVerticalAlignmentFill;
+    self.libraryButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentFill;
     self.libraryButton.backgroundColor = [UIColor greenColor];
     [self.libraryButton addTarget:self action:@selector(libraryButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     [self.menuContentContainer addSubview:self.libraryButton];
+    [self resetLibrary];
     
     [self.menuContentContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.libraryButton
                                                                           attribute:NSLayoutAttributeLeft
@@ -411,7 +418,41 @@
                                                                       toItem:self.libraryButton
                                                                    attribute:NSLayoutAttributeWidth
                                                                   multiplier:1.0 constant:0]];
+    
+    self.cameraModeButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    [self.cameraModeButton setTranslatesAutoresizingMaskIntoConstraints:NO];
+    self.cameraModeButton.backgroundColor = [UIColor blueColor];
+    [self.menuContentContainer addSubview:self.cameraModeButton];
+    [self.cameraModeButton addTarget:self action:@selector(cameraModeButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
 
+    [self.menuContentContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraModeButton
+                                                                          attribute:NSLayoutAttributeRight
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:self.menuContentContainer
+                                                                          attribute:NSLayoutAttributeRight
+                                                                         multiplier:1.0 constant:-15]];
+    
+    [self.menuContentContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraModeButton
+                                                                          attribute:NSLayoutAttributeCenterY
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:self.menuContentContainer
+                                                                          attribute:NSLayoutAttributeCenterY
+                                                                         multiplier:1.0 constant:0]];
+    
+    [self.cameraModeButton addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraModeButton
+                                                                   attribute:NSLayoutAttributeWidth
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.cameraModeButton
+                                                                   attribute:NSLayoutAttributeWidth
+                                                                  multiplier:0 constant:50]];
+    
+    
+    [self.cameraModeButton addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraModeButton
+                                                                   attribute:NSLayoutAttributeHeight
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.cameraModeButton
+                                                                   attribute:NSLayoutAttributeWidth
+                                                                  multiplier:1.0 constant:0]];
     
 }
 
@@ -542,133 +583,36 @@
     
     [library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
                            usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-                               
+                               [group enumerateAssetsWithOptions:NSEnumerationReverse
+                                                      usingBlock:^(ALAsset *result,
+                                                                   NSUInteger index,
+                                                                   BOOL *stop) {
+                                                          
+                                                          if (result) {
+                                                              UIImage *image = [UIImage imageWithCGImage:[result thumbnail]];
+                                                              
+                                                              if (image) {
+                                                                  dispatch_async(dispatch_get_main_queue(), ^{
+                                                                      [self.libraryButton setImage:image forState:UIControlStateNormal];
+                                                                  });
+
+                                                                  *stop = YES;
+                                                              }
+                                                          }
+                                                          
+                               }];
                            } failureBlock:^(NSError *error) {
                                NSLog(@"resetLibrary - enumerate groups - %@", error);
                            }];
 }
 
-/*
- - (void) checkForLibraryImage
- {
- if ( !self.cameraView.photoLibraryButton.isHidden && [self.parentViewController.class isSubclassOfClass:NSClassFromString(@"DBCameraContainerViewController")] ) {
- if ( [ALAssetsLibrary authorizationStatus] !=  ALAuthorizationStatusDenied ) {
- __weak DBCameraView *weakCamera = self.cameraView;
- [[DBLibraryManager sharedInstance] loadLastItemWithBlock:^(BOOL success, UIImage *image) {
- [weakCamera.photoLibraryButton setBackgroundImage:image forState:UIControlStateNormal];
- }];
- }
- } else
- [self.cameraView.photoLibraryButton setHidden:YES];
- }
- */
+- (void)cameraModeButtonTouch:(id)sender {
+    
+}
 
-/*
- - (void) loadLastItemWithBlock:(LastItemCompletionBlock)blockhandler
- {
- _getAllAssets = NO;
- _lastItemCompletionBlock = blockhandler;
- __weak LastItemCompletionBlock block = _lastItemCompletionBlock;
- [[self defaultAssetsLibrary] enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos usingBlock:self.assetGroupEnumerator
- failureBlock:^(NSError *error) {
- block( NO, nil );
- }];
- }
- */
-
-/*
- - (ALAssetsLibrary *) defaultAssetsLibrary
- {
- static dispatch_once_t pred = 0;
- static ALAssetsLibrary *library = nil;
- dispatch_once(&pred, ^{
- library = [[ALAssetsLibrary alloc] init];
- });
- return library;
- }
- */
-
-/*
- - (ALAssetsLibraryGroupsEnumerationResultsBlock) assetGroupEnumerator
- {
- if ( _assetGroups.count > 0 )
- [_assetGroups removeAllObjects];
- 
- __block NSMutableArray *groups = _assetGroups;
- __block BOOL blockGetAllAssets = _getAllAssets;
- __weak typeof(self) weakSelf = self;
- __block GroupsCompletionBlock block = _groupsCompletionBlock;
- 
- ALAssetsLibraryGroupsEnumerationResultsBlock groupsEnumerator = ^(ALAssetsGroup *group, BOOL *stop){
- if ( group ) {
- if ( group.numberOfAssets > 0 ) {
- [weakSelf setUsedGroup:group];
- [group enumerateAssetsUsingBlock:weakSelf.assetsEnumerator];
- }
- } else {
- if ( blockGetAllAssets ) {
- block ( YES, [groups copy] );
- groups = nil;
- }
- }
- };
- 
- return groupsEnumerator;
- }
- 
- - (ALAssetsGroupEnumerationResultsBlock) assetsEnumerator
- {
- __block NSMutableArray *items = [NSMutableArray array];
- __block ALAsset *assetResult;
- __block BOOL blockGetAllAssets = _getAllAssets;
- 
- __weak typeof(self) weakSelf = self;
- __weak NSMutableArray *assetGroupsBlock = _assetGroups;
- __weak LastItemCompletionBlock blockLastItem = _lastItemCompletionBlock;
- 
- ALAssetsGroupEnumerationResultsBlock assetsEnumerator = ^(ALAsset *result, NSUInteger index, BOOL *stop) {
- if ( result ) {
- if( [[result valueForProperty:ALAssetPropertyType] isEqualToString:ALAssetTypePhoto] ) {
- if ( [result defaultRepresentation] ) {
- [items addObject:[[result defaultRepresentation] url]];
- assetResult = result;
- }
- }
- } else {
- *stop = YES;
- 
- if ( !blockGetAllAssets ) {
- UIImage *image = [UIImage imageWithCGImage:[assetResult thumbnail]];
- image = [UIImage createRoundedRectImage:image size:image.size roundRadius:8];
- 
- dispatch_async(dispatch_get_main_queue(), ^{
- blockLastItem( YES, image );
- });
- } else {
- NSString *groupPropertyName = (NSString *)[weakSelf.usedGroup valueForProperty:ALAssetsGroupPropertyName];
- NSString *groupPropertyPersistentID = (NSString *)[weakSelf.usedGroup valueForProperty:ALAssetsGroupPropertyPersistentID];
- NSUInteger propertyType = [[weakSelf.usedGroup valueForProperty:ALAssetsGroupPropertyType] unsignedIntegerValue];
- 
- NSDictionary *dictionaryGroup = @{
- @"groupTitle" : groupPropertyName,
- @"groupAssets" : [[items reverseObjectEnumerator] allObjects],
- @"propertyType" : @(propertyType),
- @"propertyID" : groupPropertyPersistentID
- };
- 
- if ( propertyType == ALAssetsGroupSavedPhotos ) {
- [assetGroupsBlock insertObject:dictionaryGroup atIndex:0];
- }
- else if ( [(NSArray *)dictionaryGroup[@"groupAssets"] count] > 0 ) {
- [assetGroupsBlock addObject:dictionaryGroup];
- }
- }
- }
- };
- 
- return assetsEnumerator;
- }
- */
+- (void)resetCameraMode {
+    
+}
 
 //MARK: View overrides
 
