@@ -10,6 +10,7 @@
 #import "NHCameraGridView.h"
 
 #import <AssetsLibrary/AssetsLibrary.h>
+#import "SCRecordSessionManager.h"
 
 @interface NHCameraViewController ()
 
@@ -555,7 +556,7 @@
 //MARK: Menu container buttons
 
 - (void)captureButtonTouch:(id)sender {
-    if (self.cameraRecorder.captureSessionPreset == AVCaptureSessionPresetPhoto) {
+    if ([self.cameraRecorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto]) {
         [self.cameraRecorder capturePhoto:^(NSError *error, UIImage *image) {
             if (error) {
                 return;
@@ -565,13 +566,67 @@
         }];
     }
     else {
-        
+        if (!self.cameraRecorder.isRecording) {
+            [self.cameraRecorder.session cancelSession:nil];
+            self.cameraRecorder.session = nil;
+            SCRecordSession *session = [SCRecordSession recordSession];
+            session.fileType = AVFileTypeQuickTimeMovie;
+            self.cameraRecorder.session = session;
+            
+            
+            self.captureButton.backgroundColor = [UIColor brownColor];
+            self.cameraModeButton.enabled = NO;
+            [self.cameraRecorder record];
+        }
+        else {
+            self.captureButton.backgroundColor = [UIColor redColor];
+            self.cameraModeButton.enabled = YES;
+            [self.cameraRecorder pause:^{
+                
+                [[UIApplication sharedApplication] beginIgnoringInteractionEvents];                
+                void(^completionHandler)(NSURL *url, NSError *error) = ^(NSURL *url, NSError *error) {
+                    if (error == nil) {
+                        UISaveVideoAtPathToSavedPhotosAlbum(url.path, self, @selector(savedCapturedVideo:didFinishSavingWithError:contextInfo:), nil);
+                    } else {
+                        [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+                        
+                        [[[UIAlertView alloc] initWithTitle:@"Failed to save" message:error.localizedDescription delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+                    }
+                };
+                
+                [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+                
+                SCAssetExportSession *exportSession = [[SCAssetExportSession alloc] initWithAsset:self.cameraRecorder.session.assetRepresentingSegments];
+                exportSession.videoConfiguration.preset = SCPresetHighestQuality;
+                exportSession.audioConfiguration.preset = SCPresetHighestQuality;
+                exportSession.videoConfiguration.maxFrameRate = 35;
+                exportSession.outputUrl = self.cameraRecorder.session.outputUrl;
+                exportSession.outputFileType = AVFileTypeMPEG4;
+                
+                exportSession.videoConfiguration.sizeAsSquare = NO;
+                [exportSession exportAsynchronouslyWithCompletionHandler:^{
+                    [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+                    completionHandler(exportSession.outputUrl, exportSession.error);
+                }];
+            }];
+        }
+
     }
 }
 
 - (void)savedCapturedImage:(UIImage*)image error:(NSError*)error context:(void*)context {
     
     NSLog(@"saved - %@", error);
+}
+
+- (void)savedCapturedVideo:(NSString *)videoPath didFinishSavingWithError:(NSError *)error contextInfo: (void *) contextInfo {
+    [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+    
+    if (error == nil) {
+        [[[UIAlertView alloc] initWithTitle:@"Saved to camera roll" message:@"" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+    } else {
+        [[[UIAlertView alloc] initWithTitle:@"Failed to save" message:error.localizedDescription delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+    }
 }
 
 - (void)libraryButtonTouch:(id)sender {
@@ -608,9 +663,25 @@
 
 - (void)cameraModeButtonTouch:(id)sender {
     
+
+    NSString *newCameraPreset;
+    
+    if ([self.cameraRecorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto]) {
+        newCameraPreset = AVCaptureSessionPresetHigh;
+    }
+    else {
+        newCameraPreset = AVCaptureSessionPresetPhoto;
+    }
+    
+    self.cameraRecorder.captureSessionPreset = newCameraPreset;
+    
+    [self resetCameraMode];
 }
 
 - (void)resetCameraMode {
+    BOOL isPhotoCamera = [self.cameraRecorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto];
+    
+    self.flashButton.enabled = isPhotoCamera;
     
 }
 
