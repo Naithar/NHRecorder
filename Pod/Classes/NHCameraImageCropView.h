@@ -26,4 +26,5 @@ typedef NS_ENUM(NSUInteger, NHCropType) {
 - (void)setFilter:(SCFilter*)filter;
 - (BOOL)saveImageWithCallbackObject:(id)obj
                         andSelector:(SEL)selector;
+- (void)setCropType:(NHCropType)type;
 @end

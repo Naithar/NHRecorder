@@ -52,7 +52,7 @@
 
 - (void)commonInit {
     
-    self.cropType = NHCropTypeSquare;
+    self.cropType = NHCropTypeNone;
     
     self.delegate = self;
     self.bounces = YES;
@@ -79,6 +79,16 @@
     [self sizeContent];
 }
 
+
+- (void)setCropType:(NHCropType)type {
+//    _cropType = type;
+    
+    _cropType = NHCropTypeNone;
+    [self resetCropAnimated:YES];
+    
+    _cropType = type;
+    [self resetCropAnimated:YES];
+}
 - (void)setFilter:(SCFilter*)filter {
     self.contentView.filters = @[filter];
     self.contentView.selectedFilter = filter;
@@ -133,13 +143,13 @@
         self.contentView.center = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height / 2);
         self.contentSize = CGSizeZero;
         
-        [self resetCrop];
+        [self resetCropAnimated:NO];
         
         [self scrollViewDidZoom:self];
     }
 }
 
-- (void)resetCrop {
+- (void)resetCropAnimated:(BOOL)animated {
 //    
     CGRect cropRect = CGRectZero;
     
@@ -149,7 +159,7 @@
         case NHCropTypeNone:
             self.cropView.hidden = YES;
             self.minimumZoomScale = 1;
-            
+            [self setZoomScale:1 animated:animated];
             return;
         case NHCropTypeSquare: {
             self.cropView.hidden = NO;
@@ -187,12 +197,31 @@
 //    CGFloat widthZoom = 1;
 //    CGFloat heightZoom = 1;
     
-    CGFloat newValue = MAX(self.image.size.width, self.image.size.height) / MIN(self.image.size.width, self.image.size.height);
-
-    if (self.minimumZoomScale != newValue) {
-        self.minimumZoomScale = newValue;
-        [self setZoomScale:newValue animated:NO];
+    CGFloat newValue = 1;
+    
+//    if (self.image.size.width >= self.image.size.height) {
+//        
+//    }
+//    else {
+//        
+//    }
+    
+    if (self.bounds.size.height > self.contentView.bounds.size.height) {
+        /////////SMTH TO DO
+//        newValue = self.image.size.width / self.image.size.height;
+        
+        if (self.cropView.bounds.size.height > self.contentView.bounds.size.height) {
+            newValue = self.cropView.bounds.size.height / self.contentView.bounds.size.height;
+        }
     }
+    else if (self.bounds.size.width > self.contentView.bounds.size.width) {
+        newValue = self.bounds.size.width / self.contentView.bounds.size.width;
+    }
+
+//    if (self.minimumZoomScale != newValue) {
+        self.minimumZoomScale = newValue;
+        [self setZoomScale:newValue animated:animated];
+//    }
 }
 
 - (BOOL)saveImageWithCallbackObject:(id)obj andSelector:(SEL)selector {
@@ -219,6 +248,16 @@
                 CGFloat resultHeight = round(ratio * newRect.size.height);
                 CGFloat resultXOffset = round(ratio * newRect.origin.x);
                 CGFloat resultYOffset = round(ratio * newRect.origin.y);
+                
+                if (resultXOffset < 0) {
+                    resultWidth += resultXOffset;
+                    resultXOffset = 0;
+                }
+                
+                if (resultYOffset < 0) {
+                    resultHeight += resultYOffset;
+                    resultYOffset = 0;
+                }
                 
                 CGRect resultRect = CGRectMake(
                                                (image.imageOrientation == UIImageOrientationUp
@@ -257,14 +296,14 @@
     scrollView.alwaysBounceVertical = YES;//scrollView.zoomScale > 1;
     scrollView.alwaysBounceHorizontal = YES;//scrollView.zoomScale > 1;
 //    
-    if (scrollView.zoomScale == 1) {
-        self.contentSize = CGSizeZero;
-        self.contentInset = UIEdgeInsetsZero;
-        self.cropView.center = CGPointMake(
-                                           self.bounds.size.width / 2,
-                                           self.bounds.size.height / 2);
-        return;
-    }
+//    if (scrollView.zoomScale == 1) {
+//        self.contentSize = CGSizeZero;
+//        self.contentInset = UIEdgeInsetsZero;
+//        self.cropView.center = CGPointMake(
+//                                           self.bounds.size.width / 2,
+//                                           self.bounds.size.height / 2);
+//        return;
+//    }
     
     CGSize zoomedSize = self.contentView.bounds.size;
     zoomedSize.width *= self.zoomScale;
@@ -285,19 +324,30 @@
     CGFloat cropHorizontalOffset = 0;
     
     if (self.cropType != NHCropTypeNone) {
-        if (self.contentView.frame.size.height != self.cropView.bounds.size.height) {
+        /////////SMTH TO DO
+//        if (self.bounds.size.width >= self.bounds.size.height) {
             cropVerticalOffset = floor(self.bounds.size.height - self.cropView.bounds.size.height) / 2;
-        }
-        
-        if (self.contentView.frame.size.width != self.cropView.bounds.size.width) {
-            cropHorizontalOffset = floor(self.bounds.size.width - self.cropView.bounds.size.width) / 2;
-        }
-    }
+//        }
+        cropHorizontalOffset = floor(self.bounds.size.width - self.cropView.bounds.size.width) / 2;
     
+
     self.contentInset = UIEdgeInsetsMake(verticalOffset - self.contentView.frame.origin.y + cropVerticalOffset,
                                          horizontalOffset - self.contentView.frame.origin.x + cropHorizontalOffset,
                                          verticalOffset + self.contentView.frame.origin.y + cropVerticalOffset,
                                          horizontalOffset + self.contentView.frame.origin.x + cropHorizontalOffset);
+    
+    self.cropView.center = CGPointMake(
+                                       scrollView.contentOffset.x + scrollView.bounds.size.width / 2,
+                                       scrollView.contentOffset.y + scrollView.bounds.size.height / 2);
+        }
+    else {
+        self.contentSize = CGSizeZero;
+        self.contentInset = UIEdgeInsetsZero;
+//        self.cropView.center = CGPointMake(
+//                                           self.bounds.size.width / 2,
+//                                           self.bounds.size.height / 2);
+
+    }
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {

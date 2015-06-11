@@ -10,8 +10,9 @@
 #import <SCFilterSelectorViewInternal.h>
 #import "NHCameraFilterView.h"
 #import "NHCameraImageCropView.h"
+#import "NHCameraCropCollectionView.h"
 
-@interface NHCameraImageEditorController ()<NHCameraFilterViewDelegate>
+@interface NHCameraImageEditorController ()<NHCameraFilterViewDelegate, NHCameraCropCollectionViewDelegate>
 
 @property (nonatomic, strong) UIImage *image;
 
@@ -25,6 +26,7 @@
 
 @property (nonatomic, strong) UIView *menuContentContainer;
 @property (nonatomic, strong) NHCameraFilterView *filterView;
+@property (nonatomic, strong) NHCameraCropCollectionView *cropView;
 
 @end
 
@@ -144,6 +146,13 @@
     [self.filterView setSelected:0];
     [self.menuContentContainer addSubview:self.filterView];
     
+    self.cropView = [[NHCameraCropCollectionView alloc] init];
+    self.cropView.backgroundColor = [UIColor greenColor];
+    self.cropView.nhDelegate = self;
+    self.cropView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.cropView setSelected:0];
+    [self.menuContentContainer addSubview:self.cropView];
+    
     [self.menuContentContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.filterView
                                                                           attribute:NSLayoutAttributeTop
                                                                           relatedBy:NSLayoutRelationEqual
@@ -166,6 +175,34 @@
                                                                          multiplier:1.0 constant:15]];
     
     [self.menuContentContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.filterView
+                                                                          attribute:NSLayoutAttributeRight
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:self.menuContentContainer
+                                                                          attribute:NSLayoutAttributeRight
+                                                                         multiplier:1.0 constant:-15]];
+    
+    [self.menuContentContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.cropView
+                                                                          attribute:NSLayoutAttributeTop
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:self.menuContentContainer
+                                                                          attribute:NSLayoutAttributeTop
+                                                                         multiplier:1.0 constant:2.5]];
+    
+    [self.menuContentContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.cropView
+                                                                          attribute:NSLayoutAttributeBottom
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:self.menuContentContainer
+                                                                          attribute:NSLayoutAttributeBottom
+                                                                         multiplier:1.0 constant:0]];
+    
+    [self.menuContentContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.cropView
+                                                                          attribute:NSLayoutAttributeLeft
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:self.menuContentContainer
+                                                                          attribute:NSLayoutAttributeLeft
+                                                                         multiplier:1.0 constant:15]];
+    
+    [self.menuContentContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.cropView
                                                                           attribute:NSLayoutAttributeRight
                                                                           relatedBy:NSLayoutRelationEqual
                                                                              toItem:self.menuContentContainer
@@ -389,20 +426,28 @@
 - (void)resetContainerView {
     if (self.filterButton.selected) {
         self.filterView.hidden = NO;
+        self.cropView.hidden = YES;
     }
     else if (self.cropButton.selected) {
         self.filterView.hidden = YES;
+        self.cropView.hidden = NO;
     }
     else if (self.optionsButton.selected) {
         self.filterView.hidden = YES;
+        self.cropView.hidden = YES;
     }
     else {
         self.filterView.hidden = YES;
+        self.cropView.hidden = YES;
     }
 }
 
 - (void)filterView:(NHCameraFilterView *)filteView didSelectFilter:(SCFilter *)filter {
     [self.cropImageView setFilter:filter];
+}
+
+- (void)cropView:(NHCameraCropCollectionView *)cropView didSelectType:(NHCropType)type {
+    [self.cropImageView setCropType:type];
 }
 
 - (void)savedCapturedImage:(UIImage*)image error:(NSError*)error context:(void*)context {
