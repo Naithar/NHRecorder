@@ -92,6 +92,7 @@
     [self.cameraRecorder prepare:nil];
     
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@" " style:UIBarButtonItemStylePlain target:nil action:nil];
+    
 }
 
 - (void)setupRecorderView {
@@ -164,7 +165,7 @@
     self.menuContainer = [[UIView alloc] init];
     [self.menuContainer setTranslatesAutoresizingMaskIntoConstraints:NO];
     
-    self.menuContainer.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+    self.menuContainer.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.75];
     [self.view addSubview:self.menuContainer];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.menuContainer
@@ -378,7 +379,7 @@
                                                                           relatedBy:NSLayoutRelationEqual
                                                                              toItem:self.menuContentContainer
                                                                           attribute:NSLayoutAttributeHeight
-                                                                         multiplier:0 constant:100]];
+                                                                         multiplier:0 constant:80]];
     
 
     
@@ -597,7 +598,10 @@
 
 - (void)captureButtonTouch:(id)sender {
     if ([self.cameraRecorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto]) {
+        
+        [UIApplication sharedApplication].keyWindow.userInteractionEnabled = NO;
         [self.cameraRecorder capturePhoto:^(NSError *error, UIImage *image) {
+            [UIApplication sharedApplication].keyWindow.userInteractionEnabled = YES;
             if (error) {
                 return;
             }
@@ -654,10 +658,6 @@
     }
 }
 
-- (void)savedCapturedImage:(UIImage*)image error:(NSError*)error context:(void*)context {
-    
-    NSLog(@"saved - %@", error);
-}
 
 - (void)savedCapturedVideo:(NSString *)videoPath didFinishSavingWithError:(NSError *)error contextInfo: (void *) contextInfo {
     [[UIApplication sharedApplication] endIgnoringInteractionEvents];
@@ -750,6 +750,9 @@
     return YES;
 }
 
+
+- (void)dealloc {
+}
 
 
 
