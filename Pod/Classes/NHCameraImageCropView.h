@@ -8,6 +8,15 @@
 
 #import <UIKit/UIKit.h>
 #import <SCRecorder.h>
+
+typedef NS_ENUM(NSUInteger, NHCropType) {
+    NHCropTypeNone,
+    NHCropTypeSquare,
+    NHCropTypeCircle,
+    NHCropType4x3,
+    NHCropType16x9
+};
+
 @interface NHCameraImageCropView : UIScrollView
 
 - (instancetype)initWithImage:(UIImage*)image;

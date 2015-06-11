@@ -65,7 +65,8 @@
 - (void)nextButtonNavigationTouch:(id)sender {
     if (self.cropImageView.panGestureRecognizer.state == UIGestureRecognizerStatePossible
         && self.cropImageView.pinchGestureRecognizer.state == UIGestureRecognizerStatePossible) {
-    [self.cropImageView saveImageWithCallbackObject:self andSelector:@selector(savedCapturedImage:error:context:)];
+        
+        [self.cropImageView saveImageWithCallbackObject:self andSelector:@selector(savedCapturedImage:error:context:)];
     }
     else {
         NSLog(@"stop doing shit");
