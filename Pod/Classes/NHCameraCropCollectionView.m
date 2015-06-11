@@ -45,7 +45,7 @@
     return CGSizeMake(65, self.bounds.size.height);
 }
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    return 4;
+    return 6;
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumInteritemSpacingForSectionAtIndex:(NSInteger)section {
@@ -90,6 +90,12 @@
             break;
         case 3:
             type = NHCropType16x9;
+            break;
+        case 4:
+            type = NHCropType3x4;
+            break;
+        case 5:
+            type = NHCropType9x16;
             break;
         default:
             break;

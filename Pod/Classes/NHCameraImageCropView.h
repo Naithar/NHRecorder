@@ -14,7 +14,9 @@ typedef NS_ENUM(NSUInteger, NHCropType) {
     NHCropTypeSquare,
     NHCropTypeCircle,
     NHCropType4x3,
-    NHCropType16x9
+    NHCropType16x9,
+    NHCropType3x4,
+    NHCropType9x16,
 };
 
 @interface NHCameraImageCropView : UIScrollView

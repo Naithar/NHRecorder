@@ -154,6 +154,7 @@
     CGRect cropRect = CGRectZero;
     
     CGFloat width = MIN(self.bounds.size.width, self.bounds.size.height);
+    CGFloat height = MIN(self.bounds.size.width, self.bounds.size.height);
     
     switch (self.cropType) {
         case NHCropTypeNone:
@@ -186,6 +187,18 @@
             cropRect.size.width = width;
             cropRect.size.height = round(width / 16 * 9);
             break;
+        case NHCropType3x4:
+            self.cropView.hidden = NO;
+            self.cropView.layer.cornerRadius = 0;
+            cropRect.size.width = round(height / 4 * 3);
+            cropRect.size.height = height;
+            break;
+        case NHCropType9x16:
+            self.cropView.hidden = NO;
+            self.cropView.layer.cornerRadius = 0;
+            cropRect.size.width = round(height / 4 * 3);
+            cropRect.size.height = height;
+            break;
         default:
             break;
     }
@@ -194,34 +207,10 @@
     self.cropView.frame = cropRect;
     self.cropView.center = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height / 2);
     
-//    CGFloat widthZoom = 1;
-//    CGFloat heightZoom = 1;
-    
     CGFloat newValue = 1;
-    
-//    if (self.image.size.width >= self.image.size.height) {
-//        
-//    }
-//    else {
-//        
-//    }
-    
-    if (self.bounds.size.height > self.contentView.bounds.size.height) {
-        /////////SMTH TO DO
-//        newValue = self.image.size.width / self.image.size.height;
-        
-        if (self.cropView.bounds.size.height > self.contentView.bounds.size.height) {
-            newValue = self.cropView.bounds.size.height / self.contentView.bounds.size.height;
-        }
-    }
-    else if (self.bounds.size.width > self.contentView.bounds.size.width) {
-        newValue = self.bounds.size.width / self.contentView.bounds.size.width;
-    }
 
-//    if (self.minimumZoomScale != newValue) {
-        self.minimumZoomScale = newValue;
-        [self setZoomScale:newValue animated:animated];
-//    }
+    self.minimumZoomScale = newValue;
+    [self setZoomScale:newValue animated:animated];
 }
 
 - (BOOL)saveImageWithCallbackObject:(id)obj andSelector:(SEL)selector {
@@ -293,17 +282,8 @@
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView {
     
-    scrollView.alwaysBounceVertical = YES;//scrollView.zoomScale > 1;
-    scrollView.alwaysBounceHorizontal = YES;//scrollView.zoomScale > 1;
-//    
-//    if (scrollView.zoomScale == 1) {
-//        self.contentSize = CGSizeZero;
-//        self.contentInset = UIEdgeInsetsZero;
-//        self.cropView.center = CGPointMake(
-//                                           self.bounds.size.width / 2,
-//                                           self.bounds.size.height / 2);
-//        return;
-//    }
+    scrollView.alwaysBounceVertical = YES;
+    scrollView.alwaysBounceHorizontal = YES;
     
     CGSize zoomedSize = self.contentView.bounds.size;
     zoomedSize.width *= self.zoomScale;
@@ -312,42 +292,38 @@
     CGFloat verticalOffset = 0;
     CGFloat horizontalOffset = 0;
     
-    if (zoomedSize.width < self.bounds.size.width) {
-        horizontalOffset = (self.bounds.size.width - zoomedSize.width) / 2.0;
-    }
-    
     if (zoomedSize.height < self.bounds.size.height) {
         verticalOffset = (self.bounds.size.height - zoomedSize.height) / 2.0;
+    }
+    
+    if (zoomedSize.width < self.bounds.size.width) {
+        horizontalOffset = (self.bounds.size.width - zoomedSize.width) / 2.0;
     }
     
     CGFloat cropVerticalOffset = 0;
     CGFloat cropHorizontalOffset = 0;
     
     if (self.cropType != NHCropTypeNone) {
-        /////////SMTH TO DO
-//        if (self.bounds.size.width >= self.bounds.size.height) {
-            cropVerticalOffset = floor(self.bounds.size.height - self.cropView.bounds.size.height) / 2;
-//        }
-        cropHorizontalOffset = floor(self.bounds.size.width - self.cropView.bounds.size.width) / 2;
+        cropVerticalOffset = (self.bounds.size.height - self.cropView.bounds.size.height) / 2 - verticalOffset;
+        cropHorizontalOffset = (self.bounds.size.width - self.cropView.bounds.size.width) / 2 - horizontalOffset;
+    }
+    else if (self.zoomScale == 1) {
+        self.contentSize = CGSizeZero;
+        self.contentInset = UIEdgeInsetsZero;
+        self.cropView.center = CGPointMake(
+                                           self.bounds.size.width / 2,
+                                           self.bounds.size.height / 2);
+        return;
+    }
     
-
     self.contentInset = UIEdgeInsetsMake(verticalOffset - self.contentView.frame.origin.y + cropVerticalOffset,
                                          horizontalOffset - self.contentView.frame.origin.x + cropHorizontalOffset,
                                          verticalOffset + self.contentView.frame.origin.y + cropVerticalOffset,
                                          horizontalOffset + self.contentView.frame.origin.x + cropHorizontalOffset);
     
-    self.cropView.center = CGPointMake(
-                                       scrollView.contentOffset.x + scrollView.bounds.size.width / 2,
+    self.cropView.center = CGPointMake(scrollView.contentOffset.x + scrollView.bounds.size.width / 2,
                                        scrollView.contentOffset.y + scrollView.bounds.size.height / 2);
-        }
-    else {
-        self.contentSize = CGSizeZero;
-        self.contentInset = UIEdgeInsetsZero;
-//        self.cropView.center = CGPointMake(
-//                                           self.bounds.size.width / 2,
-//                                           self.bounds.size.height / 2);
-
-    }
+    
 }
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView {
