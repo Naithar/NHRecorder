@@ -8,9 +8,9 @@
 
 #import "NHCameraViewController.h"
 #import "NHCameraGridView.h"
+#import "NHCameraImageEditorController.h"
 
 #import <AssetsLibrary/AssetsLibrary.h>
-#import "SCRecordSessionManager.h"
 
 @interface NHCameraViewController ()
 
@@ -19,6 +19,7 @@
 @property (nonatomic, strong) SCRecorder *cameraRecorder;
 
 @property (nonatomic, strong) UIView *menuContainer;
+@property (nonatomic, strong) UIView *menuSeparator;
 @property (nonatomic, strong) UIButton *gridButton;
 @property (nonatomic, strong) UIButton *frontCameraButton;
 @property (nonatomic, strong) UIButton *flashButton;
@@ -57,7 +58,7 @@
 }
 
 - (void)commonInit {
-    self.view.backgroundColor = [UIColor blueColor];
+    self.view.backgroundColor = [UIColor blackColor];
     
     self.cameraRecorder = [SCRecorder recorder];
     self.cameraRecorder.session = [SCRecordSession recordSession];
@@ -68,7 +69,6 @@
         self.cameraRecorder.flashMode = SCFlashModeAuto;
         self.flashMode = SCFlashModeAuto;
     }
-    
     
     //video configuration
     self.cameraRecorder.videoConfiguration.sizeAsSquare = NO;
@@ -90,6 +90,8 @@
     [self resetCameraMode];
     
     [self.cameraRecorder prepare:nil];
+    
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@" " style:UIBarButtonItemStylePlain target:nil action:nil];
 }
 
 - (void)setupRecorderView {
@@ -162,7 +164,7 @@
     self.menuContainer = [[UIView alloc] init];
     [self.menuContainer setTranslatesAutoresizingMaskIntoConstraints:NO];
     
-    self.menuContainer.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.85];
+    self.menuContainer.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
     [self.view addSubview:self.menuContainer];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.menuContainer
@@ -193,11 +195,18 @@
                                                                           attribute:NSLayoutAttributeHeight
                                                                          multiplier:0 constant:45]];
     
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraRecorderView
+                                                          attribute:NSLayoutAttributeBottom
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.menuContainer
+                                                          attribute:NSLayoutAttributeTop
+                                                         multiplier:1.0 constant:0]];
+    
     self.gridButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.gridButton setTitle:@"gn" forState:UIControlStateNormal];
     [self.gridButton setTitle:@"g" forState:UIControlStateSelected];
     [self.gridButton setTranslatesAutoresizingMaskIntoConstraints:NO];
-    self.gridButton.backgroundColor = [UIColor redColor];
+    self.gridButton.backgroundColor = [UIColor clearColor];
     [self.gridButton addTarget:self action:@selector(gridButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     [self.menuContainer addSubview:self.gridButton];
     [self resetGrid];
@@ -206,14 +215,14 @@
     [self.frontCameraButton setTitle:@"cn" forState:UIControlStateNormal];
     [self.frontCameraButton setTitle:@"c" forState:UIControlStateSelected];
     [self.frontCameraButton setTranslatesAutoresizingMaskIntoConstraints:NO];
-    self.frontCameraButton.backgroundColor = [UIColor greenColor];
+    self.frontCameraButton.backgroundColor = [UIColor clearColor];
     [self.frontCameraButton addTarget:self action:@selector(frontCameraButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     [self.menuContainer addSubview:self.frontCameraButton];
     [self resetCamera];
     
     self.flashButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.flashButton setTranslatesAutoresizingMaskIntoConstraints:NO];
-    self.flashButton.backgroundColor = [UIColor blueColor];
+    self.flashButton.backgroundColor = [UIColor clearColor];
     [self.flashButton addTarget:self action:@selector(flashButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     [self.menuContainer addSubview:self.flashButton];
     [self resetFlash];
@@ -301,6 +310,40 @@
                                                                       toItem:self.flashButton
                                                                    attribute:NSLayoutAttributeWidth
                                                                   multiplier:1.0 constant:0]];
+    
+    self.menuSeparator = [[UIView alloc] init];
+    self.menuSeparator.translatesAutoresizingMaskIntoConstraints = NO;
+    self.menuSeparator.backgroundColor = [UIColor whiteColor];
+    
+    [self.menuContainer addSubview:self.menuSeparator];
+    
+    [self.menuSeparator addConstraint:[NSLayoutConstraint constraintWithItem:self.menuSeparator
+                                                                   attribute:NSLayoutAttributeHeight
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.menuSeparator
+                                                                   attribute:NSLayoutAttributeHeight
+                                                                  multiplier:0 constant:0.5]];
+    
+    [self.menuContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.menuSeparator
+                                                                   attribute:NSLayoutAttributeBottom
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.menuContainer
+                                                                   attribute:NSLayoutAttributeBottom
+                                                                  multiplier:1.0 constant:0]];
+    
+    [self.menuContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.menuSeparator
+                                                                   attribute:NSLayoutAttributeLeft
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.menuContainer
+                                                                   attribute:NSLayoutAttributeLeft
+                                                                  multiplier:1.0 constant:0]];
+    
+    [self.menuContainer addConstraint:[NSLayoutConstraint constraintWithItem:self.menuSeparator
+                                                                   attribute:NSLayoutAttributeRight
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.menuContainer
+                                                                   attribute:NSLayoutAttributeRight
+                                                                  multiplier:1.0 constant:0]];
 }
 
 - (void)setupMenuContentView {
@@ -337,13 +380,7 @@
                                                                           attribute:NSLayoutAttributeHeight
                                                                          multiplier:0 constant:100]];
     
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraRecorderView
-                                                          attribute:NSLayoutAttributeBottom
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.menuContentContainer
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1.0 constant:0]];
+
     
     self.captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
     [self.captureButton setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -386,7 +423,9 @@
     self.libraryButton.imageView.contentMode = UIViewContentModeScaleAspectFill;
     self.libraryButton.contentVerticalAlignment = UIControlContentVerticalAlignmentFill;
     self.libraryButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentFill;
-    self.libraryButton.backgroundColor = [UIColor greenColor];
+    self.libraryButton.backgroundColor = [UIColor clearColor];
+    self.libraryButton.layer.cornerRadius = 5;
+    self.libraryButton.clipsToBounds = YES;
     [self.libraryButton addTarget:self action:@selector(libraryButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     [self.menuContentContainer addSubview:self.libraryButton];
     [self resetLibrary];
@@ -459,6 +498,7 @@
 
 - (void)setupGridView {
     self.gridView = [[NHCameraGridView alloc] init];
+    self.gridView.userInteractionEnabled = NO;
     [self.gridView setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.gridView.backgroundColor = [UIColor clearColor];
     self.gridView.numberOfColumns = 2;
@@ -468,30 +508,30 @@
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.gridView
                                                           attribute:NSLayoutAttributeTop
                                                           relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.view
+                                                             toItem:self.cameraRecorderView
                                                           attribute:NSLayoutAttributeTop
-                                                         multiplier:1.0 constant:0]];
+                                                         multiplier:1.0 constant:0.5]];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.gridView
                                                           attribute:NSLayoutAttributeLeft
                                                           relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.view
+                                                             toItem:self.cameraRecorderView
                                                           attribute:NSLayoutAttributeLeft
-                                                         multiplier:1.0 constant:0]];
+                                                         multiplier:1.0 constant:0.5]];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.gridView
                                                           attribute:NSLayoutAttributeRight
                                                           relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.view
+                                                             toItem:self.cameraRecorderView
                                                           attribute:NSLayoutAttributeRight
-                                                         multiplier:1.0 constant:0]];
+                                                         multiplier:1.0 constant:0.5]];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.gridView
                                                           attribute:NSLayoutAttributeBottom
                                                           relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.menuContentContainer
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1.0 constant:0]];
+                                                             toItem:self.cameraRecorderView
+                                                          attribute:NSLayoutAttributeBottom
+                                                         multiplier:1.0 constant:-0.5]];
 }
 
 
@@ -561,8 +601,8 @@
             if (error) {
                 return;
             }
-            
-            UIImageWriteToSavedPhotosAlbum(image, self, @selector(savedCapturedImage:error:context:), nil);
+            NHCameraImageEditorController *controller = [[NHCameraImageEditorController alloc] initWithUIImage:image];
+            [self.navigationController pushViewController:controller animated:YES];
         }];
     }
     else {
@@ -662,12 +702,10 @@
 }
 
 - (void)cameraModeButtonTouch:(id)sender {
-    
-
     NSString *newCameraPreset;
     
     if ([self.cameraRecorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto]) {
-        newCameraPreset = AVCaptureSessionPresetHigh;
+        newCameraPreset = [SCRecorderTools bestCaptureSessionPresetCompatibleWithAllDevices];
     }
     else {
         newCameraPreset = AVCaptureSessionPresetPhoto;
@@ -711,5 +749,8 @@
 - (BOOL)prefersStatusBarHidden {
     return YES;
 }
+
+
+
 
 @end

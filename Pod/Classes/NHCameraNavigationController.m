@@ -62,6 +62,9 @@
     self.navigationBar.barTintColor = [UIColor blackColor];
     self.navigationBar.tintColor = [UIColor whiteColor];
     
+    self.navigationBar.backIndicatorImage = [UIImage imageNamed:@"NHRecorder.back.png"];
+    self.navigationBar.backIndicatorTransitionMaskImage = [UIImage imageNamed:@"NHRecorder.back.png"];
+    
     self.cameraViewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"NHRecorder.close"] style:UIBarButtonItemStylePlain target:self action:@selector(closeNavigationButtonTouch:)];
     
     [self setViewControllers:@[self.cameraViewController]];
