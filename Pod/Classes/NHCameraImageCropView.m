@@ -180,34 +180,15 @@
             break;
     }
     
+
     self.cropView.frame = cropRect;
     self.cropView.center = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height / 2);
     
-    CGFloat widthZoom = 1;
-    CGFloat heightZoom = 1;
-    if (self.contentView.bounds.size.width < self.bounds.size.width) {
-        widthZoom = self.bounds.size.width / self.contentView.bounds.size.width;
-    }
+//    CGFloat widthZoom = 1;
+//    CGFloat heightZoom = 1;
     
-    if (self.contentView.bounds.size.height < self.bounds.size.height) {
-        heightZoom = self.bounds.size.height / self.contentView.bounds.size.height;
-    }
-    
-    CGFloat newValue = 1;
-    if (self.cropType == NHCropTypeSquare
-        || self.cropType == NHCropTypeCircle) {
-        newValue = heightZoom == 1
-        ? widthZoom
-        : widthZoom == 1
-        ? heightZoom
-        : MIN(widthZoom, heightZoom);
-    }
-    else {
-        newValue = heightZoom == 1
-        ? widthZoom
-        : MIN(widthZoom, heightZoom);
-    }
-    
+    CGFloat newValue = MAX(self.image.size.width, self.image.size.height) / MIN(self.image.size.width, self.image.size.height);
+
     if (self.minimumZoomScale != newValue) {
         self.minimumZoomScale = newValue;
         [self setZoomScale:newValue animated:NO];
@@ -304,8 +285,13 @@
     CGFloat cropHorizontalOffset = 0;
     
     if (self.cropType != NHCropTypeNone) {
-        cropVerticalOffset = floor(self.bounds.size.height - self.cropView.bounds.size.height) / 2;
-        cropHorizontalOffset = floor(self.bounds.size.width - self.cropView.bounds.size.width) / 2;
+        if (self.contentView.frame.size.height != self.cropView.bounds.size.height) {
+            cropVerticalOffset = floor(self.bounds.size.height - self.cropView.bounds.size.height) / 2;
+        }
+        
+        if (self.contentView.frame.size.width != self.cropView.bounds.size.width) {
+            cropHorizontalOffset = floor(self.bounds.size.width - self.cropView.bounds.size.width) / 2;
+        }
     }
     
     self.contentInset = UIEdgeInsetsMake(verticalOffset - self.contentView.frame.origin.y + cropVerticalOffset,

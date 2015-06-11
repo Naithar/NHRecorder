@@ -80,7 +80,7 @@
     self.selectionView.translatesAutoresizingMaskIntoConstraints = NO;
     self.selectionView.backgroundColor = [UIColor blackColor];
     self.selectionView.layer.borderColor = [[UIColor whiteColor] CGColor];
-    self.selectionView.layer.cornerRadius = 5;
+    self.selectionView.layer.cornerRadius = 7.5;
     self.selectionView.layer.borderWidth = 1;
     self.selectionView.clipsToBounds = YES;
     
