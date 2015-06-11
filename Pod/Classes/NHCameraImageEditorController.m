@@ -9,12 +9,13 @@
 #import "NHCameraImageEditorController.h"
 #import <SCFilterSelectorViewInternal.h>
 #import "NHCameraFilterView.h"
+#import "NHCameraImageCropView.h"
 
 @interface NHCameraImageEditorController ()<NHCameraFilterViewDelegate>
 
 @property (nonatomic, strong) UIImage *image;
 
-@property (nonatomic, strong) SCFilterSelectorView *filterImageView;
+@property (nonatomic, strong) NHCameraImageCropView *cropImageView;
 
 @property (nonatomic, strong) UIView *menuContainer;
 @property (nonatomic, strong) UIView *menuSeparator;
@@ -40,10 +41,16 @@
     return self;
 }
 
-- (void)commonInit {
-    self.view.backgroundColor = [UIColor whiteColor];
+- (void)viewDidLayoutSubviews {
+    [super viewDidLayoutSubviews];
     
-    [self setupFilterView];
+    [self.cropImageView sizeContent];
+}
+
+- (void)commonInit {
+    self.view.backgroundColor = [UIColor blackColor];
+    
+    [self setupCropImageView];
     [self setupMenuContentView];
     [self setupMenuView];
     
@@ -56,44 +63,42 @@
 }
 
 - (void)nextButtonNavigationTouch:(id)sender {
-    UIImage *image = [self.filterImageView currentlyDisplayedImageWithScale:self.image.scale orientation:self.image.imageOrientation];
-    
-    UIImageWriteToSavedPhotosAlbum(image, self, @selector(savedCapturedImage:error:context:), nil);
+    if (self.cropImageView.panGestureRecognizer.state == UIGestureRecognizerStatePossible
+        && self.cropImageView.pinchGestureRecognizer.state == UIGestureRecognizerStatePossible) {
+    [self.cropImageView saveImageWithCallbackObject:self andSelector:@selector(savedCapturedImage:error:context:)];
+    }
+    else {
+        NSLog(@"stop doing shit");
+    }
 }
 
-- (void)setupFilterView {
-    self.filterImageView = [[SCFilterSelectorView alloc] init];
-    self.filterImageView.backgroundColor = [UIColor redColor];
-    [self.filterImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
-    self.filterImageView.contentMode = UIViewContentModeScaleAspectFit;
-    [self.view addSubview:self.filterImageView];
+- (void)setupCropImageView {
+    self.cropImageView = [[NHCameraImageCropView alloc] initWithImage:self.image];
+    self.cropImageView.backgroundColor = [UIColor redColor];
+    [self.cropImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    self.cropImageView.contentMode = UIViewContentModeScaleAspectFit;
+    [self.view addSubview:self.cropImageView];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.filterImageView
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cropImageView
                                                           attribute:NSLayoutAttributeTop
                                                           relatedBy:NSLayoutRelationEqual
                                                              toItem:self.view
                                                           attribute:NSLayoutAttributeTop
                                                          multiplier:1.0 constant:0]];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.filterImageView
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cropImageView
                                                           attribute:NSLayoutAttributeLeft
                                                           relatedBy:NSLayoutRelationEqual
                                                              toItem:self.view
                                                           attribute:NSLayoutAttributeLeft
                                                          multiplier:1.0 constant:0]];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.filterImageView
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cropImageView
                                                           attribute:NSLayoutAttributeRight
                                                           relatedBy:NSLayoutRelationEqual
                                                              toItem:self.view
                                                           attribute:NSLayoutAttributeRight
                                                          multiplier:1.0 constant:0]];
-    
-    self.filterImageView.filters = @[[SCFilter emptyFilter]];
-    [self.filterImageView setImageByUIImage:self.image];
-    [self.filterImageView setNeedsDisplay];
-    
-    
 }
 
 - (void)setupMenuContentView {
@@ -202,7 +207,7 @@
                                                                    attribute:NSLayoutAttributeHeight
                                                                   multiplier:0 constant:45]];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.filterImageView
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cropImageView
                                                           attribute:NSLayoutAttributeBottom
                                                           relatedBy:NSLayoutRelationEqual
                                                              toItem:self.menuContainer
@@ -396,9 +401,7 @@
 }
 
 - (void)filterView:(NHCameraFilterView *)filteView didSelectFilter:(SCFilter *)filter {
-    self.filterImageView.filters = @[filter];
-    self.filterImageView.selectedFilter = filter;
-    [self.filterImageView refresh];
+    [self.cropImageView setFilter:filter];
 }
 
 - (void)savedCapturedImage:(UIImage*)image error:(NSError*)error context:(void*)context {
