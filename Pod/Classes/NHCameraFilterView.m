@@ -45,18 +45,18 @@
 }
 
 - (void)commonInit {
-    self.filters = @[
-                     [SCFilter emptyFilter],
-                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectMono"],
-                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectNoir"],
-                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectFade"],
-                     [SCFilter filterWithCIFilterName:@"CIColorClamp"],
-                     [SCFilter filterWithCIFilterName:@"CIColorMonochrome"],
-                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectChrome"],
-                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectInstant"],
-                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectTransfer"],
-                     [SCFilter filterWithCIFilterName:@"CISepiaTone"],
-                     ];
+//    self.filters = @[
+//                     [SCFilter emptyFilter],
+//                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectMono"],
+//                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectNoir"],
+//                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectFade"],
+//                     [SCFilter filterWithCIFilterName:@"CIColorClamp"],
+//                     [SCFilter filterWithCIFilterName:@"CIColorMonochrome"],
+//                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectChrome"],
+//                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectInstant"],
+//                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectTransfer"],
+//                     [SCFilter filterWithCIFilterName:@"CISepiaTone"],
+//                     ];
     
     self.filterNames = @[
                          @"original",
@@ -99,19 +99,19 @@
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     NHFilterCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
-    
-    SCFilter *filter;
-    
-    if (indexPath.row < self.filters.count) {
-        filter = self.filters[indexPath.row];
-    }
-    
-    NSString *name;
-    if (indexPath.row < self.filterNames.count) {
-        name = self.filterNames[indexPath.row];
-    }
-    
-    [cell reloadWithImage:self.image andFilter:filter andName:name isSelected:indexPath.row == self.selectedIndex];
+//    
+//    SCFilter *filter;
+//    
+//    if (indexPath.row < self.filters.count) {
+//        filter = self.filters[indexPath.row];
+//    }
+//    
+//    NSString *name;
+//    if (indexPath.row < self.filterNames.count) {
+//        name = self.filterNames[indexPath.row];
+//    }
+//    
+//    [cell reloadWithImage:self.image andFilter:filter andName:name isSelected:indexPath.row == self.selectedIndex];
     return cell;
 }
 
@@ -123,14 +123,14 @@
     }
     
     self.selectedIndex = indexPath.row;
-    
-    SCFilter *filter = self.filters[indexPath.row];
-    
-    
-    __weak __typeof(self) weakSelf = self;
-    if ([weakSelf.nhDelegate respondsToSelector:@selector(filterView:didSelectFilter:)]) {
-        [weakSelf.nhDelegate filterView:weakSelf didSelectFilter:filter];
-    }
+//    
+//    SCFilter *filter = self.filters[indexPath.row];
+//    
+//    
+//    __weak __typeof(self) weakSelf = self;
+//    if ([weakSelf.nhDelegate respondsToSelector:@selector(filterView:didSelectFilter:)]) {
+//        [weakSelf.nhDelegate filterView:weakSelf didSelectFilter:filter];
+//    }
     
     [self reloadData];
 }
@@ -143,13 +143,13 @@
     if (index >= self.filters.count) {
         return;
     }
-    
-    SCFilter *filter = self.filters[index];
-    
-    __weak __typeof(self) weakSelf = self;
-    if ([weakSelf.nhDelegate respondsToSelector:@selector(filterView:didSelectFilter:)]) {
-        [weakSelf.nhDelegate filterView:weakSelf didSelectFilter:filter];
-    }
+//
+//    SCFilter *filter = self.filters[index];
+//    
+//    __weak __typeof(self) weakSelf = self;
+//    if ([weakSelf.nhDelegate respondsToSelector:@selector(filterView:didSelectFilter:)]) {
+//        [weakSelf.nhDelegate filterView:weakSelf didSelectFilter:filter];
+//    }
 }
 
 

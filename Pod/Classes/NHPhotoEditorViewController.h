@@ -7,9 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <SCRecorder.h>
+//#import <SCRecorder.h>
 
-@interface NHCameraImageEditorController : UIViewController
+@interface NHPhotoEditorViewController : UIViewController
 
 - (instancetype)initWithUIImage:(UIImage*)image;
 

@@ -31,5 +31,5 @@ Pod::Spec.new do |s|
   s.resources = ['Pod/Assets/*']
 
   s.public_header_files = 'Pod/Classes/**/*.h'
-  s.dependency 'SCRecorder', '= 2.4.7'
+  s.dependency 'GPUImage'
 end

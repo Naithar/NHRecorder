@@ -6,15 +6,15 @@
 //
 //
 
-#import "NHCameraNavigationController.h"
+#import "NHCaptureNavigationController.h"
 
-@interface NHCameraNavigationController ()
+@interface NHCaptureNavigationController ()
 
-@property (nonatomic, strong) NHCameraViewController *cameraViewController;
+@property (nonatomic, strong) NHPhotoCaptureViewController *cameraViewController;
 
 @end
 
-@implementation NHCameraNavigationController
+@implementation NHCaptureNavigationController
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
@@ -57,7 +57,7 @@
 }
 
 - (void)commonInit {
-    self.cameraViewController = [[NHCameraViewController alloc] init];
+    self.cameraViewController = [[NHPhotoCaptureViewController alloc] init];
     self.navigationBar.translucent = NO;
     self.navigationBar.barTintColor = [UIColor blackColor];
     self.navigationBar.tintColor = [UIColor whiteColor];
@@ -65,7 +65,7 @@
     self.navigationBar.backIndicatorImage = [UIImage imageNamed:@"NHRecorder.back.png"];
     self.navigationBar.backIndicatorTransitionMaskImage = [UIImage imageNamed:@"NHRecorder.back.png"];
     
-    self.cameraViewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"NHRecorder.close"] style:UIBarButtonItemStylePlain target:self action:@selector(closeNavigationButtonTouch:)];
+    self.cameraViewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"NHRecorder.close.png"] style:UIBarButtonItemStylePlain target:self action:@selector(closeNavigationButtonTouch:)];
     
     [self setViewControllers:@[self.cameraViewController]];
 }

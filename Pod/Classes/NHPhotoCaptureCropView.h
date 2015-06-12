@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <SCRecorder.h>
+//#import <SCRecorder.h>
 
 typedef NS_ENUM(NSUInteger, NHCropType) {
     NHCropTypeNone,
@@ -19,13 +19,13 @@ typedef NS_ENUM(NSUInteger, NHCropType) {
     NHCropType9x16,
 };
 
-@interface NHCameraImageCropView : UIScrollView
+@interface NHPhotoCaptureCropView : UIScrollView
 
 - (instancetype)initWithImage:(UIImage*)image;
 - (instancetype)initWithFrame:(CGRect)frame image:(UIImage*)image;
 
 - (void)sizeContent;
-- (void)setFilter:(SCFilter*)filter;
+//- (void)setFilter:(SCFilter*)filter;
 - (BOOL)saveImageWithCallbackObject:(id)obj
                         andSelector:(SEL)selector;
 - (void)setCropType:(NHCropType)type;

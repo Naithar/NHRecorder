@@ -6,20 +6,20 @@
 //
 //
 
-#import "NHCameraImageCropView.h"
-#import <SCFilterSelectorViewInternal.h>
+#import "NHPhotoCaptureCropView.h"
+//#import <SCFilterSelectorViewInternal.h>
 
-@interface NHCameraImageCropView ()<UIScrollViewDelegate>
+@interface NHPhotoCaptureCropView ()<UIScrollViewDelegate>
 
 @property (nonatomic, strong) UIImage *image;
-@property (nonatomic, strong) SCFilterSelectorView *contentView;
+@property (nonatomic, strong) UIImageView *contentView;
 @property (nonatomic, assign) NHCropType cropType;
 
 @property (nonatomic, strong) UIView *cropView;
 
 @end
 
-@implementation NHCameraImageCropView
+@implementation NHPhotoCaptureCropView
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
@@ -51,7 +51,6 @@
 }
 
 - (void)commonInit {
-    
     self.cropType = NHCropTypeNone;
     
     self.delegate = self;
@@ -64,9 +63,10 @@
     self.showsHorizontalScrollIndicator = NO;
     self.backgroundColor = [UIColor clearColor];
     
-    self.contentView = [[SCFilterSelectorView alloc] init];
-    [self.contentView setImageByUIImage:self.image];
+    self.contentView = [[UIImageView alloc] init];
+//    [self.contentView setImageByUIImage:self.image];
     self.contentView.backgroundColor = [UIColor greenColor];
+    self.contentView.image = [self.image copy];
     [self addSubview:self.contentView];
     
     self.cropView = [[UIView alloc] init];
@@ -81,20 +81,38 @@
 
 
 - (void)setCropType:(NHCropType)type {
-//    _cropType = type;
-    
+////    _cropType = type;
+//    
     _cropType = NHCropTypeNone;
     [self resetCropAnimated:YES];
     
     _cropType = type;
     [self resetCropAnimated:YES];
 }
-- (void)setFilter:(SCFilter*)filter {
-    self.contentView.filters = @[filter];
-    self.contentView.selectedFilter = filter;
-    
-    [self.contentView refresh];
-}
+//- (void)setFilter:(SCFilter*)filter {
+//    
+//    CIContext *context = [CIContext contextWithOptions:nil];
+//    
+//    CIImage *ciImage = [CIImage imageWithCGImage:self.image.CGImage];
+//    CIImage *image = [filter imageByProcessingImage:ciImage atTime:0];
+//    
+//    CGRect ext = [image extent];
+//    CGImageRef cgimg =
+//    [context createCGImage:image fromRect:ext];
+//    
+//    // 3
+//    UIImage *newImage = [UIImage imageWithCGImage:cgimg scale:self.image.scale orientation:self.image.imageOrientation];
+//    self.contentView.image = newImage;
+//    
+//    NSLog(@"%@, %@, %@, %@", self.image, ciImage, image, newImage);
+//    // 4
+//    CGImageRelease(cgimg);
+////    self.contentView.filters = @[filter];
+////    self.contentView.selectedFilter = filter;
+//    
+////    [self.contentView setNeedsDisplay];
+//}
+
 - (void)sizeContent {
     CGRect bounds = self.image ? (CGRect) { .size = self.image.size } : self.contentView.frame;
     
@@ -161,6 +179,7 @@
             self.cropView.hidden = YES;
             self.minimumZoomScale = 1;
             [self setZoomScale:1 animated:animated];
+            [self scrollViewDidZoom:self];
             return;
         case NHCropTypeSquare: {
             self.cropView.hidden = NO;
@@ -196,7 +215,7 @@
         case NHCropType9x16:
             self.cropView.hidden = NO;
             self.cropView.layer.cornerRadius = 0;
-            cropRect.size.width = round(height / 4 * 3);
+            cropRect.size.width = round(height / 16 * 9);
             cropRect.size.height = height;
             break;
         default:
@@ -209,62 +228,163 @@
     
     CGFloat newValue = 1;
 
+    if (self.cropView.bounds.size.width > self.cropView.bounds.size.height) {
+        newValue = self.cropView.bounds.size.width / self.contentView.bounds.size.width;
+    }
+    else if (self.cropView.bounds.size.width < self.cropView.bounds.size.height) {
+        newValue = self.cropView.bounds.size.height / self.contentView.bounds.size.height;
+    }
+    else {
+        newValue = self.contentView.bounds.size.width <= self.contentView.bounds.size.height
+        ? self.cropView.bounds.size.width / self.contentView.bounds.size.width
+        : self.cropView.bounds.size.height / self.contentView.bounds.size.height;
+    }
+    
     self.minimumZoomScale = newValue;
     [self setZoomScale:newValue animated:animated];
+    [self scrollViewDidZoom:self];
 }
 
 - (BOOL)saveImageWithCallbackObject:(id)obj andSelector:(SEL)selector {
+    
     UIImage *image;
-    if((image = [self.contentView
-                 currentlyDisplayedImageWithScale:self.image.scale
-                 orientation:self.image.imageOrientation])) {
-        
+//    if((image = [self.contentView
+//                 currentlyDisplayedImageWithScale:self.image.scale
+//                 orientation:self.image.imageOrientation])) {
+//
+    if (false) {
         UIImage *resultImage;
         
         switch (self.cropType) {
             case NHCropTypeNone:
-                resultImage = image;
+                
+                if (self.image.imageOrientation < UIImageOrientationUpMirrored) {
+                    resultImage = image;
+                }
+                else {
+                    UIImageOrientation newOrientation = self.image.imageOrientation;
+                    
+                    switch (self.image.imageOrientation) {
+                        case UIImageOrientationLeftMirrored:
+                            newOrientation = UIImageOrientationRightMirrored;
+                            break;
+                        case UIImageOrientationRightMirrored:
+                            newOrientation = UIImageOrientationLeftMirrored;
+                            break;
+                        default:
+                            break;
+                    }
+                    resultImage = [UIImage imageWithCGImage:image.CGImage
+                                                      scale:image.scale
+                                                orientation:newOrientation];
+
+                }
                 break;
             case NHCropTypeSquare:
             case NHCropType4x3:
             case NHCropType16x9:
+            case NHCropType9x16:
+            case NHCropType3x4:
             case NHCropTypeCircle: {
                 
-                CGRect newRect =  [self convertRect:self.cropView.frame toView:self.contentView];
+                CGRect newRect = [self convertRect:self.cropView.frame toView:self.contentView];
                 
                 CGFloat ratio = self.image.size.height / self.contentView.bounds.size.height;
-                CGFloat resultWidth = round(ratio * newRect.size.width);
-                CGFloat resultHeight = round(ratio * newRect.size.height);
-                CGFloat resultXOffset = round(ratio * newRect.origin.x);
-                CGFloat resultYOffset = round(ratio * newRect.origin.y);
+                CGFloat resultWidth = newRect.size.width;
+                CGFloat resultHeight = newRect.size.height;
+                CGFloat resultXOffset = newRect.origin.x;
+                CGFloat resultYOffset = newRect.origin.y;
                 
-                if (resultXOffset < 0) {
-                    resultWidth += resultXOffset;
-                    resultXOffset = 0;
+                
+                UIImageOrientation newOrientation = self.image.imageOrientation;
+                
+                switch (self.image.imageOrientation) {
+                    case UIImageOrientationLeftMirrored:
+                        newOrientation = UIImageOrientationRightMirrored;
+                        break;
+                    case UIImageOrientationRightMirrored:
+                        newOrientation = UIImageOrientationLeftMirrored;
+                        break;
+                    default:
+                        break;
                 }
                 
-                if (resultYOffset < 0) {
-                    resultHeight += resultYOffset;
-                    resultYOffset = 0;
+                switch (self.image.imageOrientation) {
+                    case UIImageOrientationDown:
+                    case UIImageOrientationDownMirrored:
+                        resultXOffset = self.contentView.bounds.size.width - resultWidth - resultXOffset;
+                        resultYOffset = self.contentView.bounds.size.height - resultHeight - resultYOffset;
+                        break;
+                    case UIImageOrientationRight: {
+                        CGFloat oldWidth = resultWidth;
+                        CGFloat oldHeight = resultHeight;
+                        CGFloat oldX = resultXOffset;
+                        CGFloat oldY = resultYOffset;
+                        
+                        resultXOffset = oldY;
+                        resultYOffset = self.contentView.bounds.size.width - oldWidth - oldX;
+                        
+                        resultHeight = oldWidth;
+                        resultWidth = oldHeight;
+                    } break;
+                    case UIImageOrientationLeftMirrored: {
+                        CGFloat oldWidth = resultWidth;
+                        CGFloat oldHeight = resultHeight;
+                        CGFloat oldX = resultXOffset;
+                        CGFloat oldY = resultYOffset;
+                        
+                        resultXOffset = oldY;
+                        resultYOffset = oldX;
+                        
+                        resultHeight = oldWidth;
+                        resultWidth = oldHeight;
+
+                    } break;
+                    case UIImageOrientationLeft: {
+                        CGFloat oldWidth = resultWidth;
+                        CGFloat oldHeight = resultHeight;
+                        CGFloat oldX = resultXOffset;
+                        CGFloat oldY = resultYOffset;
+                        
+                        resultXOffset = self.contentView.bounds.size.height - oldHeight - oldY;
+                        resultYOffset = oldX;
+                        
+                        resultHeight = oldWidth;
+                        resultWidth = oldHeight;
+                    } break;
+                    case UIImageOrientationRightMirrored: {
+                        CGFloat oldWidth = resultWidth;
+                        CGFloat oldHeight = resultHeight;
+                        CGFloat oldX = resultXOffset;
+                        CGFloat oldY = resultYOffset;
+                        
+                        resultXOffset = self.contentView.bounds.size.height - oldHeight - oldY;
+                        resultYOffset = self.contentView.bounds.size.width - oldWidth - oldX;
+                        
+                        resultHeight = oldWidth;
+                        resultWidth = oldHeight;
+                    } break;
+                    default:
+                        break;
                 }
                 
-                CGRect resultRect = CGRectMake(
-                                               (image.imageOrientation == UIImageOrientationUp
-                                                || image.imageOrientation == UIImageOrientationDown)
-                                               ? resultXOffset : resultYOffset,
-                                               (image.imageOrientation == UIImageOrientationUp
-                                                || image.imageOrientation == UIImageOrientationDown)
-                                               ? resultYOffset : resultXOffset,
-                                               (image.imageOrientation == UIImageOrientationUp
-                                                || image.imageOrientation == UIImageOrientationDown)
-                                               ? resultWidth : resultHeight,
-                                               (image.imageOrientation == UIImageOrientationUp
-                                                || image.imageOrientation == UIImageOrientationDown)
-                                               ? resultHeight : resultWidth);
+                CGRect resultRect = CGRectMake(round(ratio * resultXOffset),
+                                               round(ratio * resultYOffset),
+                                               round(ratio * resultWidth),
+                                               round(ratio * resultHeight));
+
                 
                 if (resultRect.size.width != 0
                     && resultRect.size.height != 0) {
-                    resultImage = [UIImage imageWithCGImage:CGImageCreateWithImageInRect(image.CGImage, resultRect) scale:image.scale orientation:image.imageOrientation];
+                    CGImageRef cgImage = CGImageCreateWithImageInRect(image.CGImage, resultRect);
+                    if (cgImage) {
+                    resultImage = [UIImage imageWithCGImage:cgImage
+                                                      scale:image.scale
+                                                orientation:newOrientation];
+                    
+                    
+                        CGImageRelease(cgImage);
+                    }
                 }
             } break;
             default:

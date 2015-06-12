@@ -10,7 +10,7 @@
 
 @interface NHFilterCollectionViewCell ()
 
-@property (nonatomic, strong) SCImageView *filterImageView;
+@property (nonatomic, strong) UIImageView *filterImageView;
 @property (nonatomic, strong) UIView *selectionView;
 @property (nonatomic, strong) UILabel *filterLabel;
 @end
@@ -40,7 +40,7 @@
     
     self.backgroundColor = [UIColor blackColor];
     
-    self.filterImageView = [[SCImageView alloc] init];
+    self.filterImageView = [[UIImageView alloc] init];
     self.filterImageView.translatesAutoresizingMaskIntoConstraints = NO;
     self.filterImageView.contentMode = UIViewContentModeScaleAspectFill;
     self.filterImageView.backgroundColor = [UIColor blackColor];
@@ -150,26 +150,27 @@
     
 }
 
-- (void)reloadWithImage:(UIImage*)image
-              andFilter:(SCFilter*)filter {
-    [self reloadWithImage:image
-                andFilter:filter
-               isSelected:NO];
-}
-
-- (void)reloadWithImage:(UIImage*)image
-              andFilter:(SCFilter*)filter
-             isSelected:(BOOL)selected {
-    [self reloadWithImage:image andFilter:filter andName:nil isSelected:selected];
-}
-
-- (void)reloadWithImage:(UIImage*)image
-              andFilter:(SCFilter*)filter
-                andName:(NSString*)name
-             isSelected:(BOOL)selected {
-    [self.filterImageView setImageByUIImage:image];
-    self.filterImageView.filter = filter;
-    self.selectionView.hidden = !selected;
-    self.filterLabel.text = name;
-}
+//- (void)reloadWithImage:(UIImage*)image
+//              andFilter:(SCFilter*)filter {
+//    [self reloadWithImage:image
+//                andFilter:filter
+//               isSelected:NO];
+//}
+//
+//- (void)reloadWithImage:(UIImage*)image
+//              andFilter:(SCFilter*)filter
+//             isSelected:(BOOL)selected {
+//    [self reloadWithImage:image andFilter:filter andName:nil isSelected:selected];
+//}
+//
+//- (void)reloadWithImage:(UIImage*)image
+//              andFilter:(SCFilter*)filter
+//                andName:(NSString*)name
+//             isSelected:(BOOL)selected {
+//    self.filterImageView.image = image;
+////    [self.filterImageView setImageByUIImage:image];
+////    self.filterImageView.filter = filter;
+//    self.selectionView.hidden = !selected;
+//    self.filterLabel.text = name;
+//}
 @end

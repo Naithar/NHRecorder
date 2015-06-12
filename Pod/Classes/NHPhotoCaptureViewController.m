@@ -6,24 +6,25 @@
 //
 //
 
-#import "NHCameraViewController.h"
+#import "NHPhotoCaptureViewController.h"
 #import "NHCameraGridView.h"
-#import "NHCameraImageEditorController.h"
+#import "NHPhotoEditorViewController.h"
 
 #import <AssetsLibrary/AssetsLibrary.h>
 
-@interface NHCameraViewController ()
+@interface NHPhotoCaptureViewController ()
 
 @property (nonatomic, strong) UIView *cameraRecorderView;
-@property (nonatomic, strong) SCRecorderToolsView *cameraRecorderToolsView;
-@property (nonatomic, strong) SCRecorder *cameraRecorder;
+//@property (nonatomic, strong) SCRecorderToolsView *cameraRecorderToolsView;
+//@property (nonatomic, strong) SCRecorder *cameraRecorder;
 
 @property (nonatomic, strong) UIView *menuContainer;
 @property (nonatomic, strong) UIView *menuSeparator;
 @property (nonatomic, strong) UIButton *gridButton;
 @property (nonatomic, strong) UIButton *frontCameraButton;
 @property (nonatomic, strong) UIButton *flashButton;
-@property (nonatomic, assign) SCFlashMode flashMode;
+
+//@property (nonatomic, assign) SCFlashMode flashMode;
 
 @property (nonatomic, strong) NHCameraGridView *gridView;
 
@@ -35,7 +36,7 @@
 
 @end
 
-@implementation NHCameraViewController
+@implementation NHPhotoCaptureViewController
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
@@ -59,29 +60,30 @@
 
 - (void)commonInit {
     self.view.backgroundColor = [UIColor blackColor];
-    
-    self.cameraRecorder = [SCRecorder recorder];
-    self.cameraRecorder.session = [SCRecordSession recordSession];
-    self.cameraRecorder.maxRecordDuration = CMTimeMake(15, 1);
-    self.cameraRecorder.autoSetVideoOrientation = YES;
-    if (![self.cameraRecorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto]) {
-        self.cameraRecorder.captureSessionPreset = AVCaptureSessionPresetPhoto;
-        self.cameraRecorder.flashMode = SCFlashModeAuto;
-        self.flashMode = SCFlashModeAuto;
-    }
+//    
+//    self.cameraRecorder = [SCRecorder recorder];
+//    self.cameraRecorder.session = [SCRecordSession recordSession];
+//    self.cameraRecorder.maxRecordDuration = CMTimeMake(15, 1);
+//    self.cameraRecorder.autoSetVideoOrientation = YES;
+//    self.cameraRecorder.fastRecordMethodEnabled = YES;
+//    if (![self.cameraRecorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto]) {
+//        self.cameraRecorder.captureSessionPreset = AVCaptureSessionPresetPhoto;
+//        self.cameraRecorder.flashMode = SCFlashModeAuto;
+//        self.flashMode = SCFlashModeAuto;
+//    }
     
     //video configuration
-    self.cameraRecorder.videoConfiguration.sizeAsSquare = NO;
+//    self.cameraRecorder.videoConfiguration.sizeAsSquare = NO;
     //photo configuration
-    self.cameraRecorder.photoConfiguration.enabled = YES;
+//    self.cameraRecorder.photoConfiguration.enabled = YES;
     //audio configuration
-    self.cameraRecorder.audioConfiguration.enabled = YES;
-    
+//    self.cameraRecorder.audioConfiguration.enabled = YES;
+//
     [self setupRecorderView];
-    self.cameraRecorder.previewView = self.cameraRecorderView;
+//    self.cameraRecorder.previewView = self.cameraRecorderView;
     
-    [self setupToolsView];
-    self.cameraRecorderToolsView.recorder = self.cameraRecorder;
+//    [self setupToolsView];
+//    self.cameraRecorderToolsView.recorder = self.cameraRecorder;
  
     [self setupMenuContentView];
     [self setupGridView];
@@ -89,7 +91,7 @@
     
     [self resetCameraMode];
     
-    [self.cameraRecorder prepare:nil];
+//    [self.cameraRecorder prepare:nil];
     
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@" " style:UIBarButtonItemStylePlain target:nil action:nil];
     
@@ -100,6 +102,7 @@
     [self.cameraRecorderView setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.cameraRecorderView.contentMode = UIViewContentModeScaleAspectFit;
     [self.view addSubview:self.cameraRecorderView];
+    self.cameraRecorderView.backgroundColor = [UIColor redColor];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraRecorderView
                                                           attribute:NSLayoutAttributeTop
@@ -125,41 +128,41 @@
     
 }
 
-- (void)setupToolsView {
-    self.cameraRecorderToolsView = [[SCRecorderToolsView alloc] init];
-    [self.cameraRecorderToolsView setTranslatesAutoresizingMaskIntoConstraints:NO];
-    self.cameraRecorderToolsView.insideFocusTargetImage = [UIImage imageNamed:@"NHRecorder.focus"];
-    self.cameraRecorderToolsView.outsideFocusTargetImage = [UIImage imageNamed:@"NHRecorder.focus"];
-    [self.cameraRecorderView addSubview:self.cameraRecorderToolsView];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraRecorderToolsView
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.cameraRecorderView
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1.0 constant:0]];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraRecorderToolsView
-                                                          attribute:NSLayoutAttributeBottom
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.cameraRecorderView
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1.0 constant:0]];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraRecorderToolsView
-                                                          attribute:NSLayoutAttributeLeft
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.cameraRecorderView
-                                                          attribute:NSLayoutAttributeLeft
-                                                         multiplier:1.0 constant:0]];
-    
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraRecorderToolsView
-                                                          attribute:NSLayoutAttributeRight
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.cameraRecorderView
-                                                          attribute:NSLayoutAttributeRight
-                                                         multiplier:1.0 constant:0]];
-}
+//- (void)setupToolsView {
+//    self.cameraRecorderToolsView = [[SCRecorderToolsView alloc] init];
+//    [self.cameraRecorderToolsView setTranslatesAutoresizingMaskIntoConstraints:NO];
+//    self.cameraRecorderToolsView.insideFocusTargetImage = [UIImage imageNamed:@"NHRecorder.focus"];
+//    self.cameraRecorderToolsView.outsideFocusTargetImage = [UIImage imageNamed:@"NHRecorder.focus"];
+//    [self.cameraRecorderView addSubview:self.cameraRecorderToolsView];
+//    
+//    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraRecorderToolsView
+//                                                          attribute:NSLayoutAttributeTop
+//                                                          relatedBy:NSLayoutRelationEqual
+//                                                             toItem:self.cameraRecorderView
+//                                                          attribute:NSLayoutAttributeTop
+//                                                         multiplier:1.0 constant:0]];
+//    
+//    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraRecorderToolsView
+//                                                          attribute:NSLayoutAttributeBottom
+//                                                          relatedBy:NSLayoutRelationEqual
+//                                                             toItem:self.cameraRecorderView
+//                                                          attribute:NSLayoutAttributeBottom
+//                                                         multiplier:1.0 constant:0]];
+//    
+//    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraRecorderToolsView
+//                                                          attribute:NSLayoutAttributeLeft
+//                                                          relatedBy:NSLayoutRelationEqual
+//                                                             toItem:self.cameraRecorderView
+//                                                          attribute:NSLayoutAttributeLeft
+//                                                         multiplier:1.0 constant:0]];
+//    
+//    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraRecorderToolsView
+//                                                          attribute:NSLayoutAttributeRight
+//                                                          relatedBy:NSLayoutRelationEqual
+//                                                             toItem:self.cameraRecorderView
+//                                                          attribute:NSLayoutAttributeRight
+//                                                         multiplier:1.0 constant:0]];
+//}
 
 - (void)setupMenuView {
     self.menuContainer = [[UIView alloc] init];
@@ -549,17 +552,17 @@
 }
 
 - (void)flashButtonTouch:(id)sender {
-    switch (self.flashMode) {
-        case SCFlashModeAuto:
-            self.flashMode = SCFlashModeOn;
-            break;
-        case SCFlashModeOn:
-            self.flashMode = SCFlashModeOff;
-            break;
-        default:
-            self.flashMode = SCFlashModeAuto;
-            break;
-    }
+//    switch (self.flashMode) {
+//        case SCFlashModeAuto:
+//            self.flashMode = SCFlashModeOn;
+//            break;
+//        case SCFlashModeOn:
+//            self.flashMode = SCFlashModeOff;
+//            break;
+//        default:
+//            self.flashMode = SCFlashModeAuto;
+//            break;
+//    }
     
     [self resetFlash];
 }
@@ -569,93 +572,94 @@
 }
 
 - (void)resetCamera {
-    AVCaptureDevicePosition newPosition = self.frontCameraButton.selected
-    ? AVCaptureDevicePositionFront
-    : AVCaptureDevicePositionBack;
+//    AVCaptureDevicePosition newPosition = self.frontCameraButton.selected
+//    ? AVCaptureDevicePositionFront
+//    : AVCaptureDevicePositionBack;
     
-    if (self.cameraRecorder.device != newPosition) {
-        self.cameraRecorder.device = newPosition;
-    }
+//    if (self.cameraRecorder.device != newPosition) {
+//        self.cameraRecorder.device = newPosition;
+//    }
 }
 
 - (void)resetFlash {
-    switch (self.flashMode) {
-        case SCFlashModeOn:
-            [self.flashButton setTitle:@"on" forState:UIControlStateNormal];
-            break;
-        case SCFlashModeOff:
-            [self.flashButton setTitle:@"off" forState:UIControlStateNormal];
-            break;
-        default:
-            [self.flashButton setTitle:@"auto" forState:UIControlStateNormal];
-            break;
-    }
-    
-    self.cameraRecorder.flashMode = self.flashMode;
+//    switch (self.flashMode) {
+//        case SCFlashModeOn:
+//            [self.flashButton setTitle:@"on" forState:UIControlStateNormal];
+//            break;
+//        case SCFlashModeOff:
+//            [self.flashButton setTitle:@"off" forState:UIControlStateNormal];
+//            break;
+//        default:
+//            [self.flashButton setTitle:@"auto" forState:UIControlStateNormal];
+//            break;
+//    }
+//    
+//    self.cameraRecorder.flashMode = self.flashMode;
 }
 
 //MARK: Menu container buttons
 
 - (void)captureButtonTouch:(id)sender {
-    if ([self.cameraRecorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto]) {
-        
-        [UIApplication sharedApplication].keyWindow.userInteractionEnabled = NO;
-        [self.cameraRecorder capturePhoto:^(NSError *error, UIImage *image) {
-            [UIApplication sharedApplication].keyWindow.userInteractionEnabled = YES;
-            if (error) {
-                return;
-            }
-            NHCameraImageEditorController *controller = [[NHCameraImageEditorController alloc] initWithUIImage:image];
-            [self.navigationController pushViewController:controller animated:YES];
-        }];
-    }
-    else {
-        if (!self.cameraRecorder.isRecording) {
-            [self.cameraRecorder.session cancelSession:nil];
-            self.cameraRecorder.session = nil;
-            SCRecordSession *session = [SCRecordSession recordSession];
-            session.fileType = AVFileTypeQuickTimeMovie;
-            self.cameraRecorder.session = session;
-            
-            
-            self.captureButton.backgroundColor = [UIColor brownColor];
-            self.cameraModeButton.enabled = NO;
-            [self.cameraRecorder record];
-        }
-        else {
-            self.captureButton.backgroundColor = [UIColor redColor];
-            self.cameraModeButton.enabled = YES;
-            [self.cameraRecorder pause:^{
-                
-                [[UIApplication sharedApplication] beginIgnoringInteractionEvents];                
-                void(^completionHandler)(NSURL *url, NSError *error) = ^(NSURL *url, NSError *error) {
-                    if (error == nil) {
-                        UISaveVideoAtPathToSavedPhotosAlbum(url.path, self, @selector(savedCapturedVideo:didFinishSavingWithError:contextInfo:), nil);
-                    } else {
-                        [[UIApplication sharedApplication] endIgnoringInteractionEvents];
-                        
-                        [[[UIAlertView alloc] initWithTitle:@"Failed to save" message:error.localizedDescription delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-                    }
-                };
-                
-                [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
-                
-                SCAssetExportSession *exportSession = [[SCAssetExportSession alloc] initWithAsset:self.cameraRecorder.session.assetRepresentingSegments];
-                exportSession.videoConfiguration.preset = SCPresetHighestQuality;
-                exportSession.audioConfiguration.preset = SCPresetHighestQuality;
-                exportSession.videoConfiguration.maxFrameRate = 35;
-                exportSession.outputUrl = self.cameraRecorder.session.outputUrl;
-                exportSession.outputFileType = AVFileTypeMPEG4;
-                
-                exportSession.videoConfiguration.sizeAsSquare = NO;
-                [exportSession exportAsynchronouslyWithCompletionHandler:^{
-                    [[UIApplication sharedApplication] endIgnoringInteractionEvents];
-                    completionHandler(exportSession.outputUrl, exportSession.error);
-                }];
-            }];
-        }
-
-    }
+//    if ([self.cameraRecorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto]) {
+//        
+//        [UIApplication sharedApplication].keyWindow.userInteractionEnabled = NO;
+//        [self.cameraRecorder capturePhoto:^(NSError *error, UIImage *image) {
+//            [UIApplication sharedApplication].keyWindow.userInteractionEnabled = YES;
+//            if (error
+//                || !image) {
+//                return;
+//            }
+//            NHPhotoEditorViewController *controller = [[NHPhotoEditorViewController alloc] initWithUIImage:image];
+//            [self.navigationController pushViewController:controller animated:YES];
+//        }];
+//    }
+//    else {
+//        if (!self.cameraRecorder.isRecording) {
+//            [self.cameraRecorder.session cancelSession:nil];
+//            self.cameraRecorder.session = nil;
+//            SCRecordSession *session = [SCRecordSession recordSession];
+//            session.fileType = AVFileTypeQuickTimeMovie;
+//            self.cameraRecorder.session = session;
+//            
+//            
+//            self.captureButton.backgroundColor = [UIColor brownColor];
+//            self.cameraModeButton.enabled = NO;
+//            [self.cameraRecorder record];
+//        }
+//        else {
+//            self.captureButton.backgroundColor = [UIColor redColor];
+//            self.cameraModeButton.enabled = YES;
+//            [self.cameraRecorder pause:^{
+//                
+//                [[UIApplication sharedApplication] beginIgnoringInteractionEvents];                
+//                void(^completionHandler)(NSURL *url, NSError *error) = ^(NSURL *url, NSError *error) {
+//                    if (error == nil) {
+//                        UISaveVideoAtPathToSavedPhotosAlbum(url.path, self, @selector(savedCapturedVideo:didFinishSavingWithError:contextInfo:), nil);
+//                    } else {
+//                        [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+//                        
+//                        [[[UIAlertView alloc] initWithTitle:@"Failed to save" message:error.localizedDescription delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
+//                    }
+//                };
+//                
+//                [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
+//                
+//                SCAssetExportSession *exportSession = [[SCAssetExportSession alloc] initWithAsset:self.cameraRecorder.session.assetRepresentingSegments];
+//                exportSession.videoConfiguration.preset = SCPresetHighestQuality;
+//                exportSession.audioConfiguration.preset = SCPresetHighestQuality;
+//                exportSession.videoConfiguration.maxFrameRate = 35;
+//                exportSession.outputUrl = self.cameraRecorder.session.outputUrl;
+//                exportSession.outputFileType = AVFileTypeMPEG4;
+//                
+//                exportSession.videoConfiguration.sizeAsSquare = NO;
+//                [exportSession exportAsynchronouslyWithCompletionHandler:^{
+//                    [[UIApplication sharedApplication] endIgnoringInteractionEvents];
+//                    completionHandler(exportSession.outputUrl, exportSession.error);
+//                }];
+//            }];
+//        }
+//
+//    }
 }
 
 
@@ -704,22 +708,22 @@
 - (void)cameraModeButtonTouch:(id)sender {
     NSString *newCameraPreset;
     
-    if ([self.cameraRecorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto]) {
-        newCameraPreset = [SCRecorderTools bestCaptureSessionPresetCompatibleWithAllDevices];
-    }
-    else {
-        newCameraPreset = AVCaptureSessionPresetPhoto;
-    }
-    
-    self.cameraRecorder.captureSessionPreset = newCameraPreset;
+//    if ([self.cameraRecorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto]) {
+//        newCameraPreset = [SCRecorderTools bestCaptureSessionPresetCompatibleWithAllDevices];
+//    }
+//    else {
+//        newCameraPreset = AVCaptureSessionPresetPhoto;
+//    }
+//    
+//    self.cameraRecorder.captureSessionPreset = newCameraPreset;
     
     [self resetCameraMode];
 }
 
 - (void)resetCameraMode {
-    BOOL isPhotoCamera = [self.cameraRecorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto];
+//    BOOL isPhotoCamera = [self.cameraRecorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto];
     
-    self.flashButton.enabled = isPhotoCamera;
+//    self.flashButton.enabled = isPhotoCamera;
     
 }
 
@@ -732,14 +736,14 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    [self.cameraRecorder startRunning];
+//    [self.cameraRecorder startRunning];
     [self resetLibrary];
 }
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
     
-    self.cameraRecorder.previewView = self.cameraRecorderView;
+//    self.cameraRecorder.previewView = self.cameraRecorderView;
 }
 
 - (void)didReceiveMemoryWarning {

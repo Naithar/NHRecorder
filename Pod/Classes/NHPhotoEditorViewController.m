@@ -6,17 +6,17 @@
 //
 //
 
-#import "NHCameraImageEditorController.h"
-#import <SCFilterSelectorViewInternal.h>
+#import "NHPhotoEditorViewController.h"
+//#import <SCFilterSelectorViewInternal.h>
 #import "NHCameraFilterView.h"
-#import "NHCameraImageCropView.h"
-#import "NHCameraCropCollectionView.h"
+#import "NHPhotoCaptureCropView.h"
+#import "NHPhotoCropCollectionView.h"
 
-@interface NHCameraImageEditorController ()<NHCameraFilterViewDelegate, NHCameraCropCollectionViewDelegate>
+@interface NHPhotoEditorViewController ()<NHCameraFilterViewDelegate, NHPhotoCropCollectionViewDelegate>
 
 @property (nonatomic, strong) UIImage *image;
 
-@property (nonatomic, strong) NHCameraImageCropView *cropImageView;
+@property (nonatomic, strong) NHPhotoCaptureCropView *cropImageView;
 
 @property (nonatomic, strong) UIView *menuContainer;
 @property (nonatomic, strong) UIView *menuSeparator;
@@ -26,11 +26,11 @@
 
 @property (nonatomic, strong) UIView *menuContentContainer;
 @property (nonatomic, strong) NHCameraFilterView *filterView;
-@property (nonatomic, strong) NHCameraCropCollectionView *cropView;
+@property (nonatomic, strong) NHPhotoCropCollectionView *cropView;
 
 @end
 
-@implementation NHCameraImageEditorController
+@implementation NHPhotoEditorViewController
 
 - (instancetype)initWithUIImage:(UIImage*)image {
     self = [super init];
@@ -76,7 +76,7 @@
 }
 
 - (void)setupCropImageView {
-    self.cropImageView = [[NHCameraImageCropView alloc] initWithImage:self.image];
+    self.cropImageView = [[NHPhotoCaptureCropView alloc] initWithImage:self.image];
     self.cropImageView.backgroundColor = [UIColor redColor];
     [self.cropImageView setTranslatesAutoresizingMaskIntoConstraints:NO];
     self.cropImageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -146,7 +146,7 @@
     [self.filterView setSelected:0];
     [self.menuContentContainer addSubview:self.filterView];
     
-    self.cropView = [[NHCameraCropCollectionView alloc] init];
+    self.cropView = [[NHPhotoCropCollectionView alloc] init];
     self.cropView.backgroundColor = [UIColor greenColor];
     self.cropView.nhDelegate = self;
     self.cropView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -442,11 +442,11 @@
     }
 }
 
-- (void)filterView:(NHCameraFilterView *)filteView didSelectFilter:(SCFilter *)filter {
-    [self.cropImageView setFilter:filter];
-}
+//- (void)filterView:(NHCameraFilterView *)filteView didSelectFilter:(SCFilter *)filter {
+////    [self.cropImageView setFilter:filter];
+//}
 
-- (void)cropView:(NHCameraCropCollectionView *)cropView didSelectType:(NHCropType)type {
+- (void)cropView:(NHPhotoCropCollectionView *)cropView didSelectType:(NHCropType)type {
     [self.cropImageView setCropType:type];
 }
 

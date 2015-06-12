@@ -6,14 +6,14 @@
 //
 //
 
-#import "NHCameraCropCollectionView.h"
+#import "NHPhotoCropCollectionView.h"
 
-@interface NHCameraCropCollectionView ()<UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
+@interface NHPhotoCropCollectionView ()<UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 
 @property (nonatomic, assign) NSInteger selectedIndex;
 @end
 
-@implementation NHCameraCropCollectionView
+@implementation NHPhotoCropCollectionView
 
 - (instancetype)initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewLayout *)layout {
     
