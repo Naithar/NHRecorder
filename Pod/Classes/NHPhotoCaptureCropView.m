@@ -8,11 +8,15 @@
 
 #import "NHPhotoCaptureCropView.h"
 //#import <SCFilterSelectorViewInternal.h>
+#import <GPUImage.h>
 
 @interface NHPhotoCaptureCropView ()<UIScrollViewDelegate>
 
 @property (nonatomic, strong) UIImage *image;
-@property (nonatomic, strong) UIImageView *contentView;
+@property (nonatomic, strong) GPUImageView *contentView;
+@property (nonatomic, strong) GPUImagePicture *picture;
+@property (nonatomic, strong) GPUImageCropFilter *filter;
+@property (nonatomic, strong) GPUImageFilter *emptyFilter;
 @property (nonatomic, assign) NHCropType cropType;
 
 @property (nonatomic, strong) UIView *cropView;
@@ -63,11 +67,29 @@
     self.showsHorizontalScrollIndicator = NO;
     self.backgroundColor = [UIColor clearColor];
     
-    self.contentView = [[UIImageView alloc] init];
+    self.contentView = [[GPUImageView alloc] init];
+
+    [self addSubview:self.contentView];
+    
 //    [self.contentView setImageByUIImage:self.image];
     self.contentView.backgroundColor = [UIColor greenColor];
-    self.contentView.image = [self.image copy];
-    [self addSubview:self.contentView];
+    
+//    @autoreleasepool {
+    
+    
+    
+//    self.contentView.image = [picture imageFromCurrentFramebuffer];
+    
+//    [filter addTarget:self.contentView];
+    
+//    [self.filter useNextFrameForImageCapture];
+    
+    
+//    self.contentView.image = [filter imageFromCurrentFramebuffer];
+    
+    
+    
+    
     
     self.cropView = [[UIView alloc] init];
     self.cropView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.35];
@@ -77,8 +99,75 @@
     [self addSubview:self.cropView];
     
     [self sizeContent];
+    
+    self.picture = [[GPUImagePicture alloc] initWithImage:self.image smoothlyScaleOutput:YES];
+    self.filter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0, 0, 1, 1)];
+    self.emptyFilter = [[GPUImageFilter alloc] init];
+    
+    GPUImageRotationMode newRotation = kGPUImageNoRotation;
+    
+    switch (self.image.imageOrientation) {
+        case UIImageOrientationUp:
+        case UIImageOrientationUpMirrored:
+            break;
+        case UIImageOrientationLeft:
+        case UIImageOrientationLeftMirrored:
+            newRotation = kGPUImageRotateLeft;
+            break;
+        case UIImageOrientationRight:
+        case UIImageOrientationRightMirrored:
+            newRotation = kGPUImageRotateRight;
+            break;
+        case UIImageOrientationDown:
+        case UIImageOrientationDownMirrored:
+            newRotation = kGPUImageRotate180;
+            break;
+        default:
+            break;
+    }
+    [self.emptyFilter setInputRotation:newRotation atIndex:0];
+    
+//    [self.transformFilter setAffineTransform:CGAffineTransformMakeRotation(M_PI_2)];
+    [self.picture addTarget:self.emptyFilter];
+    [self.emptyFilter addTarget:self.filter];
+
+    [self.emptyFilter addTarget:self.contentView];
+    
+    
+    
+    [self.picture processImage];
+    
+    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
+    imageView.contentMode = UIViewContentModeScaleAspectFit;
+    imageView.image = self.image;
+    [self addSubview:imageView];
+    
+//    self.contentView.image = [self.filter imageFromCurrentFramebuffer];
+//    [self.filter addTarget:self.contentView];
+    
+//    dispatch_async(dispatch_get_main_queue(), ^{
+//[self.picture processImage];
+//    });
+//    [self.picture processImage];
+//    [self.picture processImage];
+//    [self.picture processImage];
+//    [self.picture processImage];
+    
+//    }
 }
 
+
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    
+//    [self.filter addTarget:self.contentView];
+//    [self.filter useNextFrameForImageCapture];
+//    [self.picture processImage];
+//    [self.picture processImage];
+//    [self.picture processImage];
+//    [self.picture processImage];
+    
+}
 
 - (void)setCropType:(NHCropType)type {
 ////    _cropType = type;
@@ -157,7 +246,14 @@
     }
     
     if (!CGRectEqualToRect(self.contentView.bounds, bounds)) {
+        
+        [self.emptyFilter removeTarget:self.contentView];
+        
         self.contentView.frame = bounds;
+        
+        [self.emptyFilter addTarget:self.contentView];
+        [self.picture processImage];
+        
         self.contentView.center = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height / 2);
         self.contentSize = CGSizeZero;
         
@@ -247,19 +343,22 @@
 
 - (BOOL)saveImageWithCallbackObject:(id)obj andSelector:(SEL)selector {
     
+    [self.picture processImage];
+    
     UIImage *image;
 //    if((image = [self.contentView
 //                 currentlyDisplayedImageWithScale:self.image.scale
 //                 orientation:self.image.imageOrientation])) {
 //
-    if (false) {
+    if (true) {
         UIImage *resultImage;
         
         switch (self.cropType) {
             case NHCropTypeNone:
                 
                 if (self.image.imageOrientation < UIImageOrientationUpMirrored) {
-                    resultImage = image;
+                    [self.filter useNextFrameForImageCapture];
+                    resultImage = [self.filter imageFromCurrentFramebuffer];
                 }
                 else {
                     UIImageOrientation newOrientation = self.image.imageOrientation;
@@ -274,9 +373,13 @@
                         default:
                             break;
                     }
-                    resultImage = [UIImage imageWithCGImage:image.CGImage
-                                                      scale:image.scale
-                                                orientation:newOrientation];
+                    [self.filter useNextFrameForImageCapture];
+                    resultImage = [self.filter imageFromCurrentFramebuffer];
+//                    [UIImage imageWithCGImage:image.CGImage
+//                                                      scale:image.scale
+//                                                orientation:newOrientation];
+                    
+//                    [self.picture ]
 
                 }
                 break;
@@ -289,102 +392,99 @@
                 
                 CGRect newRect = [self convertRect:self.cropView.frame toView:self.contentView];
                 
-                CGFloat ratio = self.image.size.height / self.contentView.bounds.size.height;
+//                CGFloat ratio = self.image.size.height / self.contentView.bounds.size.height;
                 CGFloat resultWidth = newRect.size.width;
                 CGFloat resultHeight = newRect.size.height;
                 CGFloat resultXOffset = newRect.origin.x;
                 CGFloat resultYOffset = newRect.origin.y;
                 
                 
-                UIImageOrientation newOrientation = self.image.imageOrientation;
-                
-                switch (self.image.imageOrientation) {
-                    case UIImageOrientationLeftMirrored:
-                        newOrientation = UIImageOrientationRightMirrored;
-                        break;
-                    case UIImageOrientationRightMirrored:
-                        newOrientation = UIImageOrientationLeftMirrored;
-                        break;
-                    default:
-                        break;
-                }
-                
-                switch (self.image.imageOrientation) {
-                    case UIImageOrientationDown:
-                    case UIImageOrientationDownMirrored:
-                        resultXOffset = self.contentView.bounds.size.width - resultWidth - resultXOffset;
-                        resultYOffset = self.contentView.bounds.size.height - resultHeight - resultYOffset;
-                        break;
-                    case UIImageOrientationRight: {
-                        CGFloat oldWidth = resultWidth;
-                        CGFloat oldHeight = resultHeight;
-                        CGFloat oldX = resultXOffset;
-                        CGFloat oldY = resultYOffset;
-                        
-                        resultXOffset = oldY;
-                        resultYOffset = self.contentView.bounds.size.width - oldWidth - oldX;
-                        
-                        resultHeight = oldWidth;
-                        resultWidth = oldHeight;
-                    } break;
-                    case UIImageOrientationLeftMirrored: {
-                        CGFloat oldWidth = resultWidth;
-                        CGFloat oldHeight = resultHeight;
-                        CGFloat oldX = resultXOffset;
-                        CGFloat oldY = resultYOffset;
-                        
-                        resultXOffset = oldY;
-                        resultYOffset = oldX;
-                        
-                        resultHeight = oldWidth;
-                        resultWidth = oldHeight;
-
-                    } break;
-                    case UIImageOrientationLeft: {
-                        CGFloat oldWidth = resultWidth;
-                        CGFloat oldHeight = resultHeight;
-                        CGFloat oldX = resultXOffset;
-                        CGFloat oldY = resultYOffset;
-                        
-                        resultXOffset = self.contentView.bounds.size.height - oldHeight - oldY;
-                        resultYOffset = oldX;
-                        
-                        resultHeight = oldWidth;
-                        resultWidth = oldHeight;
-                    } break;
-                    case UIImageOrientationRightMirrored: {
-                        CGFloat oldWidth = resultWidth;
-                        CGFloat oldHeight = resultHeight;
-                        CGFloat oldX = resultXOffset;
-                        CGFloat oldY = resultYOffset;
-                        
-                        resultXOffset = self.contentView.bounds.size.height - oldHeight - oldY;
-                        resultYOffset = self.contentView.bounds.size.width - oldWidth - oldX;
-                        
-                        resultHeight = oldWidth;
-                        resultWidth = oldHeight;
-                    } break;
-                    default:
-                        break;
-                }
-                
-                CGRect resultRect = CGRectMake(round(ratio * resultXOffset),
-                                               round(ratio * resultYOffset),
-                                               round(ratio * resultWidth),
-                                               round(ratio * resultHeight));
+//                UIImageOrientation newOrientation = self.image.imageOrientation;
+//                
+//                switch (self.image.imageOrientation) {
+//                    case UIImageOrientationLeftMirrored:
+//                        newOrientation = UIImageOrientationRightMirrored;
+//                        break;
+//                    case UIImageOrientationRightMirrored:
+//                        newOrientation = UIImageOrientationLeftMirrored;
+//                        break;
+//                    default:
+//                        break;
+//                }
+//                
+//                switch (self.image.imageOrientation) {
+//                    case UIImageOrientationDown:
+//                    case UIImageOrientationDownMirrored:
+//                        resultXOffset = self.contentView.bounds.size.width - resultWidth - resultXOffset;
+//                        resultYOffset = self.contentView.bounds.size.height - resultHeight - resultYOffset;
+//                        break;
+//                    case UIImageOrientationRight: {
+//                        CGFloat oldWidth = resultWidth;
+//                        CGFloat oldHeight = resultHeight;
+//                        CGFloat oldX = resultXOffset;
+//                        CGFloat oldY = resultYOffset;
+//                        
+//                        resultXOffset = oldY;
+//                        resultYOffset = self.contentView.bounds.size.width - oldWidth - oldX;
+//                        
+//                        resultHeight = oldWidth;
+//                        resultWidth = oldHeight;
+//                    } break;
+//                    case UIImageOrientationLeftMirrored: {
+//                        CGFloat oldWidth = resultWidth;
+//                        CGFloat oldHeight = resultHeight;
+//                        CGFloat oldX = resultXOffset;
+//                        CGFloat oldY = resultYOffset;
+//                        
+//                        resultXOffset = oldY;
+//                        resultYOffset = oldX;
+//                        
+//                        resultHeight = oldWidth;
+//                        resultWidth = oldHeight;
+//
+//                    } break;
+//                    case UIImageOrientationLeft: {
+//                        CGFloat oldWidth = resultWidth;
+//                        CGFloat oldHeight = resultHeight;
+//                        CGFloat oldX = resultXOffset;
+//                        CGFloat oldY = resultYOffset;
+//                        
+//                        resultXOffset = self.contentView.bounds.size.height - oldHeight - oldY;
+//                        resultYOffset = oldX;
+//                        
+//                        resultHeight = oldWidth;
+//                        resultWidth = oldHeight;
+//                    } break;
+//                    case UIImageOrientationRightMirrored: {
+//                        CGFloat oldWidth = resultWidth;
+//                        CGFloat oldHeight = resultHeight;
+//                        CGFloat oldX = resultXOffset;
+//                        CGFloat oldY = resultYOffset;
+//                        
+//                        resultXOffset = self.contentView.bounds.size.height - oldHeight - oldY;
+//                        resultYOffset = self.contentView.bounds.size.width - oldWidth - oldX;
+//                        
+//                        resultHeight = oldWidth;
+//                        resultWidth = oldHeight;
+//                    } break;
+//                    default:
+//                        break;
+//                }
+//                
+                CGRect resultRect = CGRectMake(
+                                               resultXOffset / self.contentView.bounds.size.width,
+                                               resultYOffset / self.contentView.bounds.size.height,
+                                               resultWidth / self.contentView.bounds.size.width,
+                                               resultHeight / self.contentView.bounds.size.height);
 
                 
                 if (resultRect.size.width != 0
                     && resultRect.size.height != 0) {
-                    CGImageRef cgImage = CGImageCreateWithImageInRect(image.CGImage, resultRect);
-                    if (cgImage) {
-                    resultImage = [UIImage imageWithCGImage:cgImage
-                                                      scale:image.scale
-                                                orientation:newOrientation];
                     
+                    [self.filter setCropRegion:resultRect];
+                    [self.filter useNextFrameForImageCapture];
+                    resultImage = [self.filter imageFromCurrentFramebuffer];
                     
-                        CGImageRelease(cgImage);
-                    }
                 }
             } break;
             default:

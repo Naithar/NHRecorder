@@ -9,14 +9,13 @@
 #import "NHPhotoCaptureViewController.h"
 #import "NHCameraGridView.h"
 #import "NHPhotoEditorViewController.h"
-
+#import <GPUImage.h>
 #import <AssetsLibrary/AssetsLibrary.h>
 
 @interface NHPhotoCaptureViewController ()
 
-@property (nonatomic, strong) UIView *cameraRecorderView;
-//@property (nonatomic, strong) SCRecorderToolsView *cameraRecorderToolsView;
-//@property (nonatomic, strong) SCRecorder *cameraRecorder;
+@property (nonatomic, strong) GPUImageView *photoCameraView;
+@property (nonatomic, strong) GPUImageStillCamera *photoCamera;
 
 @property (nonatomic, strong) UIView *menuContainer;
 @property (nonatomic, strong) UIView *menuSeparator;
@@ -34,6 +33,8 @@
 @property (nonatomic, strong) UIButton *captureButton;
 @property (nonatomic, strong) UIButton *cameraModeButton;
 
+@property (nonatomic, strong) GPUImageFilter *emptyFilter;
+@property (nonatomic, strong) GPUImageTransformFilter *transformFilter;
 @end
 
 @implementation NHPhotoCaptureViewController
@@ -60,24 +61,16 @@
 
 - (void)commonInit {
     self.view.backgroundColor = [UIColor blackColor];
-//    
-//    self.cameraRecorder = [SCRecorder recorder];
-//    self.cameraRecorder.session = [SCRecordSession recordSession];
-//    self.cameraRecorder.maxRecordDuration = CMTimeMake(15, 1);
-//    self.cameraRecorder.autoSetVideoOrientation = YES;
-//    self.cameraRecorder.fastRecordMethodEnabled = YES;
-//    if (![self.cameraRecorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto]) {
-//        self.cameraRecorder.captureSessionPreset = AVCaptureSessionPresetPhoto;
-//        self.cameraRecorder.flashMode = SCFlashModeAuto;
-//        self.flashMode = SCFlashModeAuto;
-//    }
+//
+    self.photoCamera = [[GPUImageStillCamera alloc] init];
+    self.emptyFilter = [[GPUImageFilter alloc] init];
+    self.transformFilter = [[GPUImageTransformFilter alloc] init];
+//    [self.transformFilter setAffineTransform:CGAffineTransformMakeRotation(M_PI)];
+    [self.photoCamera addTarget:self.emptyFilter];
+    [self.emptyFilter addTarget:self.transformFilter];
+
     
-    //video configuration
-//    self.cameraRecorder.videoConfiguration.sizeAsSquare = NO;
-    //photo configuration
-//    self.cameraRecorder.photoConfiguration.enabled = YES;
-    //audio configuration
-//    self.cameraRecorder.audioConfiguration.enabled = YES;
+    self.photoCamera.outputImageOrientation = UIInterfaceOrientationPortrait;
 //
     [self setupRecorderView];
 //    self.cameraRecorder.previewView = self.cameraRecorderView;
@@ -89,7 +82,12 @@
     [self setupGridView];
     [self setupMenuView];
     
-    [self resetCameraMode];
+//    [self resetCameraMode];
+    
+    
+    [self.photoCamera addTarget:self.photoCameraView];
+    
+//    [self.photoCamera.inputCamera setfocus]
     
 //    [self.cameraRecorder prepare:nil];
     
@@ -98,27 +96,27 @@
 }
 
 - (void)setupRecorderView {
-    self.cameraRecorderView = [[UIView alloc] init];
-    [self.cameraRecorderView setTranslatesAutoresizingMaskIntoConstraints:NO];
-    self.cameraRecorderView.contentMode = UIViewContentModeScaleAspectFit;
-    [self.view addSubview:self.cameraRecorderView];
-    self.cameraRecorderView.backgroundColor = [UIColor redColor];
+    self.photoCameraView = [[GPUImageView alloc] init];
+    [self.photoCameraView setTranslatesAutoresizingMaskIntoConstraints:NO];
+    self.photoCameraView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
+    [self.view addSubview:self.photoCameraView];
+    self.photoCameraView.backgroundColor = [UIColor redColor];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraRecorderView
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.photoCameraView
                                                           attribute:NSLayoutAttributeTop
                                                           relatedBy:NSLayoutRelationEqual
                                                              toItem:self.view
                                                           attribute:NSLayoutAttributeTop
                                                          multiplier:1.0 constant:0]];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraRecorderView
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.photoCameraView
                                                           attribute:NSLayoutAttributeLeft
                                                           relatedBy:NSLayoutRelationEqual
                                                              toItem:self.view
                                                           attribute:NSLayoutAttributeLeft
                                                          multiplier:1.0 constant:0]];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraRecorderView
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.photoCameraView
                                                           attribute:NSLayoutAttributeRight
                                                           relatedBy:NSLayoutRelationEqual
                                                              toItem:self.view
@@ -199,7 +197,7 @@
                                                                           attribute:NSLayoutAttributeHeight
                                                                          multiplier:0 constant:45]];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraRecorderView
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.photoCameraView
                                                           attribute:NSLayoutAttributeBottom
                                                           relatedBy:NSLayoutRelationEqual
                                                              toItem:self.menuContainer
@@ -512,28 +510,28 @@
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.gridView
                                                           attribute:NSLayoutAttributeTop
                                                           relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.cameraRecorderView
+                                                             toItem:self.photoCameraView
                                                           attribute:NSLayoutAttributeTop
                                                          multiplier:1.0 constant:0.5]];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.gridView
                                                           attribute:NSLayoutAttributeLeft
                                                           relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.cameraRecorderView
+                                                             toItem:self.photoCameraView
                                                           attribute:NSLayoutAttributeLeft
                                                          multiplier:1.0 constant:0.5]];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.gridView
                                                           attribute:NSLayoutAttributeRight
                                                           relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.cameraRecorderView
+                                                             toItem:self.photoCameraView
                                                           attribute:NSLayoutAttributeRight
                                                          multiplier:1.0 constant:0.5]];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.gridView
                                                           attribute:NSLayoutAttributeBottom
                                                           relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.cameraRecorderView
+                                                             toItem:self.photoCameraView
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1.0 constant:-0.5]];
 }
@@ -572,13 +570,13 @@
 }
 
 - (void)resetCamera {
-//    AVCaptureDevicePosition newPosition = self.frontCameraButton.selected
-//    ? AVCaptureDevicePositionFront
-//    : AVCaptureDevicePositionBack;
+    AVCaptureDevicePosition newPosition = self.frontCameraButton.selected
+    ? AVCaptureDevicePositionFront
+    : AVCaptureDevicePositionBack;
     
-//    if (self.cameraRecorder.device != newPosition) {
-//        self.cameraRecorder.device = newPosition;
-//    }
+    if (self.photoCamera.cameraPosition != newPosition) {
+        [self.photoCamera rotateCamera];
+    }
 }
 
 - (void)resetFlash {
@@ -599,10 +597,38 @@
 
 //MARK: Menu container buttons
 
+
 - (void)captureButtonTouch:(id)sender {
 //    if ([self.cameraRecorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto]) {
 //        
 //        [UIApplication sharedApplication].keyWindow.userInteractionEnabled = NO;
+    
+//    self.photoCamera.outputImageOrientation = UIInterfaceOrientationLandscapeLeft;
+    
+//    [self.emptyFilter useNextFrameForImageCapture];
+//    UIImage* image = [self.emptyFilter imageFromCurrentFramebuffer];
+//    
+//    if (image) {
+//        
+//        UIImage *resultImage = [UIImage imageWithCGImage:image.CGImage scale:image.scale orientation:UIImageOrientationLeft];
+//        NHPhotoEditorViewController *controller = [[NHPhotoEditorViewController alloc] initWithUIImage:resultImage];
+//        [self.navigationController pushViewController:controller animated:YES];
+//    }
+
+    
+
+    [self.photoCamera capturePhotoAsImageProcessedUpToFilter:self.transformFilter
+                                       withCompletionHandler:^(UIImage *image, NSError *error) {
+        if (error
+            || !image) {
+            return;
+        }
+                                           
+                                           
+                                           NHPhotoEditorViewController *controller = [[NHPhotoEditorViewController alloc] initWithUIImage:image];
+                                           [self.navigationController pushViewController:controller animated:YES];
+
+    }];
 //        [self.cameraRecorder capturePhoto:^(NSError *error, UIImage *image) {
 //            [UIApplication sharedApplication].keyWindow.userInteractionEnabled = YES;
 //            if (error
@@ -706,7 +732,7 @@
 }
 
 - (void)cameraModeButtonTouch:(id)sender {
-    NSString *newCameraPreset;
+//    NSString *newCameraPreset;
     
 //    if ([self.cameraRecorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto]) {
 //        newCameraPreset = [SCRecorderTools bestCaptureSessionPresetCompatibleWithAllDevices];
@@ -717,17 +743,11 @@
 //    
 //    self.cameraRecorder.captureSessionPreset = newCameraPreset;
     
-    [self resetCameraMode];
-}
-
-- (void)resetCameraMode {
-//    BOOL isPhotoCamera = [self.cameraRecorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto];
-    
-//    self.flashButton.enabled = isPhotoCamera;
-    
+//    [self resetCameraMode];
 }
 
 //MARK: View overrides
+
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -736,14 +756,18 @@
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-//    [self.cameraRecorder startRunning];
+    [self.photoCamera startCameraCapture];
     [self resetLibrary];
+}
+
+- (void)viewDidDisappear:(BOOL)animated {
+    [super viewDidDisappear:animated];
+    
+    [self.photoCamera stopCameraCapture];
 }
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
-    
-//    self.cameraRecorder.previewView = self.cameraRecorderView;
 }
 
 - (void)didReceiveMemoryWarning {
