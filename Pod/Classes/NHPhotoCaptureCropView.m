@@ -15,8 +15,9 @@
 @property (nonatomic, strong) UIImage *image;
 @property (nonatomic, strong) GPUImageView *contentView;
 @property (nonatomic, strong) GPUImagePicture *picture;
-@property (nonatomic, strong) GPUImageCropFilter *filter;
-@property (nonatomic, strong) GPUImageFilter *emptyFilter;
+@property (nonatomic, strong) GPUImageFilter *collectionFilter;
+@property (nonatomic, strong) GPUImageCropFilter *cropFilter;
+@property (nonatomic, strong) GPUImageFilter *rotationFilter;
 @property (nonatomic, assign) NHCropType cropType;
 
 @property (nonatomic, strong) UIView *cropView;
@@ -100,9 +101,9 @@
     
     [self sizeContent];
     
-    self.picture = [[GPUImagePicture alloc] initWithImage:self.image smoothlyScaleOutput:YES];
-    self.filter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0, 0, 1, 1)];
-    self.emptyFilter = [[GPUImageFilter alloc] init];
+    self.picture = [[GPUImagePicture alloc] initWithImage:self.image smoothlyScaleOutput:NO];
+    self.cropFilter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0, 0, 1, 1)];
+    self.rotationFilter = [[GPUImageFilter alloc] init];
     
     GPUImageRotationMode newRotation = kGPUImageNoRotation;
     
@@ -125,17 +126,23 @@
         default:
             break;
     }
-    [self.emptyFilter setInputRotation:newRotation atIndex:0];
+    [self.rotationFilter setInputRotation:newRotation atIndex:0];
     
 //    [self.transformFilter setAffineTransform:CGAffineTransformMakeRotation(M_PI_2)];
-    [self.picture addTarget:self.emptyFilter];
-    [self.emptyFilter addTarget:self.filter];
-
-    [self.emptyFilter addTarget:self.contentView];
+    
+    self.collectionFilter = [[GPUImageFilter alloc] init];
+    
+//    self.picture = nil;
+    [self.picture addTarget:self.rotationFilter];
     
     
+    [self.rotationFilter addTarget:self.collectionFilter];
+    [self.collectionFilter addTarget:self.cropFilter];
+    [self.collectionFilter addTarget:self.contentView];
     
-    [self.picture processImage];
+    if (self.window) {
+        [self.picture processImage];
+    }
     
     UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
     imageView.contentMode = UIViewContentModeScaleAspectFit;
@@ -155,6 +162,8 @@
     
 //    }
 }
+
+
 
 
 - (void)layoutSubviews {
@@ -178,29 +187,24 @@
     _cropType = type;
     [self resetCropAnimated:YES];
 }
-//- (void)setFilter:(SCFilter*)filter {
-//    
-//    CIContext *context = [CIContext contextWithOptions:nil];
-//    
-//    CIImage *ciImage = [CIImage imageWithCGImage:self.image.CGImage];
-//    CIImage *image = [filter imageByProcessingImage:ciImage atTime:0];
-//    
-//    CGRect ext = [image extent];
-//    CGImageRef cgimg =
-//    [context createCGImage:image fromRect:ext];
-//    
-//    // 3
-//    UIImage *newImage = [UIImage imageWithCGImage:cgimg scale:self.image.scale orientation:self.image.imageOrientation];
-//    self.contentView.image = newImage;
-//    
-//    NSLog(@"%@, %@, %@, %@", self.image, ciImage, image, newImage);
-//    // 4
-//    CGImageRelease(cgimg);
-////    self.contentView.filters = @[filter];
-////    self.contentView.selectedFilter = filter;
-//    
-////    [self.contentView setNeedsDisplay];
-//}
+- (void)setFilter:(GPUImageFilter*)filter {
+    
+    [self.rotationFilter removeTarget:self.collectionFilter];
+    
+    self.collectionFilter = filter;
+    
+    [self.rotationFilter addTarget:self.collectionFilter];
+    [self.collectionFilter addTarget:self.cropFilter];
+    [self.collectionFilter addTarget:self.contentView];
+    
+    if (self.window) {
+        [self.picture processImage];
+    }
+//    self.contentView.filters = @[filter];
+//    self.contentView.selectedFilter = filter;
+    
+//    [self.contentView setNeedsDisplay];
+}
 
 - (void)sizeContent {
     CGRect bounds = self.image ? (CGRect) { .size = self.image.size } : self.contentView.frame;
@@ -247,12 +251,12 @@
     
     if (!CGRectEqualToRect(self.contentView.bounds, bounds)) {
         
-        [self.emptyFilter removeTarget:self.contentView];
+        [self.collectionFilter removeTarget:self.contentView];
         
         self.contentView.frame = bounds;
         
-        [self.emptyFilter addTarget:self.contentView];
-        [self.picture processImage];
+        [self.collectionFilter addTarget:self.contentView];
+        
         
         self.contentView.center = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height / 2);
         self.contentSize = CGSizeZero;
@@ -260,6 +264,10 @@
         [self resetCropAnimated:NO];
         
         [self scrollViewDidZoom:self];
+    }
+    
+    if (self.window) {
+        [self.picture processImage];
     }
 }
 
@@ -342,46 +350,9 @@
 }
 
 - (BOOL)saveImageWithCallbackObject:(id)obj andSelector:(SEL)selector {
-    
-    [self.picture processImage];
-    
-    UIImage *image;
-//    if((image = [self.contentView
-//                 currentlyDisplayedImageWithScale:self.image.scale
-//                 orientation:self.image.imageOrientation])) {
-//
-    if (true) {
-        UIImage *resultImage;
-        
-        switch (self.cropType) {
-            case NHCropTypeNone:
-                
-                if (self.image.imageOrientation < UIImageOrientationUpMirrored) {
-                    [self.filter useNextFrameForImageCapture];
-                    resultImage = [self.filter imageFromCurrentFramebuffer];
-                }
-                else {
-                    UIImageOrientation newOrientation = self.image.imageOrientation;
-                    
-                    switch (self.image.imageOrientation) {
-                        case UIImageOrientationLeftMirrored:
-                            newOrientation = UIImageOrientationRightMirrored;
-                            break;
-                        case UIImageOrientationRightMirrored:
-                            newOrientation = UIImageOrientationLeftMirrored;
-                            break;
-                        default:
-                            break;
-                    }
-                    [self.filter useNextFrameForImageCapture];
-                    resultImage = [self.filter imageFromCurrentFramebuffer];
-//                    [UIImage imageWithCGImage:image.CGImage
-//                                                      scale:image.scale
-//                                                orientation:newOrientation];
-                    
-//                    [self.picture ]
 
-                }
+    switch (self.cropType) {
+            case NHCropTypeNone:
                 break;
             case NHCropTypeSquare:
             case NHCropType4x3:
@@ -481,21 +452,24 @@
                 if (resultRect.size.width != 0
                     && resultRect.size.height != 0) {
                     
-                    [self.filter setCropRegion:resultRect];
-                    [self.filter useNextFrameForImageCapture];
-                    resultImage = [self.filter imageFromCurrentFramebuffer];
+                    [self.cropFilter setCropRegion:resultRect];
+//                    [self.cropFilter useNextFrameForImageCapture];
+//                    resultImage = [self.cropFilter imageFromCurrentFramebuffer];
                     
                 }
             } break;
             default:
                 break;
         }
-        
-        if (resultImage) {
-            UIImageWriteToSavedPhotosAlbum(resultImage, obj, selector, nil);
-            return YES;
-        }
-    }
+    
+    [self.picture processImageUpToFilter:self.cropFilter withCompletionHandler:^(UIImage *processedImage) {
+        UIImageWriteToSavedPhotosAlbum(processedImage, obj, selector, nil);
+
+    }];
+    
+//        if (resultImage) {
+//            return YES;
+//        }
 
     return NO;
 }

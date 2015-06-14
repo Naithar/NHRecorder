@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-//#import <SCRecorder.h>
+#import <GPUImage.h>
 
 typedef NS_ENUM(NSUInteger, NHCropType) {
     NHCropTypeNone,
@@ -25,7 +25,7 @@ typedef NS_ENUM(NSUInteger, NHCropType) {
 - (instancetype)initWithFrame:(CGRect)frame image:(UIImage*)image;
 
 - (void)sizeContent;
-//- (void)setFilter:(SCFilter*)filter;
+- (void)setFilter:(GPUImageFilter*)filter;
 - (BOOL)saveImageWithCallbackObject:(id)obj
                         andSelector:(SEL)selector;
 - (void)setCropType:(NHCropType)type;

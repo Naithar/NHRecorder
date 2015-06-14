@@ -442,9 +442,9 @@
     }
 }
 
-//- (void)filterView:(NHCameraFilterView *)filteView didSelectFilter:(SCFilter *)filter {
-////    [self.cropImageView setFilter:filter];
-//}
+- (void)filterView:(NHCameraFilterView *)filteView didSelectFilter:(GPUImageFilter *)filter {
+    [self.cropImageView setFilter:filter];
+}
 
 - (void)cropView:(NHPhotoCropCollectionView *)cropView didSelectType:(NHCropType)type {
     [self.cropImageView setCropType:type];

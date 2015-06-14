@@ -11,6 +11,7 @@
 #import "NHPhotoEditorViewController.h"
 #import <GPUImage.h>
 #import <AssetsLibrary/AssetsLibrary.h>
+#import "NHCameraFocusView.h"
 
 @interface NHPhotoCaptureViewController ()
 
@@ -33,8 +34,9 @@
 @property (nonatomic, strong) UIButton *captureButton;
 @property (nonatomic, strong) UIButton *cameraModeButton;
 
-@property (nonatomic, strong) GPUImageFilter *emptyFilter;
-@property (nonatomic, strong) GPUImageTransformFilter *transformFilter;
+@property (nonatomic, strong) GPUImageCropFilter *cropFilter;
+
+@property (nonatomic, strong) NHCameraFocusView *focusView;
 @end
 
 @implementation NHPhotoCaptureViewController
@@ -63,14 +65,15 @@
     self.view.backgroundColor = [UIColor blackColor];
 //
     self.photoCamera = [[GPUImageStillCamera alloc] init];
-    self.emptyFilter = [[GPUImageFilter alloc] init];
-    self.transformFilter = [[GPUImageTransformFilter alloc] init];
+    self.cropFilter = [[GPUImageCropFilter alloc] init];
+//    self.transformFilter = [[GPUImageTransformFilter alloc] init];
 //    [self.transformFilter setAffineTransform:CGAffineTransformMakeRotation(M_PI)];
-    [self.photoCamera addTarget:self.emptyFilter];
-    [self.emptyFilter addTarget:self.transformFilter];
+    [self.photoCamera addTarget:self.cropFilter];
+//    [self.emptyFilter addTarget:self.transformFilter];
 
     
     self.photoCamera.outputImageOrientation = UIInterfaceOrientationPortrait;
+    self.photoCamera.horizontallyMirrorFrontFacingCamera = YES;
 //
     [self setupRecorderView];
 //    self.cameraRecorder.previewView = self.cameraRecorderView;
@@ -85,11 +88,48 @@
 //    [self resetCameraMode];
     
     
-    [self.photoCamera addTarget:self.photoCameraView];
+    [self.cropFilter addTarget:self.photoCameraView];
     
 //    [self.photoCamera.inputCamera setfocus]
     
 //    [self.cameraRecorder prepare:nil];
+    
+    self.focusView = [[NHCameraFocusView alloc] init];
+    
+    self.focusView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.focusView.camera = self.photoCamera;
+    self.focusView.cropFilter = self.cropFilter;
+    [self.view addSubview:self.focusView];
+    
+    [self.focusView setFocusPoint:self.focusView.center];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.focusView
+                                                          attribute:NSLayoutAttributeTop
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.photoCameraView
+                                                          attribute:NSLayoutAttributeTop
+                                                         multiplier:1.0 constant:0]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.focusView
+                                                          attribute:NSLayoutAttributeBottom
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.photoCameraView
+                                                          attribute:NSLayoutAttributeBottom
+                                                         multiplier:1.0 constant:0]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.focusView
+                                                          attribute:NSLayoutAttributeLeft
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.photoCameraView
+                                                          attribute:NSLayoutAttributeLeft
+                                                         multiplier:1.0 constant:0]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.focusView
+                                                          attribute:NSLayoutAttributeRight
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.photoCameraView
+                                                          attribute:NSLayoutAttributeRight
+                                                         multiplier:1.0 constant:0]];
     
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@" " style:UIBarButtonItemStylePlain target:nil action:nil];
     
@@ -574,9 +614,14 @@
     ? AVCaptureDevicePositionFront
     : AVCaptureDevicePositionBack;
     
+    
+    
     if (self.photoCamera.cameraPosition != newPosition) {
         [self.photoCamera rotateCamera];
+        
     }
+    
+    
 }
 
 - (void)resetFlash {
@@ -599,93 +644,31 @@
 
 
 - (void)captureButtonTouch:(id)sender {
-//    if ([self.cameraRecorder.captureSessionPreset isEqualToString:AVCaptureSessionPresetPhoto]) {
-//        
-//        [UIApplication sharedApplication].keyWindow.userInteractionEnabled = NO;
-    
-//    self.photoCamera.outputImageOrientation = UIInterfaceOrientationLandscapeLeft;
-    
-//    [self.emptyFilter useNextFrameForImageCapture];
-//    UIImage* image = [self.emptyFilter imageFromCurrentFramebuffer];
+
+//    [self.cropFilter useNextFrameForImageCapture];
+//    UIImage* image = [self.cropFilter imageFromCurrentFramebuffer];
 //    
 //    if (image) {
 //        
-//        UIImage *resultImage = [UIImage imageWithCGImage:image.CGImage scale:image.scale orientation:UIImageOrientationLeft];
-//        NHPhotoEditorViewController *controller = [[NHPhotoEditorViewController alloc] initWithUIImage:resultImage];
+//        NHPhotoEditorViewController *controller = [[NHPhotoEditorViewController alloc] initWithUIImage:image];
 //        [self.navigationController pushViewController:controller animated:YES];
 //    }
 
     
-
-    [self.photoCamera capturePhotoAsImageProcessedUpToFilter:self.transformFilter
-                                       withCompletionHandler:^(UIImage *image, NSError *error) {
-        if (error
-            || !image) {
-            return;
-        }
-                                           
-                                           
-                                           NHPhotoEditorViewController *controller = [[NHPhotoEditorViewController alloc] initWithUIImage:image];
-                                           [self.navigationController pushViewController:controller animated:YES];
-
-    }];
-//        [self.cameraRecorder capturePhoto:^(NSError *error, UIImage *image) {
-//            [UIApplication sharedApplication].keyWindow.userInteractionEnabled = YES;
-//            if (error
-//                || !image) {
-//                return;
-//            }
-//            NHPhotoEditorViewController *controller = [[NHPhotoEditorViewController alloc] initWithUIImage:image];
-//            [self.navigationController pushViewController:controller animated:YES];
-//        }];
-//    }
-//    else {
-//        if (!self.cameraRecorder.isRecording) {
-//            [self.cameraRecorder.session cancelSession:nil];
-//            self.cameraRecorder.session = nil;
-//            SCRecordSession *session = [SCRecordSession recordSession];
-//            session.fileType = AVFileTypeQuickTimeMovie;
-//            self.cameraRecorder.session = session;
-//            
-//            
-//            self.captureButton.backgroundColor = [UIColor brownColor];
-//            self.cameraModeButton.enabled = NO;
-//            [self.cameraRecorder record];
-//        }
-//        else {
-//            self.captureButton.backgroundColor = [UIColor redColor];
-//            self.cameraModeButton.enabled = YES;
-//            [self.cameraRecorder pause:^{
-//                
-//                [[UIApplication sharedApplication] beginIgnoringInteractionEvents];                
-//                void(^completionHandler)(NSURL *url, NSError *error) = ^(NSURL *url, NSError *error) {
-//                    if (error == nil) {
-//                        UISaveVideoAtPathToSavedPhotosAlbum(url.path, self, @selector(savedCapturedVideo:didFinishSavingWithError:contextInfo:), nil);
-//                    } else {
-//                        [[UIApplication sharedApplication] endIgnoringInteractionEvents];
-//                        
-//                        [[[UIAlertView alloc] initWithTitle:@"Failed to save" message:error.localizedDescription delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil] show];
-//                    }
-//                };
-//                
-//                [[UIApplication sharedApplication] beginIgnoringInteractionEvents];
-//                
-//                SCAssetExportSession *exportSession = [[SCAssetExportSession alloc] initWithAsset:self.cameraRecorder.session.assetRepresentingSegments];
-//                exportSession.videoConfiguration.preset = SCPresetHighestQuality;
-//                exportSession.audioConfiguration.preset = SCPresetHighestQuality;
-//                exportSession.videoConfiguration.maxFrameRate = 35;
-//                exportSession.outputUrl = self.cameraRecorder.session.outputUrl;
-//                exportSession.outputFileType = AVFileTypeMPEG4;
-//                
-//                exportSession.videoConfiguration.sizeAsSquare = NO;
-//                [exportSession exportAsynchronouslyWithCompletionHandler:^{
-//                    [[UIApplication sharedApplication] endIgnoringInteractionEvents];
-//                    completionHandler(exportSession.outputUrl, exportSession.error);
-//                }];
-//            }];
-//        }
-//
-//    }
+    [self.photoCamera
+     capturePhotoAsImageProcessedUpToFilter:self.cropFilter
+     withCompletionHandler:^(UIImage *image, NSError *error) {
+         if (error
+             || !image) {
+             return;
+         }
+         
+         
+         NHPhotoEditorViewController *controller = [[NHPhotoEditorViewController alloc] initWithUIImage:image];
+         [self.navigationController pushViewController:controller animated:YES];
+         
+     }];
+    
 }
 
 

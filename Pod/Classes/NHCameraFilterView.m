@@ -45,7 +45,13 @@
 }
 
 - (void)commonInit {
-//    self.filters = @[
+    self.filters = @[
+                     [[GPUImageFilter alloc] init],
+                     [[GPUImageMonochromeFilter alloc] init],
+                     [[GPUImageGrayscaleFilter alloc] init],
+                     [[GPUImageSepiaFilter alloc] init],
+                     [[GPUImagePixellateFilter alloc] init]
+                     ];
 //                     [SCFilter emptyFilter],
 //                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectMono"],
 //                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectNoir"],
@@ -124,13 +130,13 @@
     
     self.selectedIndex = indexPath.row;
 //    
-//    SCFilter *filter = self.filters[indexPath.row];
-//    
-//    
-//    __weak __typeof(self) weakSelf = self;
-//    if ([weakSelf.nhDelegate respondsToSelector:@selector(filterView:didSelectFilter:)]) {
-//        [weakSelf.nhDelegate filterView:weakSelf didSelectFilter:filter];
-//    }
+    GPUImageFilter *filter = self.filters[indexPath.row];
+    
+    
+    __weak __typeof(self) weakSelf = self;
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(filterView:didSelectFilter:)]) {
+        [weakSelf.nhDelegate filterView:weakSelf didSelectFilter:filter];
+    }
     
     [self reloadData];
 }
@@ -144,12 +150,12 @@
         return;
     }
 //
-//    SCFilter *filter = self.filters[index];
-//    
-//    __weak __typeof(self) weakSelf = self;
-//    if ([weakSelf.nhDelegate respondsToSelector:@selector(filterView:didSelectFilter:)]) {
-//        [weakSelf.nhDelegate filterView:weakSelf didSelectFilter:filter];
-//    }
+    GPUImageFilter *filter = self.filters[index];
+    
+    __weak __typeof(self) weakSelf = self;
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(filterView:didSelectFilter:)]) {
+        [weakSelf.nhDelegate filterView:weakSelf didSelectFilter:filter];
+    }
 }
 
 

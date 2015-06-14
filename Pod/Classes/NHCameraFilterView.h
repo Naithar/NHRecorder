@@ -7,14 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
-//#import <SCRecorder.h>
+#import <GPUImage.h>
 
 @class NHCameraFilterView;
 
 @protocol NHCameraFilterViewDelegate <NSObject>
 
 @optional
-//- (void)filterView:(NHCameraFilterView*)filteView didSelectFilter:(SCFilter*)filter;
+- (void)filterView:(NHCameraFilterView*)filteView didSelectFilter:(GPUImageFilter*)filter;
 
 @end
 
