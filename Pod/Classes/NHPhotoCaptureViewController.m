@@ -7,8 +7,8 @@
 //
 
 #import "NHPhotoCaptureViewController.h"
-#import "NHCameraGridView.h"
 #import "NHCameraFocusView.h"
+#import "NHCameraGridView.h"
 #import "NHPhotoEditorViewController.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 

@@ -11,9 +11,8 @@
 
 extern const CGFloat kNHRecorderBottomViewHeight;
 
-@class NHCameraFocusView;
 @class NHCameraGridView;
-
+@class NHCameraFocusView;
 @class NHPhotoCaptureViewController;
 
 @protocol NHPhotoCaptureViewControllerDelegate <NSObject>

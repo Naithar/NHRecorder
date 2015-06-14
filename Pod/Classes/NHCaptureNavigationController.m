@@ -10,7 +10,8 @@
 
 @interface NHCaptureNavigationController ()
 
-@property (nonatomic, strong) NHPhotoCaptureViewController *cameraViewController;
+@property (nonatomic, strong) NHPhotoCaptureViewController *photoCameraViewController;
+@property (nonatomic, strong) NHPhotoEditorViewController *photoEditorViewController;
 
 @end
 
@@ -57,7 +58,7 @@
 }
 
 - (void)commonInit {
-    self.cameraViewController = [[NHPhotoCaptureViewController alloc] init];
+    self.photoCameraViewController = [[NHPhotoCaptureViewController alloc] init];
     self.navigationBar.translucent = NO;
     self.navigationBar.barTintColor = [UIColor blackColor];
     self.navigationBar.tintColor = [UIColor whiteColor];
@@ -65,7 +66,7 @@
     self.navigationBar.backIndicatorImage = [UIImage imageNamed:@"NHRecorder.back.png"];
     self.navigationBar.backIndicatorTransitionMaskImage = [UIImage imageNamed:@"NHRecorder.back.png"];
     
-    [self setViewControllers:@[self.cameraViewController]];
+    [self setViewControllers:@[self.photoCameraViewController]];
 }
 
 - (void)viewDidLoad {

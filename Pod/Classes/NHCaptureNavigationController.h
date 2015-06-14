@@ -8,9 +8,11 @@
 
 #import <UIKit/UIKit.h>
 #import "NHPhotoCaptureViewController.h"
+#import "NHPhotoEditorViewController.h"
 
 @interface NHCaptureNavigationController : UINavigationController
 
-@property (nonatomic, readonly, strong) NHPhotoCaptureViewController *cameraViewController;
+@property (nonatomic, readonly, strong) NHPhotoCaptureViewController *photoCameraViewController;
+@property (nonatomic, readonly, strong) NHPhotoEditorViewController *photoEditorViewController;
 
 @end
