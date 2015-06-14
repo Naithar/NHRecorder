@@ -48,7 +48,7 @@
     self = [super initWithFrame:frame];
     
     if (self) {
-        _image = [UIImage imageNamed:@"image.jpg"];//image;
+        _image = image;
         [self commonInit];
     }
     
