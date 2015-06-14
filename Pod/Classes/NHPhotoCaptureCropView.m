@@ -15,6 +15,7 @@
 @property (nonatomic, strong) UIImage *image;
 @property (nonatomic, strong) GPUImageView *contentView;
 @property (nonatomic, strong) GPUImagePicture *picture;
+
 @property (nonatomic, strong) GPUImageFilter *collectionFilter;
 @property (nonatomic, strong) GPUImageCropFilter *cropFilter;
 @property (nonatomic, strong) GPUImageFilter *rotationFilter;
@@ -87,8 +88,6 @@
     
     
 //    self.contentView.image = [filter imageFromCurrentFramebuffer];
-    
-    
     
     
     
@@ -214,7 +213,7 @@
         
         if (ratio) {
             
-            if (ratio > 1.25) {
+            if (ratio > 1.05) {
                 if (self.frame.size.height > self.frame.size.width) {
                     bounds.size.width = MIN(self.bounds.size.width, self.bounds.size.height);
                     bounds.size.height = bounds.size.width / ratio;
@@ -226,7 +225,7 @@
                     
                 }
             }
-            else if (ratio < 0.75) {
+            else if (ratio < 0.95) {
                 if (self.frame.size.height > self.frame.size.width) {
                     bounds.size.height = MAX(self.bounds.size.width, self.bounds.size.height);
                     bounds.size.width = bounds.size.height * ratio;
@@ -532,6 +531,18 @@
 }
 
 - (void)dealloc {
+    [self.cropFilter removeAllTargets];
+    [self.collectionFilter removeAllTargets];
+    [self.rotationFilter removeAllTargets];
+    [self.picture removeAllTargets];
+    
+    self.cropFilter = nil;
+    self.collectionFilter = nil;
+    self.rotationFilter = nil;
+    self.picture = nil;
+    self.image = nil;
+    
+    [[GPUImageContext sharedFramebufferCache] purgeAllUnassignedFramebuffers];
 }
 
 
