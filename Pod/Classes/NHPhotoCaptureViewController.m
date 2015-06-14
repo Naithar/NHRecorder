@@ -654,7 +654,6 @@
 //        [self.navigationController pushViewController:controller animated:YES];
 //    }
 
-    
     [self.photoCamera
      capturePhotoAsImageProcessedUpToFilter:self.cropFilter
      withCompletionHandler:^(UIImage *image, NSError *error) {
