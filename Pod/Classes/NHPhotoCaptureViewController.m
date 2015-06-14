@@ -64,7 +64,6 @@ const CGFloat kNHRecorderBottomViewHeight = 90;
 }
 
 - (void)commonInit {
-    self.maxImageSize = CGSizeZero;
     self.view.backgroundColor = [UIColor blackColor];
     
     self.photoCamera = [[GPUImageStillCamera alloc]
@@ -452,13 +451,19 @@ const CGFloat kNHRecorderBottomViewHeight = 90;
                                                
                                                UIImage *resultImage;
                                                
-                                               if (CGSizeEqualToSize(self.maxImageSize, CGSizeZero)) {
+                                               CGSize imageSizeToFit = CGSizeZero;
+                                               
+                                               __weak __typeof(self) weakSelf = self;
+                                               if ([weakSelf.nhDelegate respondsToSelector:@selector(imageSizeToFitForPhotoCapture:)]) {
+                                                   imageSizeToFit = [weakSelf.nhDelegate imageSizeToFitForPhotoCapture:weakSelf];
+                                               }
+                                               
+                                               if (CGSizeEqualToSize(imageSizeToFit, CGSizeZero)) {
                                                    resultImage = processedImage;
                                                }
                                                else {
-                                                   resultImage = [processedImage resizedImageToFitInSize:self.maxImageSize scaleIfSmaller:YES];
+                                                   resultImage = [processedImage resizedImageToFitInSize:imageSizeToFit scaleIfSmaller:YES];
                                                }
-                                               
                                                
                                                if (resultImage) {
                                                    BOOL shouldEdit = YES;

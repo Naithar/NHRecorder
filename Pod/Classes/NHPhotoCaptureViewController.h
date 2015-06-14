@@ -14,11 +14,10 @@
 
 @optional
 - (BOOL)photoCapture:(NHPhotoCaptureViewController*)controller shouldEditImage:(UIImage*)image;
+- (CGSize)imageSizeToFitForPhotoCapture:(NHPhotoCaptureViewController*)controller;
 @end
 
 @interface NHPhotoCaptureViewController : UIViewController
-
-@property (nonatomic, assign) CGSize maxImageSize;
 
 @property (nonatomic, weak) id<NHPhotoCaptureViewControllerDelegate> nhDelegate;
 
