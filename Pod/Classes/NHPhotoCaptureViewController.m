@@ -16,6 +16,9 @@
 #import "NHMediaPickerViewController.h"
 
 const CGFloat kNHRecorderBottomViewHeight = 90;
+const CGFloat kNHRecorderCaptureButtonHeight = 60;
+const CGFloat kNHRecorderLibraryButtonHeight = 50;
+const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 
 @interface NHPhotoCaptureViewController ()
 
@@ -158,6 +161,8 @@ const CGFloat kNHRecorderBottomViewHeight = 90;
     [self.captureButton setTitle:nil forState:UIControlStateNormal];
     self.captureButton.backgroundColor = [UIColor whiteColor];
     [self.captureButton addTarget:self action:@selector(captureButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
+    self.captureButton.layer.cornerRadius = kNHRecorderCaptureButtonHeight / 2;
+    self.captureButton.clipsToBounds = YES;
     [self.bottomContainerView addSubview:self.captureButton];
     
     self.libraryButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -322,11 +327,11 @@ const CGFloat kNHRecorderBottomViewHeight = 90;
 
 - (void)setupCaptureButtonConstraints {
     [self.bottomContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.captureButton
-                                                          attribute:NSLayoutAttributeTop
+                                                          attribute:NSLayoutAttributeCenterY
                                                           relatedBy:NSLayoutRelationEqual
                                                              toItem:self.bottomContainerView
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1.0 constant:10]];
+                                                          attribute:NSLayoutAttributeCenterY
+                                                         multiplier:1.0 constant:0]];
     
     [self.bottomContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.captureButton
                                                           attribute:NSLayoutAttributeCenterX
@@ -335,12 +340,12 @@ const CGFloat kNHRecorderBottomViewHeight = 90;
                                                           attribute:NSLayoutAttributeCenterX
                                                          multiplier:1.0 constant:0]];
     
-    [self.bottomContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.captureButton
-                                                                         attribute:NSLayoutAttributeBottom
+    [self.captureButton addConstraint:[NSLayoutConstraint constraintWithItem:self.captureButton
+                                                                         attribute:NSLayoutAttributeHeight
                                                                          relatedBy:NSLayoutRelationEqual
-                                                                            toItem:self.bottomContainerView
-                                                                         attribute:NSLayoutAttributeBottom
-                                                                        multiplier:1.0 constant:-10]];
+                                                                            toItem:self.captureButton
+                                                                         attribute:NSLayoutAttributeHeight
+                                                                        multiplier:0 constant:kNHRecorderCaptureButtonHeight]];
     
     [self.captureButton addConstraint:[NSLayoutConstraint constraintWithItem:self.captureButton
                                                           attribute:NSLayoutAttributeHeight
@@ -348,6 +353,42 @@ const CGFloat kNHRecorderBottomViewHeight = 90;
                                                              toItem:self.captureButton
                                                           attribute:NSLayoutAttributeWidth
                                                          multiplier:1.0 constant:0]];
+    UIView *captureButtonBorder = [[UIView alloc] init];
+    captureButtonBorder.translatesAutoresizingMaskIntoConstraints = NO;
+    captureButtonBorder.layer.borderWidth = 2;
+    captureButtonBorder.layer.borderColor = [UIColor whiteColor].CGColor;
+    captureButtonBorder.layer.cornerRadius = (kNHRecorderCaptureButtonHeight + 2 * kNHRecorderCaptureButtonBorderOffset) / 2;
+    captureButtonBorder.userInteractionEnabled = NO;
+    captureButtonBorder.backgroundColor = [UIColor clearColor];
+    [self.bottomContainerView addSubview:captureButtonBorder];
+    
+    [self.bottomContainerView addConstraint:[NSLayoutConstraint constraintWithItem:captureButtonBorder
+                                                                         attribute:NSLayoutAttributeTop
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.captureButton
+                                                                         attribute:NSLayoutAttributeTop
+                                                                        multiplier:1.0 constant:-kNHRecorderCaptureButtonBorderOffset]];
+    
+    [self.bottomContainerView addConstraint:[NSLayoutConstraint constraintWithItem:captureButtonBorder
+                                                                         attribute:NSLayoutAttributeLeft
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.captureButton
+                                                                         attribute:NSLayoutAttributeLeft
+                                                                        multiplier:1.0 constant:-kNHRecorderCaptureButtonBorderOffset]];
+    
+    [self.bottomContainerView addConstraint:[NSLayoutConstraint constraintWithItem:captureButtonBorder
+                                                                         attribute:NSLayoutAttributeRight
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.captureButton
+                                                                         attribute:NSLayoutAttributeRight
+                                                                        multiplier:1.0 constant:kNHRecorderCaptureButtonBorderOffset]];
+    
+    [self.bottomContainerView addConstraint:[NSLayoutConstraint constraintWithItem:captureButtonBorder
+                                                                         attribute:NSLayoutAttributeBottom
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.captureButton
+                                                                         attribute:NSLayoutAttributeBottom
+                                                                        multiplier:1.0 constant:kNHRecorderCaptureButtonBorderOffset]];
 }
 
 - (void)setupLibraryButtonConstraints {
@@ -370,7 +411,7 @@ const CGFloat kNHRecorderBottomViewHeight = 90;
                                                                          relatedBy:NSLayoutRelationEqual
                                                                             toItem:self.libraryButton
                                                                          attribute:NSLayoutAttributeHeight
-                                                                        multiplier:0 constant:50]];
+                                                                        multiplier:0 constant:kNHRecorderLibraryButtonHeight]];
     
     [self.libraryButton addConstraint:[NSLayoutConstraint constraintWithItem:self.libraryButton
                                                                    attribute:NSLayoutAttributeHeight
