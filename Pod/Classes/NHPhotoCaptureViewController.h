@@ -9,6 +9,8 @@
 #import <UIKit/UIKit.h>
 #import <GPUImage.h>
 
+extern const CGFloat kNHRecorderBottomViewHeight;
+
 @class NHCameraFocusView;
 @class NHCameraGridView;
 
