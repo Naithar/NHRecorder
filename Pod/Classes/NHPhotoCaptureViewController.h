@@ -7,6 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <GPUImage.h>
+
+@class NHCameraFocusView;
+@class NHCameraGridView;
 
 @class NHPhotoCaptureViewController;
 
@@ -18,6 +22,19 @@
 @end
 
 @interface NHPhotoCaptureViewController : UIViewController
+
+@property (nonatomic, readonly, strong) GPUImageView *photoCameraView;
+@property (nonatomic, readonly, strong) NHCameraGridView *cameraGridView;
+@property (nonatomic, readonly, strong) NHCameraFocusView *cameraFocusView;
+@property (nonatomic, readonly, strong) UIView *bottomContainerView;
+
+@property (nonatomic, readonly, strong) UIBarButtonItem *closeButton;
+@property (nonatomic, readonly, strong) UIBarButtonItem *flashButton;
+@property (nonatomic, readonly, strong) UIBarButtonItem *gridButton;
+@property (nonatomic, readonly, strong) UIBarButtonItem *switchButton;
+
+@property (nonatomic, readonly, strong) UIButton *captureButton;
+@property (nonatomic, readonly, strong) UIButton *libraryButton;
 
 @property (nonatomic, weak) id<NHPhotoCaptureViewControllerDelegate> nhDelegate;
 

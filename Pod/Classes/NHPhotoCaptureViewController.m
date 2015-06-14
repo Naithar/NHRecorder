@@ -8,10 +8,10 @@
 
 #import "NHPhotoCaptureViewController.h"
 #import "NHCameraGridView.h"
-#import "NHPhotoEditorViewController.h"
-#import <GPUImage.h>
-#import <AssetsLibrary/AssetsLibrary.h>
 #import "NHCameraFocusView.h"
+#import "NHPhotoEditorViewController.h"
+#import <AssetsLibrary/AssetsLibrary.h>
+
 #import "UIImage+Resize.h"
 #import "NHMediaPickerViewController.h"
 
@@ -28,10 +28,10 @@ const CGFloat kNHRecorderBottomViewHeight = 90;
 
 @property (nonatomic, strong) UIView *bottomContainerView;
 
-@property (nonatomic, strong) id closeButton;
-@property (nonatomic, strong) id flashButton;
-@property (nonatomic, strong) id gridButton;
-@property (nonatomic, strong) id switchButton;
+@property (nonatomic, strong) UIBarButtonItem *closeButton;
+@property (nonatomic, strong) UIBarButtonItem *flashButton;
+@property (nonatomic, strong) UIBarButtonItem *gridButton;
+@property (nonatomic, strong) UIBarButtonItem *switchButton;
 
 @property (nonatomic, strong) UIButton *captureButton;
 @property (nonatomic, strong) UIButton *libraryButton;
