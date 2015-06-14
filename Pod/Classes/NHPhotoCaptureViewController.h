@@ -8,18 +8,18 @@
 
 #import <UIKit/UIKit.h>
 
+@class NHPhotoCaptureViewController;
+
 @protocol NHPhotoCaptureViewControllerDelegate <NSObject>
 
 @optional
-//views initializer
+- (BOOL)photoCapture:(NHPhotoCaptureViewController*)controller shouldEditImage:(UIImage*)image;
 @end
 
 @interface NHPhotoCaptureViewController : UIViewController
 
+@property (nonatomic, assign) CGSize maxImageSize;
 
-@end
+@property (nonatomic, weak) id<NHPhotoCaptureViewControllerDelegate> nhDelegate;
 
-@interface UIImage(ResizeCategory)
--(UIImage*)resizedImageToSize:(CGSize)dstSize;
--(UIImage*)resizedImageToFitInSize:(CGSize)boundingSize scaleIfSmaller:(BOOL)scale;
 @end

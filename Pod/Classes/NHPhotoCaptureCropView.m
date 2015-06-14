@@ -7,10 +7,11 @@
 //
 
 #import "NHPhotoCaptureCropView.h"
-//#import <SCFilterSelectorViewInternal.h>
+#import "NHPhotoCropView.h"
 #import <GPUImage.h>
 
 @interface NHPhotoCaptureCropView ()<UIScrollViewDelegate>
+
 
 @property (nonatomic, strong) UIImage *image;
 @property (nonatomic, strong) GPUImageView *contentView;
@@ -21,7 +22,8 @@
 @property (nonatomic, strong) GPUImageFilter *rotationFilter;
 @property (nonatomic, assign) NHCropType cropType;
 
-@property (nonatomic, strong) UIView *cropView;
+@property (nonatomic, strong) NHPhotoCropView *cropView;
+@property (nonatomic, strong) UIView *cropMaskView;
 
 @end
 
@@ -91,12 +93,12 @@
     
     
     
-    self.cropView = [[UIView alloc] init];
-    self.cropView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.35];
+    self.cropView = [[NHPhotoCropView alloc] init];
+    self.cropView.backgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.15];
     self.cropView.layer.borderColor = [UIColor whiteColor].CGColor;
     self.cropView.layer.borderWidth = 1;
     self.cropView.clipsToBounds = YES;
-    [self addSubview:self.cropView];
+//    [self addSubview:self.cropView];
     
     [self sizeContent];
     
@@ -142,27 +144,42 @@
     if (self.window) {
         [self.picture processImage];
     }
-    
-    UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 100, 100)];
-    imageView.contentMode = UIViewContentModeScaleAspectFit;
-    imageView.image = self.image;
-    [self addSubview:imageView];
-    
-//    self.contentView.image = [self.filter imageFromCurrentFramebuffer];
-//    [self.filter addTarget:self.contentView];
-    
-//    dispatch_async(dispatch_get_main_queue(), ^{
-//[self.picture processImage];
-//    });
-//    [self.picture processImage];
-//    [self.picture processImage];
-//    [self.picture processImage];
-//    [self.picture processImage];
-    
-//    }
 }
 
-
+- (void)setOverlay:(UIView *)overlay {
+    [self willChangeValueForKey:@"overlay"];
+//    _overlay.layer.mask = nil;
+    _overlay = overlay;
+//    _overlay.layer.mask = self.cropView.layer;
+    [self didChangeValueForKey:@"overlay"];
+    
+    CGRect cropRect = (CGRect){ .size = self.cropView.bounds.size };
+    cropRect = CGRectOffset(cropRect, (CGRectGetWidth(self.overlay.frame) - CGRectGetWidth(cropRect)) * .5, (CGRectGetHeight(self.overlay.frame) - CGRectGetHeight(cropRect)) * .5);
+    
+    cropRect = CGRectOffset(cropRect, self.overlay.frame.origin.x, self.overlay.frame.origin.y);
+    UIGraphicsBeginImageContextWithOptions(self.overlay.bounds.size, NO, 0.f);
+    
+    CGContextRef context = UIGraphicsGetCurrentContext();
+    
+    if (context) {
+    [[UIColor blackColor] setFill];
+    UIRectFill(self.bounds);
+    
+    CGContextSetStrokeColorWithColor(context, [[UIColor whiteColor] colorWithAlphaComponent:0.5].CGColor);
+    CGContextStrokeRect(context, cropRect);
+    [[UIColor clearColor] setFill];
+    UIRectFill(CGRectInset(cropRect, 1, 1));
+    
+    UIImageView *imageView = [[UIImageView alloc]
+                              initWithFrame:self.overlay.bounds];
+        imageView.contentMode = UIViewContentModeScaleAspectFill;
+        imageView.image = UIGraphicsGetImageFromCurrentImageContext();
+    
+    self.overlay.layer.mask = imageView.layer;
+//    [_imageView setImage:UIGraphicsGetImageFromCurrentImageContext()];
+    }
+    UIGraphicsEndImageContext();
+}
 
 
 - (void)layoutSubviews {
@@ -262,6 +279,7 @@
         
         [self resetCropAnimated:NO];
         
+        
         [self scrollViewDidZoom:self];
     }
     
@@ -346,6 +364,8 @@
     self.minimumZoomScale = newValue;
     [self setZoomScale:newValue animated:animated];
     [self scrollViewDidZoom:self];
+    
+    [self setOverlay:self.overlay];
 }
 
 - (BOOL)saveImageWithCallbackObject:(id)obj andSelector:(SEL)selector {

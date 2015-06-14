@@ -65,13 +65,7 @@
     self.navigationBar.backIndicatorImage = [UIImage imageNamed:@"NHRecorder.back.png"];
     self.navigationBar.backIndicatorTransitionMaskImage = [UIImage imageNamed:@"NHRecorder.back.png"];
     
-    self.cameraViewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"NHRecorder.close.png"] style:UIBarButtonItemStylePlain target:self action:@selector(closeNavigationButtonTouch:)];
-    
     [self setViewControllers:@[self.cameraViewController]];
-}
-
-- (void)closeNavigationButtonTouch:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)viewDidLoad {

@@ -102,6 +102,39 @@
                                                              toItem:self.view
                                                           attribute:NSLayoutAttributeRight
                                                          multiplier:1.0 constant:0]];
+    
+    UIView *overlay = [[UIView alloc] init];
+    overlay.backgroundColor = [[UIColor greenColor] colorWithAlphaComponent:0.15];
+    overlay.userInteractionEnabled = NO;
+    overlay.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:overlay];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:overlay
+                                                               attribute:NSLayoutAttributeTop
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:self.cropImageView
+                                                               attribute:NSLayoutAttributeTop
+                                                              multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:overlay
+                                                               attribute:NSLayoutAttributeHeight
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:self.cropImageView
+                                                               attribute:NSLayoutAttributeHeight
+                                                              multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:overlay
+                                                               attribute:NSLayoutAttributeLeft
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:self.cropImageView
+                                                               attribute:NSLayoutAttributeLeft
+                                                              multiplier:1.0 constant:0]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:overlay
+                                                               attribute:NSLayoutAttributeWidth
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:self.cropImageView
+                                                               attribute:NSLayoutAttributeWidth
+                                                              multiplier:1.0 constant:0]];
+    
+    self.cropImageView.overlay = overlay;
 }
 
 - (void)setupMenuContentView {

@@ -21,6 +21,8 @@ typedef NS_ENUM(NSUInteger, NHCropType) {
 
 @interface NHPhotoCaptureCropView : UIScrollView
 
+@property (nonatomic, weak) UIView *overlay;
+
 - (instancetype)initWithImage:(UIImage*)image;
 - (instancetype)initWithFrame:(CGRect)frame image:(UIImage*)image;
 
