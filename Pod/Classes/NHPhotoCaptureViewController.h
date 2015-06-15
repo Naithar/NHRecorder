@@ -9,6 +9,11 @@
 #import <UIKit/UIKit.h>
 #import <GPUImage.h>
 
+@interface AlignmentButton : UIButton
+
+@property (nonatomic, assign) UIEdgeInsets customAlignmentInsets;
+@end
+
 extern const CGFloat kNHRecorderBottomViewHeight;
 
 @class NHCameraGridView;
@@ -34,7 +39,7 @@ extern const CGFloat kNHRecorderBottomViewHeight;
 @property (nonatomic, readonly, strong) NHCameraFocusView *cameraFocusView;
 @property (nonatomic, readonly, strong) UIView *bottomContainerView;
 
-@property (nonatomic, readonly, strong) UIBarButtonItem *closeButton;
+@property (nonatomic, readonly, strong) AlignmentButton *closeButton;
 @property (nonatomic, readonly, strong) UIBarButtonItem *flashButton;
 @property (nonatomic, readonly, strong) UIBarButtonItem *gridButton;
 @property (nonatomic, readonly, strong) UIBarButtonItem *switchButton;

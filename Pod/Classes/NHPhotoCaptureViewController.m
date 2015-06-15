@@ -15,6 +15,18 @@
 #import "UIImage+Resize.h"
 #import "NHMediaPickerViewController.h"
 
+@implementation AlignmentButton
+
+- (UIEdgeInsets)alignmentRectInsets {
+    if (UIEdgeInsetsEqualToEdgeInsets(self.customAlignmentInsets, UIEdgeInsetsZero)) {
+        return [super alignmentRectInsets];
+    }
+        
+    return self.customAlignmentInsets;
+}
+
+@end
+
 const CGFloat kNHRecorderBottomViewHeight = 90;
 const CGFloat kNHRecorderCaptureButtonHeight = 60;
 const CGFloat kNHRecorderLibraryButtonHeight = 50;
@@ -31,7 +43,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 
 @property (nonatomic, strong) UIView *bottomContainerView;
 
-@property (nonatomic, strong) UIBarButtonItem *closeButton;
+@property (nonatomic, strong) AlignmentButton *closeButton;
 @property (nonatomic, strong) UIBarButtonItem *flashButton;
 @property (nonatomic, strong) UIBarButtonItem *gridButton;
 @property (nonatomic, strong) UIBarButtonItem *switchButton;
@@ -119,11 +131,15 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     [self setupCameraFocusViewConstraints];
     [self setupCameraGridViewConstraints];
     
-    self.closeButton = [[UIBarButtonItem alloc]
-                        initWithImage:[UIImage imageNamed:@"NHRecorder.close.png"]
-                        style:UIBarButtonItemStylePlain
-                        target:self
-                        action:@selector(closeButtonTouch:)];
+    self.closeButton = [AlignmentButton buttonWithType:UIButtonTypeSystem];
+    self.closeButton.frame = CGRectMake(0, 0, 44, 44);
+    self.closeButton.customAlignmentInsets = UIEdgeInsetsMake(0, 11, 0, 0);
+    self.closeButton.tintColor = [UIColor whiteColor];
+    
+    [self.closeButton setImage:[UIImage imageNamed:@"NHRecorder.close.png"] forState:UIControlStateNormal];
+    self.closeButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+    
+    [self.closeButton addTarget:self action:@selector(closeButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     
     self.flashButton = [[UIBarButtonItem alloc]
                         initWithImage:[[UIImage imageNamed:@"NHRecorder.flash.png"]
@@ -145,7 +161,23 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                          target:self
                          action:@selector(switchButtonTouch:)];
     
-    [self setupNavigationButtons];
+    UIBarButtonItem *closeBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.closeButton];
+    
+    self.navigationItem.leftBarButtonItems = @[closeBarButton,
+                                               [[UIBarButtonItem alloc]
+                                                initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                target:nil action:nil],
+                                               self.flashButton,
+                                               [[UIBarButtonItem alloc]
+                                                initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                target:nil action:nil],
+                                               self.gridButton,
+                                               [[UIBarButtonItem alloc]
+                                                initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
+                                                target:nil action:nil],
+                                               self.switchButton];
+    
+
     
     self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
                                              initWithTitle:@" "
@@ -421,22 +453,6 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                                                                   multiplier:1.0 constant:0]];
 }
 
-- (void)setupNavigationButtons {
-    self.navigationItem.leftBarButtonItems = @[self.closeButton,
-                                               [[UIBarButtonItem alloc]
-                                                initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                target:nil action:nil],
-                                               self.flashButton,
-                                               [[UIBarButtonItem alloc]
-                                                initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                target:nil action:nil],
-                                               self.gridButton,
-                                               [[UIBarButtonItem alloc]
-                                                initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
-                                                target:nil action:nil],
-                                               self.switchButton];
-}
-
 //MARK: Buttons
 
 - (void)closeButtonTouch:(id)sender {
@@ -621,7 +637,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     [self willChangeValueForKey:@"firstController"];
     _firstController = firstController;
     
-    self.closeButton.image = firstController ? [UIImage imageNamed:@"NHRecorder.close.png"] : [UIImage imageNamed:@"NHRecorder.back.png"];
+    [self.closeButton setImage:(firstController ? [UIImage imageNamed:@"NHRecorder.close.png"] : [UIImage imageNamed:@"NHRecorder.back.png"]) forState:UIControlStateNormal];
     [self didChangeValueForKey:@"firstController"];
 }
 
