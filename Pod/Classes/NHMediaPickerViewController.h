@@ -8,6 +8,28 @@
 
 #import <UIKit/UIKit.h>
 
+@class NHMediaPickerViewController;
+
+@protocol NHMediaPickerViewControllerDelegate <NSObject>
+
+@optional
+- (BOOL)mediaPicker:(NHMediaPickerViewController*)controller
+     shouldEditImage:(UIImage*)image;
+- (CGSize)imageSizeToFitForMediaPicker:(NHMediaPickerViewController*)controller;
+@end
+
 @interface NHMediaPickerViewController : UIViewController
+
+@property (nonatomic, weak) id<NHMediaPickerViewControllerDelegate> nhDelegate;
+
+@property (nonatomic, assign) BOOL firstController;
+
+@property (nonatomic, strong) UIColor *barTintColor;
+@property (nonatomic, strong) UIColor *barButtonTintColor;
+
+@property (nonatomic, assign) BOOL linksToCamera;
+
+@property (nonatomic, readonly, strong) UICollectionView *photoCollectionView;
+@property (nonatomic, readonly, strong) UIBarButtonItem *closeButton;
 
 @end

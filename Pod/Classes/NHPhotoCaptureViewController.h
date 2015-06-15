@@ -24,6 +24,11 @@ extern const CGFloat kNHRecorderBottomViewHeight;
 
 @interface NHPhotoCaptureViewController : UIViewController
 
+@property (nonatomic, assign) BOOL firstController;
+
+@property (nonatomic, strong) UIColor *barTintColor;
+@property (nonatomic, strong) UIColor *barButtonTintColor;
+
 @property (nonatomic, readonly, strong) GPUImageView *photoCameraView;
 @property (nonatomic, readonly, strong) NHCameraGridView *cameraGridView;
 @property (nonatomic, readonly, strong) NHCameraFocusView *cameraFocusView;

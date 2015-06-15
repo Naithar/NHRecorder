@@ -12,7 +12,7 @@
 
 @interface NHCaptureNavigationController : UINavigationController
 
-@property (nonatomic, readonly, strong) NHPhotoCaptureViewController *photoCameraViewController;
-@property (nonatomic, readonly, strong) NHPhotoEditorViewController *photoEditorViewController;
+//@property (nonatomic, readonly, strong) NHPhotoCaptureViewController *photoCameraViewController;
+//@property (nonatomic, readonly, strong) NHPhotoEditorViewController *photoEditorViewController;
 
 @end

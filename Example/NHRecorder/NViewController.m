@@ -8,7 +8,7 @@
 
 #import "NViewController.h"
 #import <NHCaptureNavigationController.h>
-
+#import <NHPhotoCaptureViewController.h>
 @interface NViewController ()
 
 @end
@@ -19,7 +19,7 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
-    
+
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(3 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         NHCaptureNavigationController *cameraViewController = [[NHCaptureNavigationController alloc] init];
         [self presentViewController:cameraViewController animated:YES completion:nil];

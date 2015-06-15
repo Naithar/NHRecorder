@@ -440,7 +440,12 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 //MARK: Buttons
 
 - (void)closeButtonTouch:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
+    if (self.firstController) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
+    else {
+        [self.navigationController popViewControllerAnimated:YES];
+    }
 }
 
 - (void)flashButtonTouch:(id)sender {
@@ -526,6 +531,8 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 
 - (void)libraryButtonTouch:(id)sender {
     NHMediaPickerViewController *viewController = [[NHMediaPickerViewController alloc] init];
+    viewController.firstController = NO;
+    viewController.linksToCamera = NO;
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
@@ -574,7 +581,9 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                                                                    NSUInteger index,
                                                                    BOOL *stop) {
                                                           
-                                                          if (result) {
+                                                          if (result
+                                                              && [[result valueForProperty:ALAssetPropertyType]
+                                                                  isEqualToString:ALAssetTypePhoto]) {
                                                               UIImage *image = [UIImage imageWithCGImage:[result thumbnail]];
                                                               
                                                               if (image) {
@@ -590,6 +599,31 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                            } failureBlock:^(NSError *error) {
                                NSLog(@"resetLibrary - enumerate groups - %@", error);
                            }];
+}
+
+
+//MARK: Setters
+
+- (void)setBarTintColor:(UIColor *)barTintColor {
+    [self willChangeValueForKey:@"barTintColor"];
+    _barTintColor = barTintColor;
+    self.navigationController.navigationBar.barTintColor = barTintColor ?: [UIColor blackColor];
+    [self didChangeValueForKey:@"barTintColor"];
+}
+
+- (void)setBarButtonTintColor:(UIColor *)barButtonTintColor {
+    [self willChangeValueForKey:@"barTintColor"];
+    _barButtonTintColor = barButtonTintColor;
+    self.navigationController.navigationBar.tintColor = barButtonTintColor ?: [UIColor whiteColor];
+    [self didChangeValueForKey:@"barTintColor"];
+}
+
+- (void)setFirstController:(BOOL)firstController {
+    [self willChangeValueForKey:@"firstController"];
+    _firstController = firstController;
+    
+    self.closeButton.image = firstController ? [UIImage imageNamed:@"NHRecorder.close.png"] : [UIImage imageNamed:@"NHRecorder.back.png"];
+    [self didChangeValueForKey:@"firstController"];
 }
 
 //MARK: View overrides
@@ -610,6 +644,13 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     [super viewDidDisappear:animated];
     
     [self.photoCamera stopCameraCapture];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
+    
+    self.navigationController.navigationBar.barTintColor = self.barTintColor ?: [UIColor blackColor];
+    self.navigationController.navigationBar.tintColor = self.barButtonTintColor ?: [UIColor whiteColor];
 }
 
 - (void)viewDidLayoutSubviews {

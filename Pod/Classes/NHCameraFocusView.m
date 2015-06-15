@@ -48,7 +48,7 @@ const CGFloat kNHRecorderMaxZoom = 5;
     
     self.outterFocusCircle = [[CALayer alloc] init];
     self.outterFocusCircle.bounds = CGRectMake(0, 0, 90, 90);
-    self.outterFocusCircle.borderWidth = 5;
+    self.outterFocusCircle.borderWidth = 4;
     self.outterFocusCircle.borderColor = [UIColor whiteColor].CGColor;
     self.outterFocusCircle.cornerRadius = 45;
     self.outterFocusCircle.backgroundColor = [UIColor clearColor].CGColor;
