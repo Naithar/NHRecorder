@@ -9,10 +9,15 @@
 #import <UIKit/UIKit.h>
 #import "NHPhotoCaptureViewController.h"
 #import "NHPhotoEditorViewController.h"
+#import "NHMediaPickerViewController.h"
+
+typedef NS_ENUM(NSUInteger, NHCaptureType) {
+    NHCaptureTypePhotoCamera,
+    NHCaptureTypeMediaPicker,
+};
 
 @interface NHCaptureNavigationController : UINavigationController
 
-//@property (nonatomic, readonly, strong) NHPhotoCaptureViewController *photoCameraViewController;
-//@property (nonatomic, readonly, strong) NHPhotoEditorViewController *photoEditorViewController;
+- (instancetype)initWithType:(NHCaptureType)type;
 
 @end

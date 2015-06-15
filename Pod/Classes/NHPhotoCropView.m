@@ -8,10 +8,12 @@
 
 #import "NHPhotoCropView.h"
 
+const CGFloat kNHRecorderCornerOffset = 25;
+const CGFloat kNHRecorderCornerWidth = 4;
+const CGFloat kNHRecorderBorderWidth = 3;
+const CGFloat kNHRecorderLineWidth = 0.5;
+
 @interface NHPhotoCropView ()
-
-@property (nonatomic, strong) UIImageView *maskImageView;
-
 @end
 
 @implementation NHPhotoCropView
@@ -37,13 +39,8 @@
 }
 
 - (void)commonInit {
-    self.cropType = NHPhotoCropTypeCircle;
-    self.maxCropSize = CGSizeMake(200, 200);
-    
-    self.maskImageView = [[UIImageView alloc] init];
-//    self.layer.mask = self.maskImageView.layer;
-    
-//    [self addSubview:self.maskImageView];
+    _cropType = NHPhotoCropTypeNone;
+    _maxCropSize = CGSizeMake(200, 200);
     
     [self resetCrop];
 }
@@ -66,6 +63,24 @@
             CGFloat value = MIN(self.maxCropSize.width, self.maxCropSize.height);
             self.cropRect = CGRectMake(cropCenter.x - value / 2, cropCenter.y - value / 2, value, value);
         } break;
+        case NHPhotoCropType4x3: {
+            self.hidden = NO;
+            CGFloat width = MIN(self.maxCropSize.width, self.maxCropSize.height);
+            CGFloat height = round(width * 3 / 4);
+            self.cropRect = CGRectMake(cropCenter.x - width / 2, cropCenter.y - height / 2, width, height);
+        } break;
+        case NHPhotoCropType16x9: {
+            self.hidden = NO;
+            CGFloat width = MIN(self.maxCropSize.width, self.maxCropSize.height);
+            CGFloat height = round(width * 9 / 16);
+            self.cropRect = CGRectMake(cropCenter.x - width / 2, cropCenter.y - height / 2, width, height);
+        } break;
+        case NHPhotoCropType3x4: {
+            self.hidden = NO;
+            CGFloat height = MAX(self.maxCropSize.width, self.maxCropSize.height);
+            CGFloat width = round(height * 3 / 4);
+            self.cropRect = CGRectMake(cropCenter.x - width / 2, cropCenter.y - height / 2, width, height);
+        } break;
         default:
             break;
     }
@@ -74,41 +89,120 @@
 }
 
 - (void)drawRect:(CGRect)rect {
-    if (!CGSizeEqualToSize(self.bounds.size, CGSizeZero)) {
-        
-        CGContextRef context = UIGraphicsGetCurrentContext();
-        
-        if (context) {
+    @autoreleasepool {
+        if (!CGSizeEqualToSize(self.bounds.size, CGSizeZero)) {
             
-            CGContextAddPath(context, [UIBezierPath bezierPathWithRect:self.bounds].CGPath);
+            CGContextRef context = UIGraphicsGetCurrentContext();
             
-            CGPathRef cropPath = NULL;
-            CGPathRef cropStrokePath = NULL;
-            
-            switch (self.cropType) {
-                case NHPhotoCropTypeSquare:
-                    cropPath = [UIBezierPath bezierPathWithRect:self.cropRect].CGPath;
-                    cropStrokePath = [UIBezierPath bezierPathWithRect:self.cropRect].CGPath;
-                    break;
-                case NHPhotoCropTypeCircle:
-                    cropPath = [UIBezierPath bezierPathWithRoundedRect:self.cropRect cornerRadius:self.cropRect.size.width / 2].CGPath;
-                    cropStrokePath = [UIBezierPath bezierPathWithRoundedRect:self.cropRect cornerRadius:self.cropRect.size.width / 2].CGPath;
-                    break;
-                default:
-                    break;
+            if (context) {
+                
+                CGContextAddPath(context, [UIBezierPath bezierPathWithRect:self.bounds].CGPath);
+                
+                CGPathRef cropPath = NULL;
+                UIBezierPath *cropStrokePath;
+                
+                switch (self.cropType) {
+                    case NHPhotoCropTypeCircle:
+                        cropPath = [UIBezierPath bezierPathWithRoundedRect:self.cropRect cornerRadius:self.cropRect.size.width / 2].CGPath;
+                        cropStrokePath = [UIBezierPath bezierPathWithRoundedRect:self.cropRect cornerRadius:self.cropRect.size.width / 2];
+                        break;
+                    default:
+                        cropPath = [UIBezierPath bezierPathWithRect:self.cropRect].CGPath;
+                        cropStrokePath = [UIBezierPath bezierPathWithRect:self.cropRect];
+                        break;
+                }
+                
+                if (cropPath) {
+                    CGContextAddPath(context, cropPath);
+                }
+                
+                [self.cropBackgroundColor ?: [[UIColor blackColor] colorWithAlphaComponent:0.5] setFill];
+                CGContextEOFillPath(context);
+                
+                if (cropStrokePath) {
+                    [[UIColor whiteColor] setStroke];
+                    CGContextSetLineWidth(context, kNHRecorderCornerWidth);
+                    
+                    CGFloat minX = CGRectGetMinX(self.cropRect);
+                    CGFloat minY = CGRectGetMinY(self.cropRect);
+                    CGFloat maxX = CGRectGetMaxX(self.cropRect);
+                    CGFloat maxY = CGRectGetMaxY(self.cropRect);
+                    
+                    if (self.cropType != NHPhotoCropTypeCircle) {
+                        CGContextMoveToPoint(context,
+                                             minX - kNHRecorderCornerWidth / 2 + kNHRecorderBorderWidth / 2,
+                                             minY + kNHRecorderCornerOffset);
+                        CGContextAddLineToPoint(context,
+                                                minX - kNHRecorderCornerWidth / 2 + kNHRecorderBorderWidth / 2,
+                                                minY - kNHRecorderCornerWidth / 2 + kNHRecorderBorderWidth / 2);
+                        CGContextAddLineToPoint(context,
+                                                minX + kNHRecorderCornerOffset,
+                                                minY - kNHRecorderCornerWidth / 2 + kNHRecorderBorderWidth / 2);
+                        
+                        CGContextMoveToPoint(context,
+                                             minX - kNHRecorderCornerWidth / 2 + kNHRecorderBorderWidth / 2,
+                                             maxY - kNHRecorderCornerOffset);
+                        CGContextAddLineToPoint(context,
+                                                minX - kNHRecorderCornerWidth / 2 + kNHRecorderBorderWidth / 2,
+                                                maxY + kNHRecorderCornerWidth / 2 - kNHRecorderBorderWidth / 2);
+                        CGContextAddLineToPoint(context,
+                                                minX + kNHRecorderCornerOffset,
+                                                maxY + kNHRecorderCornerWidth / 2 - kNHRecorderBorderWidth / 2);
+                        
+                        CGContextMoveToPoint(context,
+                                             maxX + kNHRecorderCornerWidth / 2 - kNHRecorderBorderWidth / 2,
+                                             minY + kNHRecorderCornerOffset);
+                        CGContextAddLineToPoint(context,
+                                                maxX + kNHRecorderCornerWidth / 2 - kNHRecorderBorderWidth / 2,
+                                                minY - kNHRecorderCornerWidth / 2 + kNHRecorderBorderWidth / 2);
+                        CGContextAddLineToPoint(context,
+                                                maxX - kNHRecorderCornerOffset,
+                                                minY - kNHRecorderCornerWidth / 2 + kNHRecorderBorderWidth / 2);
+                        
+                        
+                        CGContextMoveToPoint(context,
+                                             maxX + kNHRecorderCornerWidth / 2 - kNHRecorderBorderWidth / 2,
+                                             maxY - kNHRecorderCornerOffset);
+                        CGContextAddLineToPoint(context,
+                                               maxX + kNHRecorderCornerWidth / 2 - kNHRecorderBorderWidth / 2,
+                                                maxY + kNHRecorderCornerWidth / 2 - kNHRecorderBorderWidth / 2);
+                        CGContextAddLineToPoint(context,
+                                                maxX - kNHRecorderCornerOffset,
+                                                maxY + kNHRecorderCornerWidth / 2 - kNHRecorderBorderWidth / 2);
+                        
+                        
+                        CGContextDrawPath(context, kCGPathStroke);
+                    }
+                    
+                    [[UIColor whiteColor] setStroke];
+                    CGContextAddPath(context, cropStrokePath.CGPath);
+                    CGContextEOClip(context);
+
+                    CGContextSetLineWidth(context, kNHRecorderBorderWidth);
+                    CGContextAddPath(context, cropStrokePath.CGPath);
+                    CGContextDrawPath(context, kCGPathStroke);
+                    
+                    CGContextSetLineWidth(context, kNHRecorderLineWidth);
+                    CGFloat width = round(self.cropRect.size.width / 3);
+                    CGFloat height = round(self.cropRect.size.height / 3);
+                    
+                    
+                    [[UIColor whiteColor] setStroke];
+                    CGContextMoveToPoint(context, minX + width, minY);
+                    CGContextAddLineToPoint(context, minX + width, maxY);
+                    
+                    CGContextMoveToPoint(context, maxX - width, minY);
+                    CGContextAddLineToPoint(context, maxX - width, maxY);
+                    
+                    CGContextMoveToPoint(context, minX, minY + height);
+                    CGContextAddLineToPoint(context, maxX, minY + height);
+                    
+                    CGContextMoveToPoint(context, minX, maxY - height);
+                    CGContextAddLineToPoint(context, maxX, maxY - height);
+                    
+                    CGContextDrawPath(context, kCGPathStroke);
+                }
             }
-            
-            if (cropPath) {
-                CGContextAddPath(context, cropPath);
-            }
-            
-            [self.cropBackgroundColor ?: [[UIColor blackColor] colorWithAlphaComponent:0.5] setFill];
-            CGContextEOFillPath(context);
-            
-            [[[UIColor whiteColor] colorWithAlphaComponent:0.5] setStroke];
-            CGContextSetLineWidth(context, 2);
-            CGContextAddPath(context, cropStrokePath);
-            CGContextDrawPath(context, kCGPathStroke);
         }
     }
 }
@@ -125,5 +219,6 @@
     [self willChangeValueForKey:@"cropType"];
     _cropType = cropType;
     [self didChangeValueForKey:@"cropType"];
+    [self resetCrop];
 }
 @end

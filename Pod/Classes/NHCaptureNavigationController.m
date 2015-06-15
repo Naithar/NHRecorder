@@ -10,9 +10,6 @@
 
 @interface NHCaptureNavigationController ()
 
-//@property (nonatomic, strong) NHPhotoCaptureViewController *photoCameraViewController;
-//@property (nonatomic, strong) NHPhotoEditorViewController *photoEditorViewController;
-
 @end
 
 @implementation NHCaptureNavigationController
@@ -27,47 +24,52 @@
     return self;
 }
 
-- (instancetype)initWithRootViewController:(UIViewController *)rootViewController {
-    self = [super initWithRootViewController:rootViewController];
-    
-    if (self) {
-        [self commonInit];
-    }
-    
-    return self;
+- (instancetype)init {
+    return [self initWithType:NHCaptureTypePhotoCamera];
 }
 
-- (instancetype)initWithNavigationBarClass:(Class)navigationBarClass toolbarClass:(Class)toolbarClass {
-    self = [super initWithNavigationBarClass:navigationBarClass toolbarClass:toolbarClass];
+- (instancetype)initWithType:(NHCaptureType)type {
+    self = [super init];
     
     if (self) {
-        [self commonInit];
-    }
-    
-    return self;
-}
-
-- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    
-    if (self) {
-        [self commonInit];
+        [self commonInitWithType:type];
     }
     
     return self;
 }
 
 - (void)commonInit {
-    NHPhotoCaptureViewController *photoCameraViewController = [[NHPhotoCaptureViewController alloc] init];
-    photoCameraViewController.firstController = YES;
-    self.navigationBar.translucent = NO;
-    self.navigationBar.barTintColor = [UIColor blackColor];
-    self.navigationBar.tintColor = [UIColor whiteColor];
+    [self commonInitWithType:NHCaptureTypePhotoCamera];
+}
+
+- (void)commonInitWithType:(NHCaptureType)type {
+    
+    UIViewController *viewController;
+    
+    switch (type) {
+        case NHCaptureTypePhotoCamera: {
+            viewController = [[NHPhotoCaptureViewController alloc] init];
+            ((NHPhotoCaptureViewController*)viewController).firstController = YES;
+        } break;
+        case NHCaptureTypeMediaPicker:
+            viewController = [[NHMediaPickerViewController alloc] init];
+            ((NHMediaPickerViewController*)viewController).firstController = YES;
+            ((NHMediaPickerViewController*)viewController).linksToCamera = YES;
+            break;
+        default:
+            break;
+    }
+    
+     self.navigationBar.translucent = NO;
+     self.navigationBar.barTintColor = [UIColor blackColor];
+     self.navigationBar.tintColor = [UIColor whiteColor];
     
     self.navigationBar.backIndicatorImage = [UIImage imageNamed:@"NHRecorder.back.png"];
     self.navigationBar.backIndicatorTransitionMaskImage = [UIImage imageNamed:@"NHRecorder.back.png"];
     
-    [self setViewControllers:@[photoCameraViewController]];
+             if (viewController) {
+    [self setViewControllers:@[viewController]];
+             }
 }
 
 - (void)viewDidLoad {

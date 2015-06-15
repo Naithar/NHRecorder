@@ -22,9 +22,6 @@
 
 @property (nonatomic, strong) NHPhotoCropView *cropView;
 
-//@property (nonatomic, strong) NHPhotoCropView *cropView;
-//@property (nonatomic, strong) UIView *cropMaskView;
-
 @end
 
 @implementation NHPhotoView
@@ -59,6 +56,7 @@
 }
 
 - (void)commonInit {
+    self.scrollsToTop = NO;
     self.delegate = self;
     self.bounces = YES;
     self.alwaysBounceVertical = NO;
@@ -160,20 +158,33 @@
                                                     multiplier:1.0 constant:0]];
 }
 
-//- (void)setFilter:(GPUImageFilter*)filter {
-//    
-//    [self.rotationFilter removeTarget:self.customFilter];
-//    
-//    self.customFilter = filter;
-//    
-//    [self.rotationFilter addTarget:self.customFilter];
-//    [self.customFilter addTarget:self.cropFilter];
-//    [self.customFilter addTarget:self.contentView];
-//    
-//    if (self.window) {
-//        [self.picture processImage];
-//    }
-//}
+- (void)setCropType:(NHPhotoCropType)type {
+    [self.cropView setCropType:type];
+    
+    [self resetCropAnimated:YES];
+    [self scrollViewDidZoom:self];
+}
+
+- (void)setFilter:(GPUImageFilter*)filter {
+    [self.customFilter removeAllTargets];
+    [self.customFilter removeOutputFramebuffer];
+    
+    [self.rotationFilter removeTarget:self.customFilter];
+    self.customFilter = filter;
+    
+    [self.customFilter removeAllTargets];
+    [self.customFilter removeOutputFramebuffer];
+    
+    [self.rotationFilter addTarget:self.customFilter];
+    [self.customFilter addTarget:self.cropFilter];
+    
+    [self.customFilter addTarget:self.contentView];
+    
+    if (self.window) {
+        [self.customFilter useNextFrameForImageCapture];
+        [self.picture processImage];
+    }
+}
 
 - (void)sizeContent {
     CGRect bounds = self.image ? (CGRect) { .size = self.image.size } : self.contentView.frame;
@@ -265,50 +276,52 @@
     [self setZoomScale:newValue animated:animated];
     [self scrollViewDidZoom:self];
 }
-//
-//- (BOOL)saveImageWithCallbackObject:(id)obj andSelector:(SEL)selector {
-//
-//    switch (self.cropType) {
-//            case NHCropTypeNone:
-//                break;
-//            case NHCropTypeSquare:
-//            case NHCropType4x3:
-//            case NHCropType16x9:
-//            case NHCropType9x16:
-//            case NHCropType3x4:
-//            case NHCropTypeCircle: {
-//                
-//                CGRect newRect = [self convertRect:self.cropView.frame toView:self.contentView];
-//                
-//                CGFloat resultWidth = newRect.size.width;
-//                CGFloat resultHeight = newRect.size.height;
-//                CGFloat resultXOffset = newRect.origin.x;
-//                CGFloat resultYOffset = newRect.origin.y;
-//                
-//                CGRect resultRect = CGRectMake(
-//                                               resultXOffset / self.contentView.bounds.size.width,
-//                                               resultYOffset / self.contentView.bounds.size.height,
-//                                               resultWidth / self.contentView.bounds.size.width,
-//                                               resultHeight / self.contentView.bounds.size.height);
-//
-//                
-//                if (resultRect.size.width != 0
-//                    && resultRect.size.height != 0) {
-//                    
-//                    [self.cropFilter setCropRegion:resultRect];
-//                }
-//            } break;
-//            default:
-//                break;
-//        }
-//    
-//    [self.picture processImageUpToFilter:self.cropFilter withCompletionHandler:^(UIImage *processedImage) {
-//        UIImageWriteToSavedPhotosAlbum(processedImage, obj, selector, nil);
-//
-//    }];
-//
-//    return NO;
-//}
+
+- (void)processImageWithBlock:(void(^)(UIImage *image))block {
+    
+    switch (self.cropView.cropType) {
+        case NHPhotoCropTypeNone:
+            self.cropFilter.cropRegion = CGRectMake(0, 0, 1, 1);
+            break;
+        default: {
+            CGRect newRect = [self.cropView convertRect:self.cropView.cropRect toView:self.contentView];
+            
+            CGFloat resultWidth = floor(newRect.size.width);
+            CGFloat resultHeight = floor(newRect.size.height);
+            CGFloat resultXOffset = floor(newRect.origin.x);
+            CGFloat resultYOffset = floor(newRect.origin.y);
+            
+            CGRect resultRect = CGRectMake(
+                                           resultXOffset / ceil(self.contentView.bounds.size.width),
+                                           resultYOffset / ceil(self.contentView.bounds.size.height),
+                                           resultWidth / ceil(self.contentView.bounds.size.width),
+                                           resultHeight / ceil(self.contentView.bounds.size.height));
+            
+            
+            if (resultRect.origin.x >= 0
+                && resultRect.origin.y >= 0
+                && resultRect.size.width != 0
+                && resultRect.size.height != 0
+                && CGRectGetMaxY(resultRect) <= 1
+                && CGRectGetMaxX(resultRect) <= 1) {
+                
+                [self.cropFilter setCropRegion:resultRect];
+            }
+            else {
+                self.cropFilter.cropRegion = CGRectMake(0, 0, 1, 1);
+            }
+
+        } break;
+    }
+
+    
+    [self.picture processImageUpToFilter:self.cropFilter
+                   withCompletionHandler:^(UIImage *processedImage) {
+                       if (block) {
+                           block(processedImage);
+                       }
+                   }];
+}
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView {
     
@@ -333,16 +346,12 @@
     CGFloat cropVerticalOffset = 0;
     CGFloat cropHorizontalOffset = 0;
 
-    if (self.cropView != NHPhotoCropTypeNone) {
+    if (self.cropView.cropType != NHPhotoCropTypeNone) {
         cropVerticalOffset = (self.bounds.size.height - self.cropView.cropRect.size.height) / 2 - verticalOffset;
         cropHorizontalOffset = (self.bounds.size.width - self.cropView.cropRect.size.width) / 2 - horizontalOffset;
-        self.contentSize = self.contentView.frame.size;
     }
-    else if (self.zoomScale == 1) {
-        self.contentSize = CGSizeZero;
-        self.contentInset = UIEdgeInsetsZero;
-        return;
-    }
+    
+    self.contentSize = self.contentView.frame.size;
     
     self.contentInset = UIEdgeInsetsMake(verticalOffset - self.contentView.frame.origin.y + cropVerticalOffset,
                                          horizontalOffset - self.contentView.frame.origin.x + cropHorizontalOffset,

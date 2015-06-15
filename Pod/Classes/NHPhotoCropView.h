@@ -12,6 +12,9 @@ typedef NS_ENUM(NSUInteger, NHPhotoCropType) {
     NHPhotoCropTypeNone,
     NHPhotoCropTypeSquare,
     NHPhotoCropTypeCircle,
+    NHPhotoCropType4x3,
+    NHPhotoCropType16x9,
+    NHPhotoCropType3x4
 };
 
 @interface NHPhotoCropView : UIView

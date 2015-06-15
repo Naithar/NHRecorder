@@ -20,5 +20,7 @@
 - (instancetype)initWithFrame:(CGRect)frame image:(UIImage*)image;
 
 - (void)sizeContent;
-
+- (void)processImageWithBlock:(void(^)(UIImage *image))block;
+- (void)setCropType:(NHPhotoCropType)type;
+- (void)setFilter:(GPUImageFilter*)filter;
 @end

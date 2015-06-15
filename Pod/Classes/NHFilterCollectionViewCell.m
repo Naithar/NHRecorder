@@ -53,7 +53,7 @@
                                                                  relatedBy:NSLayoutRelationEqual
                                                                     toItem:self.contentView
                                                                  attribute:NSLayoutAttributeTop
-                                                                multiplier:1.0 constant:5]];
+                                                                multiplier:1.0 constant:2]];
     
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.filterImageView
                                                                  attribute:NSLayoutAttributeCenterX
@@ -83,7 +83,6 @@
     self.selectionView.layer.cornerRadius = 7.5;
     self.selectionView.layer.borderWidth = 1;
     self.selectionView.clipsToBounds = YES;
-    
     
     [self.contentView insertSubview:self.selectionView atIndex:0];
     
@@ -123,6 +122,7 @@
     self.filterLabel.textAlignment = NSTextAlignmentCenter;
     self.filterLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.filterLabel.numberOfLines = 1;
+    self.filterLabel.clipsToBounds = NO;
     
     [self.contentView insertSubview:self.filterLabel atIndex:0];
     
@@ -131,46 +131,52 @@
                                                                  relatedBy:NSLayoutRelationEqual
                                                                     toItem:self.filterImageView
                                                                  attribute:NSLayoutAttributeBottom
-                                                                multiplier:1.0 constant:5]];
+                                                                multiplier:1.0 constant:2]];
     
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.filterLabel
                                                                  attribute:NSLayoutAttributeLeft
                                                                  relatedBy:NSLayoutRelationEqual
                                                                     toItem:self.contentView
                                                                  attribute:NSLayoutAttributeLeft
-                                                                multiplier:1.0 constant:1]];
+                                                                multiplier:1.0 constant:2]];
     
     [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.filterLabel
                                                                  attribute:NSLayoutAttributeRight
                                                                  relatedBy:NSLayoutRelationEqual
                                                                     toItem:self.contentView
                                                                  attribute:NSLayoutAttributeRight
-                                                                multiplier:1.0 constant:-1]];
+                                                                multiplier:1.0 constant:-2]];
+    
+    [self.contentView addConstraint:[NSLayoutConstraint constraintWithItem:self.filterLabel
+                                                                 attribute:NSLayoutAttributeBottom
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:self.contentView
+                                                                 attribute:NSLayoutAttributeBottom
+                                                                multiplier:1.0 constant:-2]];
     
     
 }
 
-//- (void)reloadWithImage:(UIImage*)image
-//              andFilter:(SCFilter*)filter {
-//    [self reloadWithImage:image
-//                andFilter:filter
-//               isSelected:NO];
-//}
-//
-//- (void)reloadWithImage:(UIImage*)image
-//              andFilter:(SCFilter*)filter
-//             isSelected:(BOOL)selected {
-//    [self reloadWithImage:image andFilter:filter andName:nil isSelected:selected];
-//}
-//
-//- (void)reloadWithImage:(UIImage*)image
-//              andFilter:(SCFilter*)filter
-//                andName:(NSString*)name
-//             isSelected:(BOOL)selected {
-//    self.filterImageView.image = image;
-////    [self.filterImageView setImageByUIImage:image];
-////    self.filterImageView.filter = filter;
-//    self.selectionView.hidden = !selected;
-//    self.filterLabel.text = name;
-//}
+- (void)reloadWithImage:(UIImage*)image
+              andFilter:(GPUImageFilter*)filter {
+    [self reloadWithImage:image
+                andFilter:filter
+               isSelected:NO];
+}
+
+- (void)reloadWithImage:(UIImage*)image
+              andFilter:(GPUImageFilter*)filter
+             isSelected:(BOOL)selected {
+    [self reloadWithImage:image andFilter:filter andName:nil isSelected:selected];
+}
+
+- (void)reloadWithImage:(UIImage*)image
+              andFilter:(GPUImageFilter*)filter
+                andName:(NSString*)name
+             isSelected:(BOOL)selected {
+    [filter useNextFrameForImageCapture];
+    self.filterImageView.image = filter && image ? [filter imageByFilteringImage:image] : image;
+    self.selectionView.hidden = !selected;
+    self.filterLabel.text = name;
+}
 @end

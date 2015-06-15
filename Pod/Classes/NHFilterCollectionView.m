@@ -6,25 +6,27 @@
 //
 //
 
-#import "NHCameraFilterView.h"
+#import "NHFilterCollectionView.h"
 #import "NHFilterCollectionViewCell.h"
+#import "UIImage+Resize.h"
 
-@interface NHCameraFilterView ()<UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
+@interface NHFilterCollectionView ()<UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 
 @property (nonatomic, copy) UIImage *image;
 @property (nonatomic, strong) NSArray *filters;
+@property (nonatomic, strong) NSArray *outFilters;
 @property (nonatomic, strong) NSArray *filterNames;
 @property (nonatomic, assign) NSInteger selectedIndex;
 
 @end
 
-@implementation NHCameraFilterView
+@implementation NHFilterCollectionView
 
 - (instancetype)initWithImage:(UIImage*)image {
     self = [super init];
     
     if (self) {
-        _image = image;
+        _image = [image resizedImageToFitInSize:CGSizeMake(75, 75) scaleIfSmaller:YES];
     }
     
     return self;
@@ -45,36 +47,38 @@
 }
 
 - (void)commonInit {
+    
     self.filters = @[
                      [[GPUImageFilter alloc] init],
-                     [[GPUImageMonochromeFilter alloc] init],
+                     [[GPUImageToneCurveFilter alloc] initWithACV:@"1977"],
+                     [[GPUImageToneCurveFilter alloc] initWithACV:@"amaro"],
                      [[GPUImageGrayscaleFilter alloc] init],
-                     [[GPUImageSepiaFilter alloc] init],
-                     [[GPUImagePixellateFilter alloc] init]
-                     ];
-//                     [SCFilter emptyFilter],
-//                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectMono"],
-//                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectNoir"],
-//                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectFade"],
-//                     [SCFilter filterWithCIFilterName:@"CIColorClamp"],
-//                     [SCFilter filterWithCIFilterName:@"CIColorMonochrome"],
-//                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectChrome"],
-//                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectInstant"],
-//                     [SCFilter filterWithCIFilterName:@"CIPhotoEffectTransfer"],
-//                     [SCFilter filterWithCIFilterName:@"CISepiaTone"],
-//                     ];
+                     [[GPUImageToneCurveFilter alloc] initWithACV:@"hudson"],
+                     [[GPUImageToneCurveFilter alloc] initWithACV:@"mayfair"],
+                     [[GPUImageToneCurveFilter alloc] initWithACV:@"nashville"],
+                     [[GPUImageToneCurveFilter alloc] initWithACV:@"valencia"],
+                      ];
+    
+    self.outFilters = @[
+                         [[GPUImageFilter alloc] init],
+                         [[GPUImageToneCurveFilter alloc] initWithACV:@"1977"],
+                         [[GPUImageToneCurveFilter alloc] initWithACV:@"amaro"],
+                         [[GPUImageGrayscaleFilter alloc] init],
+                         [[GPUImageToneCurveFilter alloc] initWithACV:@"hudson"],
+                         [[GPUImageToneCurveFilter alloc] initWithACV:@"mayfair"],
+                         [[GPUImageToneCurveFilter alloc] initWithACV:@"nashville"],
+                         [[GPUImageToneCurveFilter alloc] initWithACV:@"valencia"],
+                         ];
     
     self.filterNames = @[
                          @"original",
-                         @"mono",
-                         @"noir",
-                         @"fade",
-                         @"clamp",
-                         @"monochrome",
-                         @"chrome",
-                         @"instant",
-                         @"transfer",
-                         @"sepiatone"
+                         @"1977",
+                         @"amaro",
+                         @"grayscale",
+                         @"hudson",
+                         @"mayfair",
+                         @"nashville",
+                         @"valencia"
                          ];
     
     self.delegate = self;
@@ -89,7 +93,7 @@
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
-    return CGSizeMake(65, self.bounds.size.height);
+    return CGSizeMake(self.bounds.size.width / 4 - 5, self.bounds.size.height);
 }
 - (NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     return self.filters.count;
@@ -100,45 +104,31 @@
 }
 
 - (CGFloat)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout minimumLineSpacingForSectionAtIndex:(NSInteger)section {
-    return 10;
+    return 5;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
     NHFilterCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
-//    
-//    SCFilter *filter;
-//    
-//    if (indexPath.row < self.filters.count) {
-//        filter = self.filters[indexPath.row];
-//    }
-//    
-//    NSString *name;
-//    if (indexPath.row < self.filterNames.count) {
-//        name = self.filterNames[indexPath.row];
-//    }
-//    
-//    [cell reloadWithImage:self.image andFilter:filter andName:name isSelected:indexPath.row == self.selectedIndex];
+    
+    GPUImageFilter *filter;
+    
+    if (indexPath.row < self.filters.count) {
+        filter = self.filters[indexPath.row];
+    }
+    
+    NSString *name;
+    if (indexPath.row < self.filterNames.count) {
+        name = self.filterNames[indexPath.row];
+    }
+    
+    [cell reloadWithImage:self.image andFilter:filter andName:name isSelected:indexPath.row == self.selectedIndex];
     return cell;
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
     [collectionView deselectItemAtIndexPath:indexPath animated:NO];
     
-    if (indexPath.row >= self.filters.count) {
-        return;
-    }
-    
-    self.selectedIndex = indexPath.row;
-//    
-    GPUImageFilter *filter = self.filters[indexPath.row];
-    
-    
-    __weak __typeof(self) weakSelf = self;
-    if ([weakSelf.nhDelegate respondsToSelector:@selector(filterView:didSelectFilter:)]) {
-        [weakSelf.nhDelegate filterView:weakSelf didSelectFilter:filter];
-    }
-    
-    [self reloadData];
+    [self setSelected:indexPath.row];
 }
 
 - (void)setSelected:(NSInteger)index {
@@ -146,11 +136,11 @@
     
     [self reloadData];
     
-    if (index >= self.filters.count) {
+    if (index >= self.outFilters.count) {
         return;
     }
-//
-    GPUImageFilter *filter = self.filters[index];
+
+    GPUImageFilter *filter = self.outFilters[index];
     
     __weak __typeof(self) weakSelf = self;
     if ([weakSelf.nhDelegate respondsToSelector:@selector(filterView:didSelectFilter:)]) {

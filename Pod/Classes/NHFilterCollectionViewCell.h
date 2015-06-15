@@ -7,17 +7,17 @@
 //
 
 #import <UIKit/UIKit.h>
-//#import <SCRecorder.h>
+#import <GPUImage.h>
 
 @interface NHFilterCollectionViewCell : UICollectionViewCell
 
-//- (void)reloadWithImage:(UIImage*)image
-//              andFilter:(SCFilter*)filter;
-//- (void)reloadWithImage:(UIImage*)image
-//              andFilter:(SCFilter*)filter
-//             isSelected:(BOOL)selected;
-//- (void)reloadWithImage:(UIImage*)image
-//              andFilter:(SCFilter*)filter
-//                andName:(NSString*)name
-//             isSelected:(BOOL)selected;
+- (void)reloadWithImage:(UIImage*)image
+              andFilter:(GPUImageFilter*)filter;
+- (void)reloadWithImage:(UIImage*)image
+              andFilter:(GPUImageFilter*)filter
+             isSelected:(BOOL)selected;
+- (void)reloadWithImage:(UIImage*)image
+              andFilter:(GPUImageFilter*)filter
+                andName:(NSString*)name
+             isSelected:(BOOL)selected;
 @end
