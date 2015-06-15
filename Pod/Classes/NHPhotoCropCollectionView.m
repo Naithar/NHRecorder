@@ -79,33 +79,33 @@
     [collectionView deselectItemAtIndexPath:indexPath animated:NO];
     
     
-    NHCropType type = NHCropTypeNone;
-    
-    switch (indexPath.row) {
-        case 1:
-            type = NHCropTypeSquare;
-            break;
-        case 2:
-            type = NHCropType4x3;
-            break;
-        case 3:
-            type = NHCropType16x9;
-            break;
-        case 4:
-            type = NHCropType3x4;
-            break;
-        case 5:
-            type = NHCropType9x16;
-            break;
-        default:
-            break;
-    }
-    
-    __weak __typeof(self) weakSelf = self;
-    if ([weakSelf.nhDelegate respondsToSelector:@selector(cropView:didSelectType:)]) {
-        [weakSelf.nhDelegate cropView:weakSelf didSelectType:type];
-    }
-    
+//    NHCropType type = NHCropTypeNone;
+//    
+//    switch (indexPath.row) {
+//        case 1:
+//            type = NHCropTypeSquare;
+//            break;
+//        case 2:
+//            type = NHCropType4x3;
+//            break;
+//        case 3:
+//            type = NHCropType16x9;
+//            break;
+//        case 4:
+//            type = NHCropType3x4;
+//            break;
+//        case 5:
+//            type = NHCropType9x16;
+//            break;
+//        default:
+//            break;
+//    }
+//    
+//    __weak __typeof(self) weakSelf = self;
+//    if ([weakSelf.nhDelegate respondsToSelector:@selector(cropView:didSelectType:)]) {
+//        [weakSelf.nhDelegate cropView:weakSelf didSelectType:type];
+//    }
+//    
     [self reloadData];
 }
 
@@ -113,27 +113,27 @@
     self.selectedIndex = index;
     
     [self reloadData];
-    
-    NHCropType type = NHCropTypeNone;
-    
-    switch (index) {
-        case 1:
-            type = NHCropTypeSquare;
-            break;
-        case 2:
-            type = NHCropType4x3;
-            break;
-        case 3:
-            type = NHCropType16x9;
-            break;
-        default:
-            break;
-    }
-    
-    __weak __typeof(self) weakSelf = self;
-    if ([weakSelf.nhDelegate respondsToSelector:@selector(cropView:didSelectType:)]) {
-        [weakSelf.nhDelegate cropView:weakSelf didSelectType:type];
-    }
+//    
+//    NHCropType type = NHCropTypeNone;
+//    
+//    switch (index) {
+//        case 1:
+//            type = NHCropTypeSquare;
+//            break;
+//        case 2:
+//            type = NHCropType4x3;
+//            break;
+//        case 3:
+//            type = NHCropType16x9;
+//            break;
+//        default:
+//            break;
+//    }
+//    
+//    __weak __typeof(self) weakSelf = self;
+//    if ([weakSelf.nhDelegate respondsToSelector:@selector(cropView:didSelectType:)]) {
+//        [weakSelf.nhDelegate cropView:weakSelf didSelectType:type];
+//    }
 }
 
 

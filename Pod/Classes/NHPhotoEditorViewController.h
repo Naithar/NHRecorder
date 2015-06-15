@@ -7,9 +7,15 @@
 //
 
 #import <UIKit/UIKit.h>
-//#import <SCRecorder.h>
+#import "NHPhotoView.h"
 
 @interface NHPhotoEditorViewController : UIViewController
+
+@property (nonatomic, readonly, strong) NHPhotoView *photoView;
+
+@property (nonatomic, readonly, strong) UIView *selectorView;
+@property (nonatomic, readonly, strong) UIView *separatorView;
+@property (nonatomic, readonly, strong) UIView *selectionContainerView;
 
 - (instancetype)initWithUIImage:(UIImage*)image;
 

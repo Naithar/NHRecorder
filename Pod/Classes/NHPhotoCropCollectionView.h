@@ -7,14 +7,14 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "NHPhotoCaptureCropView.h"
+#import "NHPhotoView.h"
 
 @class NHPhotoCropCollectionView;
 
 @protocol NHPhotoCropCollectionViewDelegate <NSObject>
 
 @optional
-- (void)cropView:(NHPhotoCropCollectionView*)cropView didSelectType:(NHCropType)type;
+//- (void)cropView:(NHPhotoCropCollectionView*)cropView didSelectType:(NHCropType)type;
 
 @end
 @interface NHPhotoCropCollectionView : UICollectionView
