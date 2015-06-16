@@ -32,6 +32,8 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
 
 @property (nonatomic, strong) id orientationChange;
 
+@property (nonatomic, assign) NSTimeInterval photoGestureTimestamp;
+
 @end
 
 @implementation NHPhotoEditorViewController
@@ -158,9 +160,45 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
                                       [strongSelf deviceOrientationChange];
                                   }
                               }];
+    
+    [self.photoView.panGestureRecognizer addTarget:self action:@selector(photoGestureAction:)];
+    [self.photoView.pinchGestureRecognizer addTarget:self action:@selector(photoGestureAction:)];
 }
 
+
 //MARK: setup
+
+- (void)photoGestureAction:(UIGestureRecognizer*)recognizer {
+
+    self.photoGestureTimestamp = [[NSDate date] timeIntervalSince1970];
+    
+    switch (recognizer.state) {
+        case UIGestureRecognizerStateBegan:
+        case UIGestureRecognizerStateChanged:
+            self.navigationItem.rightBarButtonItem.enabled = NO;
+            break;
+        default: {
+            NSTimeInterval timestamp = self.photoGestureTimestamp;
+            
+            __weak __typeof(self) weakSelf = self;
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.65 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+                __strong __typeof(weakSelf) strongSelf = weakSelf;
+                
+                if (strongSelf
+                    && strongSelf.photoGestureTimestamp == timestamp) {
+                strongSelf.navigationItem.rightBarButtonItem.enabled =
+                ((recognizer == strongSelf.photoView.pinchGestureRecognizer
+                  && (strongSelf.photoView.panGestureRecognizer.state == UIGestureRecognizerStateFailed
+                      || strongSelf.photoView.panGestureRecognizer.state == UIGestureRecognizerStatePossible))
+                 || (recognizer == strongSelf.photoView.panGestureRecognizer
+                     && (strongSelf.photoView.pinchGestureRecognizer.state == UIGestureRecognizerStateFailed
+                         || strongSelf.photoView.pinchGestureRecognizer.state == UIGestureRecognizerStatePossible)));
+                }
+            });
+            
+        } break;
+    }
+}
 
 - (void)deviceOrientationChange {
     UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
@@ -498,38 +536,41 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
 }
 
 - (void)nextButtonTouch:(id)sender {
-    [self.photoView processImageWithBlock:^(UIImage *image) {
-        if (image) {
-            UIImage *resultImage;
-            
-            CGSize imageSize = CGSizeZero;
-            
-            __weak __typeof(self) weakSelf = self;
-            if ([weakSelf.nhDelegate respondsToSelector:@selector(imageSizeToFitForPhotoEditor:)]) {
-                imageSize = [weakSelf.nhDelegate imageSizeToFitForPhotoEditor:weakSelf];
-            }
-            
-            if (CGSizeEqualToSize(imageSize, CGSizeZero)) {
-                resultImage = image;
-            }
-            else {
-                resultImage = [image resizedImageToFitInSize:imageSize scaleIfSmaller:YES];
-            }
-            
-            if (resultImage) {
-                BOOL shouldSave = YES;
+    if (self.photoView.panGestureRecognizer.state == UIGestureRecognizerStatePossible
+        && self.photoView.pinchGestureRecognizer.state == UIGestureRecognizerStatePossible) {
+        [self.photoView processImageWithBlock:^(UIImage *image) {
+            if (image) {
+                UIImage *resultImage;
+                
+                CGSize imageSize = CGSizeZero;
                 
                 __weak __typeof(self) weakSelf = self;
-                if ([weakSelf.nhDelegate respondsToSelector:@selector(photoEditor:shouldSaveImage:)]) {
-                    shouldSave = [weakSelf.nhDelegate photoEditor:weakSelf shouldSaveImage:resultImage];
+                if ([weakSelf.nhDelegate respondsToSelector:@selector(imageSizeToFitForPhotoEditor:)]) {
+                    imageSize = [weakSelf.nhDelegate imageSizeToFitForPhotoEditor:weakSelf];
                 }
                 
-                if (shouldSave) {
-                    UIImageWriteToSavedPhotosAlbum(resultImage, self, @selector(savedCapturedImage:error:context:), nil);
+                if (CGSizeEqualToSize(imageSize, CGSizeZero)) {
+                    resultImage = image;
+                }
+                else {
+                    resultImage = [image resizedImageToFitInSize:imageSize scaleIfSmaller:YES];
+                }
+                
+                if (resultImage) {
+                    BOOL shouldSave = YES;
+                    
+                    __weak __typeof(self) weakSelf = self;
+                    if ([weakSelf.nhDelegate respondsToSelector:@selector(photoEditor:shouldSaveImage:)]) {
+                        shouldSave = [weakSelf.nhDelegate photoEditor:weakSelf shouldSaveImage:resultImage];
+                    }
+                    
+                    if (shouldSave) {
+                        UIImageWriteToSavedPhotosAlbum(resultImage, self, @selector(savedCapturedImage:error:context:), nil);
+                    }
                 }
             }
-        }
-    }];
+        }];
+    }
 }
 
 - (void)savedCapturedImage:(UIImage*)image error:(NSError*)error context:(void*)context {
