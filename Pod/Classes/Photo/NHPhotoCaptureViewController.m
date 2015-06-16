@@ -199,7 +199,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     
     self.libraryButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.libraryButton.translatesAutoresizingMaskIntoConstraints = NO;
-    self.libraryButton.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    self.libraryButton.backgroundColor = [UIColor clearColor];
     [self.libraryButton setTitle:nil forState:UIControlStateNormal];
     [self.libraryButton addTarget:self action:@selector(libraryButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     self.libraryButton.layer.cornerRadius = 5;
@@ -514,6 +514,10 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 }
 
 - (void)flashButtonTouch:(id)sender {
+    if (self.photoCamera.cameraPosition == AVCaptureDevicePositionFront) {
+        return;
+    }
+    
     AVCaptureFlashMode newFlashMode = AVCaptureFlashModeAuto;
     
     switch (self.photoCamera.inputCamera.flashMode) {
@@ -546,9 +550,28 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 
 - (void)switchButtonTouch:(id)sender {
     [self.photoCamera rotateCamera];
+    
+    if (self.photoCamera.cameraPosition == AVCaptureDevicePositionFront) {
+        self.flashButton.enabled = NO;
+    }
+    else {
+        self.flashButton.enabled = YES;
+    }
 }
 
 - (void)captureButtonTouch:(id)sender {
+    
+    if ([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo] != AVAuthorizationStatusAuthorized) {
+        
+        __weak __typeof(self) weakSelf = self;
+        if ([weakSelf.nhDelegate respondsToSelector:@selector(photoCapture:cameraAvailability:)]) {
+            [weakSelf.nhDelegate
+             photoCapture:weakSelf
+             cameraAvailability:[AVCaptureDevice
+                                 authorizationStatusForMediaType:AVMediaTypeVideo]];
+        }
+        return;
+    }
     
     [self.photoCamera capturePhotoAsImageProcessedUpToFilter:self.photoCropFilter
                                        withCompletionHandler:^(UIImage *processedImage, NSError *error) {
@@ -656,7 +679,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                                                           
                                                       }];
                            } failureBlock:^(NSError *error) {
-                               NSLog(@"resetLibrary - enumerate groups - %@", error);
+                               [self.libraryButton setImage:[UIImage imageNamed:@"NHRecorder.library.error.png"] forState:UIControlStateNormal];
                            }];
 }
 

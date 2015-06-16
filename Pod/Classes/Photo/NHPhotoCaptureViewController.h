@@ -20,6 +20,7 @@ extern const CGFloat kNHRecorderBottomViewHeight;
 
 @optional
 - (BOOL)photoCapture:(NHPhotoCaptureViewController*)controller shouldEditImage:(UIImage*)image;
+- (BOOL)photoCapture:(NHPhotoCaptureViewController*)controller cameraAvailability:(AVAuthorizationStatus)status;
 - (CGSize)imageSizeToFitForPhotoCapture:(NHPhotoCaptureViewController*)controller;
 @end
 
