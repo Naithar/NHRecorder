@@ -61,6 +61,8 @@
 		6C703B7BF95C62E4BD235C62 /* Pods-NHRecorder_Example.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NHRecorder_Example.release.xcconfig"; path = "Pods/Target Support Files/Pods-NHRecorder_Example/Pods-NHRecorder_Example.release.xcconfig"; sourceTree = "<group>"; };
 		76E470701BA058578D71C1FC /* NHRecorder.podspec */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = NHRecorder.podspec; path = ../NHRecorder.podspec; sourceTree = "<group>"; };
 		873B8AEA1B1F5CCA007FD442 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		908F9A8D1B304597008E8389 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		908F9A8E1B304597008E8389 /* ru */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ru; path = ru.lproj/InfoPlist.strings; sourceTree = "<group>"; };
 		9243E7DC05B79E2A47F4B91D /* LICENSE */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; name = LICENSE; path = ../LICENSE; sourceTree = "<group>"; };
 		93CBA2DCA2D41EAF944F2E52 /* libPods-NHRecorder_Example.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NHRecorder_Example.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B25BB1E33595DEED1DAE7741 /* Pods-NHRecorder_Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NHRecorder_Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-NHRecorder_Tests/Pods-NHRecorder_Tests.release.xcconfig"; sourceTree = "<group>"; };
@@ -257,6 +259,7 @@
 			knownRegions = (
 				en,
 				Base,
+				ru,
 			);
 			mainGroup = 6003F581195388D10070C39A;
 			productRefGroup = 6003F58B195388D20070C39A /* Products */;
@@ -387,6 +390,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				6003F597195388D20070C39A /* en */,
+				908F9A8D1B304597008E8389 /* ru */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
@@ -395,6 +399,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				6003F5B9195388D20070C39A /* en */,
+				908F9A8E1B304597008E8389 /* ru */,
 			);
 			name = InfoPlist.strings;
 			sourceTree = "<group>";
