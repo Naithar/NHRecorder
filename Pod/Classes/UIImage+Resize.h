@@ -10,6 +10,13 @@
 
 
 @interface UIImage(ResizeCategory)
+
+//- (UIImage*)scaleImage;
+//- (UIImage*)rescaleToFit:(CGSize)size;
+//- (UIImage*)rescaleToFill:(CGSize)size;
+
 -(UIImage*)resizedImageToSize:(CGSize)dstSize;
+
 -(UIImage*)resizedImageToFitInSize:(CGSize)boundingSize scaleIfSmaller:(BOOL)scale;
+
 @end

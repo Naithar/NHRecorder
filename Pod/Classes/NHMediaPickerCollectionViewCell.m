@@ -8,6 +8,12 @@
 
 #import "NHMediaPickerCollectionViewCell.h"
 
+@interface NHMediaPickerCollectionViewCell ()
+
+@property (nonatomic, strong) id orientationChange;
+
+@end
+
 @implementation NHMediaPickerCollectionViewCell
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
@@ -34,6 +40,10 @@
     [super prepareForReuse];
     self.imageView.image = nil;
     self.imageView.contentMode = UIViewContentModeScaleAspectFill;
+    
+    [UIView performWithoutAnimation:^{
+        [self deviceOrientationChange];
+    }];
 }
 
 - (void)commonInit {
@@ -70,5 +80,55 @@
                                                                     toItem:self.contentView
                                                                  attribute:NSLayoutAttributeRight
                                                                 multiplier:1.0 constant:0]];
+    
+    __weak __typeof(self) weakSelf = self;
+    self.orientationChange = [[NSNotificationCenter defaultCenter]
+                              addObserverForName:UIDeviceOrientationDidChangeNotification
+                              object:nil
+                              queue:nil
+                              usingBlock:^(NSNotification *note) {
+                                  __strong __typeof(weakSelf) strongSelf = weakSelf;
+                                  if (strongSelf) {
+                                      [strongSelf deviceOrientationChange];
+                                  }
+                              }];
+    
+    [UIView performWithoutAnimation:^{
+        [self deviceOrientationChange];
+    }];
+}
+
+- (void)deviceOrientationChange {
+    UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
+    
+    CGFloat angle = 0;
+    
+    switch (deviceOrientation) {
+        case UIDeviceOrientationFaceUp:
+        case UIDeviceOrientationPortrait:
+        case UIDeviceOrientationPortraitUpsideDown:
+            break;
+        case UIDeviceOrientationLandscapeLeft:
+        case UIDeviceOrientationLandscapeRight:
+            angle = -M_PI_2;
+            break;
+        default:
+            return;
+    }
+    
+    [UIView animateWithDuration:0.3
+                          delay:0
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         self.contentView.transform = CGAffineTransformMakeRotation(angle);
+                     }
+                     completion:^(BOOL finished) {
+                         
+                     }];
+    
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self.orientationChange];
 }
 @end

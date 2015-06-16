@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "NHRecorderButton.h"
 
 @class NHMediaPickerViewController;
 
@@ -29,7 +30,7 @@
 
 @property (nonatomic, assign) BOOL linksToCamera;
 
-@property (nonatomic, readonly, strong) UICollectionView *photoCollectionView;
-@property (nonatomic, readonly, strong) UIBarButtonItem *closeButton;
+@property (nonatomic, readonly, strong) UICollectionView *mediaCollectionView;
+@property (nonatomic, readonly, strong) NHRecorderButton *closeButton;
 
 @end

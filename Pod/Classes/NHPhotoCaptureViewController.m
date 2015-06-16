@@ -15,17 +15,6 @@
 #import "UIImage+Resize.h"
 #import "NHMediaPickerViewController.h"
 
-@implementation AlignmentButton
-
-- (UIEdgeInsets)alignmentRectInsets {
-    if (UIEdgeInsetsEqualToEdgeInsets(self.customAlignmentInsets, UIEdgeInsetsZero)) {
-        return [super alignmentRectInsets];
-    }
-        
-    return self.customAlignmentInsets;
-}
-
-@end
 
 const CGFloat kNHRecorderBottomViewHeight = 90;
 const CGFloat kNHRecorderCaptureButtonHeight = 60;
@@ -43,16 +32,18 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 
 @property (nonatomic, strong) UIView *bottomContainerView;
 
-@property (nonatomic, strong) AlignmentButton *closeButton;
-@property (nonatomic, strong) UIBarButtonItem *flashButton;
-@property (nonatomic, strong) UIBarButtonItem *gridButton;
-@property (nonatomic, strong) UIBarButtonItem *switchButton;
+@property (nonatomic, strong) NHRecorderButton *closeButton;
+@property (nonatomic, strong) NHRecorderButton *flashButton;
+@property (nonatomic, strong) NHRecorderButton *gridButton;
+@property (nonatomic, strong) NHRecorderButton *switchButton;
 
 @property (nonatomic, strong) UIButton *captureButton;
-@property (nonatomic, strong) UIButton *libraryButton;
+@property (nonatomic, strong) NHRecorderButton *libraryButton;
 
 @property (nonatomic, strong) id enterForegroundNotification;
 @property (nonatomic, strong) id resignActiveNotification;
+
+@property (nonatomic, strong) id orientationChange;
 
 @end
 
@@ -131,51 +122,60 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     [self setupCameraFocusViewConstraints];
     [self setupCameraGridViewConstraints];
     
-    self.closeButton = [AlignmentButton buttonWithType:UIButtonTypeSystem];
+    self.closeButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
     self.closeButton.frame = CGRectMake(0, 0, 44, 44);
     self.closeButton.customAlignmentInsets = UIEdgeInsetsMake(0, 11, 0, 0);
     self.closeButton.tintColor = [UIColor whiteColor];
-    
     [self.closeButton setImage:[UIImage imageNamed:@"NHRecorder.close.png"] forState:UIControlStateNormal];
     self.closeButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-    
     [self.closeButton addTarget:self action:@selector(closeButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     
-    self.flashButton = [[UIBarButtonItem alloc]
-                        initWithImage:[[UIImage imageNamed:@"NHRecorder.flash.png"]
-                                       imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
-                        style:UIBarButtonItemStylePlain
-                        target:self
-                        action:@selector(flashButtonTouch:)];
+    self.flashButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
+    self.flashButton.frame = CGRectMake(0, 0, 44, 44);
+    self.flashButton.customAlignmentInsets = UIEdgeInsetsMake(0, 0, 0, 0);
+    self.flashButton.tintColor = [UIColor whiteColor];
+    [self.flashButton setImage:[[UIImage imageNamed:@"NHRecorder.flash.png"]
+                               imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
+    self.flashButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+    [self.flashButton addTarget:self action:@selector(flashButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     
-    self.gridButton = [[UIBarButtonItem alloc]
-                       initWithImage:[[UIImage imageNamed:@"NHRecorder.grid.png"]
-                                      imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
-                       style:UIBarButtonItemStylePlain
-                       target:self
-                       action:@selector(gridButtonTouch:)];
-
-    self.switchButton = [[UIBarButtonItem alloc]
-                       initWithImage:[UIImage imageNamed:@"NHRecorder.switch.png"]
-                         style:UIBarButtonItemStylePlain
-                         target:self
-                         action:@selector(switchButtonTouch:)];
+    self.gridButton = [NHRecorderButton buttonWithType:UIButtonTypeCustom];
+    self.gridButton.frame = CGRectMake(0, 0, 44, 44);
+    self.gridButton.customAlignmentInsets = UIEdgeInsetsMake(0, 0, 0, 0);
+    self.gridButton.tintColor = [UIColor whiteColor];
+    [self.gridButton setImage:[[UIImage imageNamed:@"NHRecorder.grid.png"]
+                               imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
+    [self.gridButton setImage:[[UIImage imageNamed:@"NHRecorder.grid-active.png"]
+                               imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateSelected];
+    self.gridButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
+    [self.gridButton addTarget:self action:@selector(gridButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.switchButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
+    self.switchButton.frame = CGRectMake(0, 0, 44, 44);
+    self.switchButton.customAlignmentInsets = UIEdgeInsetsMake(0, 0, 0, 0);
+    self.switchButton.tintColor = [UIColor whiteColor];
+    [self.switchButton setImage:[UIImage imageNamed:@"NHRecorder.switch.png"] forState:UIControlStateNormal];
+    self.switchButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
+    [self.switchButton addTarget:self action:@selector(switchButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     
     UIBarButtonItem *closeBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.closeButton];
+    UIBarButtonItem *flashBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.flashButton];
+    UIBarButtonItem *gridBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.gridButton];
+    UIBarButtonItem *switchBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.switchButton];
     
     self.navigationItem.leftBarButtonItems = @[closeBarButton,
                                                [[UIBarButtonItem alloc]
                                                 initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                 target:nil action:nil],
-                                               self.flashButton,
+                                               flashBarButton,
                                                [[UIBarButtonItem alloc]
                                                 initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                 target:nil action:nil],
-                                               self.gridButton,
+                                               gridBarButton,
                                                [[UIBarButtonItem alloc]
                                                 initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                 target:nil action:nil],
-                                               self.switchButton];
+                                               switchBarButton];
     
 
     
@@ -235,6 +235,55 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                                              [strongSelf.photoCamera stopCameraCapture];
                                          }
                                      }];
+
+    self.orientationChange = [[NSNotificationCenter defaultCenter]
+                              addObserverForName:UIDeviceOrientationDidChangeNotification
+                              object:nil
+                              queue:nil
+                              usingBlock:^(NSNotification *note) {
+                                  __strong __typeof(weakSelf) strongSelf = weakSelf;
+                                  if (strongSelf
+                                      && strongSelf.view.window) {
+                                      [strongSelf deviceOrientationChange];
+                                  }
+    }];
+}
+
+
+- (void)deviceOrientationChange {
+    UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
+    
+    CGFloat angle = 0;
+    
+    switch (deviceOrientation) {
+        case UIDeviceOrientationFaceUp:
+        case UIDeviceOrientationPortrait:
+            break;
+        case UIDeviceOrientationLandscapeLeft:
+            angle = M_PI_2;
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            angle = -M_PI_2;
+            break;
+        case UIDeviceOrientationPortraitUpsideDown:
+            angle = M_PI;
+            break;
+        default:
+            return;
+    }
+    
+    [UIView animateWithDuration:0.3
+                          delay:0
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         self.flashButton.imageView.transform = CGAffineTransformMakeRotation(angle);
+                          self.gridButton.imageView.transform = CGAffineTransformMakeRotation(angle);
+                         self.switchButton.imageView.transform = CGAffineTransformMakeRotation(angle);
+                         self.libraryButton.transform = CGAffineTransformMakeRotation(angle);
+                     } completion:^(BOOL finished) {
+                         
+                     }];
+
 }
 
 - (void)setupBottomContainerViewContraints {
@@ -569,21 +618,16 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
             break;
     }
     
-    if (imageName
-        && [self.flashButton respondsToSelector:@selector(setImage:)]) {
-        [self.flashButton
-         setImage:[[UIImage imageNamed: imageName]
-                   imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
-
+    
+    if (imageName) {
+    [self.flashButton setImage:[[UIImage imageNamed: imageName]
+                                   imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
+                         forState:UIControlStateNormal];
     }
 }
 
 - (void)resetGrid {
-    if ([self.gridButton respondsToSelector:@selector(setImage:)]) {
-        [self.gridButton
-         setImage:[[UIImage imageNamed: self.cameraGridView.hidden ? @"NHRecorder.grid.png" : @"NHRecorder.grid-active.png"]
-                   imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]];
-    }
+    self.gridButton.selected = !self.cameraGridView.hidden;
 }
 
 - (void)resetLibrary {
@@ -666,6 +710,10 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     
     self.navigationController.navigationBar.barTintColor = self.barTintColor ?: [UIColor blackColor];
     self.navigationController.navigationBar.tintColor = self.barButtonTintColor ?: [UIColor whiteColor];
+    
+    [UIView performWithoutAnimation:^{
+        [self deviceOrientationChange];
+    }];
 }
 
 - (void)viewDidLayoutSubviews {
@@ -684,6 +732,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self.enterForegroundNotification];
     [[NSNotificationCenter defaultCenter] removeObserver:self.resignActiveNotification];
+    [[NSNotificationCenter defaultCenter] removeObserver:self.orientationChange];
 }
 
 

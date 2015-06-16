@@ -258,19 +258,19 @@
     CGFloat newValue = 1;
     
     if (self.cropView.cropType != NHPhotoCropTypeNone) {
-        if (self.cropView.cropRect.size.width > self.cropView.cropRect.size.height) {
-            newValue = self.cropView.cropRect.size.width / self.contentView.bounds.size.width;
+        CGFloat widthZoom = self.cropView.cropRect.size.width / self.contentView.bounds.size.width;
+        CGFloat heightZoom = self.cropView.cropRect.size.height / self.contentView.bounds.size.height;
+        
+        if (self.cropView.cropRect.size.height > self.contentView.bounds.size.height) {
+            newValue = heightZoom;
         }
-        else if (self.cropView.cropRect.size.width < self.cropView.cropRect.size.height) {
-            newValue = self.cropView.cropRect.size.height / self.contentView.bounds.size.height;
+        else if (self.cropView.cropRect.size.width > self.contentView.bounds.size.width) {
+            newValue = widthZoom;
         }
         else {
-            newValue = self.contentView.bounds.size.width <= self.contentView.bounds.size.height
-            ? self.cropView.cropRect.size.width / self.contentView.bounds.size.width
-            : self.cropView.cropRect.size.height / self.contentView.bounds.size.height;
+            newValue = MAX(widthZoom, heightZoom);
         }
     }
-
 
     self.minimumZoomScale = newValue;
     [self setZoomScale:newValue animated:animated];
@@ -375,10 +375,10 @@
     self.rotationFilter = nil;
     self.picture = nil;
     self.image = nil;
+    self.delegate = nil;
     
     [[GPUImageContext sharedFramebufferCache] purgeAllUnassignedFramebuffers];
 }
-
 
 @end
 

@@ -13,6 +13,8 @@
 @property (nonatomic, strong) UIImageView *filterImageView;
 @property (nonatomic, strong) UIView *selectionView;
 @property (nonatomic, strong) UILabel *filterLabel;
+
+@property (nonatomic, strong) id orientationChange;
 @end
 
 @implementation NHFilterCollectionViewCell
@@ -154,6 +156,62 @@
                                                                  attribute:NSLayoutAttributeBottom
                                                                 multiplier:1.0 constant:-2]];
     
+    __weak __typeof(self) weakSelf = self;
+    self.orientationChange = [[NSNotificationCenter defaultCenter]
+                              addObserverForName:UIDeviceOrientationDidChangeNotification
+                              object:nil
+                              queue:nil
+                              usingBlock:^(NSNotification *note) {
+                                  __strong __typeof(weakSelf) strongSelf = weakSelf;
+                                  if (strongSelf) {
+                                      [strongSelf deviceOrientationChange];
+                                  }
+                              }];
+    
+    [UIView performWithoutAnimation:^{
+        [self deviceOrientationChange];
+    }];
+}
+
+- (void)prepareForReuse {
+    [super prepareForReuse];
+    
+    [UIView performWithoutAnimation:^{
+        [self deviceOrientationChange];
+    }];
+}
+
+- (void)deviceOrientationChange {
+    UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
+    
+    CGFloat angle = 0;
+    
+    switch (deviceOrientation) {
+        case UIDeviceOrientationFaceUp:
+        case UIDeviceOrientationPortrait:
+            break;
+        case UIDeviceOrientationLandscapeLeft:
+            angle = M_PI_2;
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            angle = -M_PI_2;
+            break;
+        case UIDeviceOrientationPortraitUpsideDown:
+            angle = M_PI;
+            break;
+        default:
+            return;
+    }
+    
+    [UIView animateWithDuration:0.3
+                          delay:0
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         self.contentView.transform = CGAffineTransformMakeRotation(angle);
+                     }
+                     completion:^(BOOL finished) {
+                         
+                     }];
     
 }
 
@@ -178,5 +236,9 @@
     self.filterImageView.image = filter && image ? [filter imageByFilteringImage:image] : image;
     self.selectionView.hidden = !selected;
     self.filterLabel.text = name;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self.orientationChange];
 }
 @end

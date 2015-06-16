@@ -7,9 +7,7 @@
 //
 
 #import "NHPhotoEditorViewController.h"
-//#import <SCFilterSelectorViewInternal.h>
-
-
+#import "UIImage+Resize.h"
 
 const CGFloat kNHRecorderSelectorViewHeight = 40;
 const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
@@ -29,6 +27,10 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
 
 @property (nonatomic, strong) NHCropCollectionView *cropCollectionView;
 @property (nonatomic, strong) NHFilterCollectionView *filterCollectionView;
+
+@property (nonatomic, strong) NHRecorderButton *backButton;
+
+@property (nonatomic, strong) id orientationChange;
 
 @end
 
@@ -57,17 +59,27 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
     
     self.view.backgroundColor = [UIColor blackColor];
     
-    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
-                                             initWithImage:[UIImage imageNamed:@"NHRecorder.back.png"]
-                                             style:UIBarButtonItemStylePlain
-                                             target:self
-                                             action:@selector(backButtonTouch:)];
+    self.backButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
+    self.backButton.frame = CGRectMake(0, 0, 44, 44);
+    self.backButton.customAlignmentInsets = UIEdgeInsetsMake(0, 11, 0, 0);
+    self.backButton.tintColor = [UIColor whiteColor];
+    [self.backButton setImage:[UIImage imageNamed:@"NHRecorder.back.png"] forState:UIControlStateNormal];
+    self.backButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+    [self.backButton addTarget:self action:@selector(backButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.backButton];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
                                               initWithTitle:@"Next"
                                               style:UIBarButtonItemStylePlain
                                               target:self
                                               action:@selector(nextButtonTouch:)];
+    
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
+                                             initWithTitle:@" "
+                                             style:UIBarButtonItemStylePlain
+                                             target:nil
+                                             action:nil];
     
     self.photoView = [[NHPhotoView alloc] initWithImage:self.image];
     self.photoView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -133,9 +145,56 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
     [self.cropCollectionView setSelected:0];
     
     [self showFiltersCollection];
+    
+    __weak __typeof(self) weakSelf = self;
+    self.orientationChange = [[NSNotificationCenter defaultCenter]
+                              addObserverForName:UIDeviceOrientationDidChangeNotification
+                              object:nil
+                              queue:nil
+                              usingBlock:^(NSNotification *note) {
+                                  __strong __typeof(weakSelf) strongSelf = weakSelf;
+                                  if (strongSelf
+                                      && strongSelf.view.window) {
+                                      [strongSelf deviceOrientationChange];
+                                  }
+                              }];
 }
 
 //MARK: setup
+
+- (void)deviceOrientationChange {
+    UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
+    
+    CGFloat angle = 0;
+    
+    switch (deviceOrientation) {
+        case UIDeviceOrientationFaceUp:
+        case UIDeviceOrientationPortrait:
+            break;
+        case UIDeviceOrientationLandscapeLeft:
+            angle = M_PI_2;
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            angle = -M_PI_2;
+            break;
+        case UIDeviceOrientationPortraitUpsideDown:
+            angle = M_PI;
+            break;
+        default:
+            return;
+    }
+    
+    [UIView animateWithDuration:0.3
+                          delay:0
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         self.filterButton.imageView.transform = CGAffineTransformMakeRotation(angle);
+                         self.cropButton.imageView.transform = CGAffineTransformMakeRotation(angle);
+                     }
+     completion:^(BOOL finished) {
+         
+     }];
+}
 
 - (void)setupSelectorViewConstraints {
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.selectorView
@@ -440,8 +499,52 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
 
 - (void)nextButtonTouch:(id)sender {
     [self.photoView processImageWithBlock:^(UIImage *image) {
-        UIImageWriteToSavedPhotosAlbum(image, nil, nil, nil);
+        if (image) {
+            UIImage *resultImage;
+            
+            CGSize imageSize = CGSizeZero;
+            
+            __weak __typeof(self) weakSelf = self;
+            if ([weakSelf.nhDelegate respondsToSelector:@selector(imageSizeToFitForPhotoEditor:)]) {
+                imageSize = [weakSelf.nhDelegate imageSizeToFitForPhotoEditor:weakSelf];
+            }
+            
+            if (CGSizeEqualToSize(imageSize, CGSizeZero)) {
+                resultImage = image;
+            }
+            else {
+                resultImage = [image resizedImageToFitInSize:imageSize scaleIfSmaller:YES];
+            }
+            
+            if (resultImage) {
+                BOOL shouldSave = YES;
+                
+                __weak __typeof(self) weakSelf = self;
+                if ([weakSelf.nhDelegate respondsToSelector:@selector(photoEditor:shouldSaveImage:)]) {
+                    shouldSave = [weakSelf.nhDelegate photoEditor:weakSelf shouldSaveImage:resultImage];
+                }
+                
+                if (shouldSave) {
+                    UIImageWriteToSavedPhotosAlbum(resultImage, self, @selector(savedCapturedImage:error:context:), nil);
+                }
+            }
+        }
     }];
+}
+
+- (void)savedCapturedImage:(UIImage*)image error:(NSError*)error context:(void*)context {
+    if (error) {
+        __weak __typeof(self) weakSelf = self;
+        if ([weakSelf.nhDelegate respondsToSelector:@selector(photoEditor:receivedErrorOnSave:)]) {
+            [weakSelf.nhDelegate photoEditor:weakSelf receivedErrorOnSave:error];
+        }
+        return;
+    }
+    
+    __weak __typeof(self) weakSelf = self;
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(photoEditor:savedImage:)]) {
+        [weakSelf.nhDelegate photoEditor:weakSelf savedImage:image];
+    }
 }
 
 - (void)filterButtonTouch:(id)sender {
@@ -475,11 +578,19 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
     
     self.navigationController.navigationBar.barTintColor = self.barTintColor ?: [UIColor blackColor];
     self.navigationController.navigationBar.tintColor = self.barButtonTintColor ?: [UIColor whiteColor];
+    
+    [UIView performWithoutAnimation:^{
+        [self deviceOrientationChange];
+    }];
 }
 
 
 - (BOOL)prefersStatusBarHidden {
     return YES;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self.orientationChange];
 }
 
 @end

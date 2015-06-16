@@ -11,8 +11,26 @@
 #import "NHPhotoView.h"
 #import "NHCropCollectionView.h"
 #import "NHFilterCollectionView.h"
+#import "NHRecorderButton.h"
+
+@class NHPhotoEditorViewController;
+
+@protocol NHPhotoEditorViewControllerDelegate <NSObject>
+
+@optional
+- (CGSize)imageSizeToFitForPhotoEditor:(NHPhotoEditorViewController*)controller;
+- (BOOL)photoEditor:(NHPhotoEditorViewController*)editor
+    shouldSaveImage:(UIImage*)image;
+
+- (void)photoEditor:(NHPhotoEditorViewController*)editor
+         savedImage:(UIImage*)image;
+- (void)photoEditor:(NHPhotoEditorViewController*)editor
+         receivedErrorOnSave:(NSError*)error;
+@end
 
 @interface NHPhotoEditorViewController : UIViewController
+
+@property (nonatomic, weak) id<NHPhotoEditorViewControllerDelegate> nhDelegate;
 
 @property (nonatomic, assign) NHPhotoCropType forcedCropType;
 
@@ -27,6 +45,8 @@
 
 @property (nonatomic, readonly, strong) UIButton *filterButton;
 @property (nonatomic, readonly, strong) UIButton *cropButton;
+
+@property (nonatomic, readonly, strong) NHRecorderButton *backButton;
 
 @property (nonatomic, readonly, strong) NHCropCollectionView *cropCollectionView;
 @property (nonatomic, readonly, strong) NHFilterCollectionView *filterCollectionView;

@@ -13,6 +13,8 @@
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) UILabel *textLabel;
 
+@property (nonatomic, strong) id orientationChange;
+
 @end
 
 @implementation NHCropCollectionViewCell
@@ -58,6 +60,56 @@
     [self setupImageViewConstraints];
     
     [self setupTextLabelConstraints];
+    
+    __weak __typeof(self) weakSelf = self;
+    self.orientationChange = [[NSNotificationCenter defaultCenter]
+                              addObserverForName:UIDeviceOrientationDidChangeNotification
+                              object:nil
+                              queue:nil
+                              usingBlock:^(NSNotification *note) {
+                                  __strong __typeof(weakSelf) strongSelf = weakSelf;
+                                  if (strongSelf) {
+                                      [strongSelf deviceOrientationChange];
+                                  }
+                              }];
+    
+    [UIView performWithoutAnimation:^{
+        [self deviceOrientationChange];
+    }];
+}
+
+- (void)deviceOrientationChange {
+    UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
+    
+    CGFloat angle = 0;
+    
+    switch (deviceOrientation) {
+        case UIDeviceOrientationFaceUp:
+        case UIDeviceOrientationPortrait:
+            break;
+        case UIDeviceOrientationLandscapeLeft:
+            angle = M_PI_2;
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            angle = -M_PI_2;
+            break;
+        case UIDeviceOrientationPortraitUpsideDown:
+            angle = M_PI;
+            break;
+        default:
+            return;
+    }
+    
+    [UIView animateWithDuration:0.3
+                          delay:0
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         self.contentView.transform = CGAffineTransformMakeRotation(angle);
+                     }
+                     completion:^(BOOL finished) {
+                         
+                     }];
+    
 }
 
 - (void)setupImageViewConstraints {
@@ -120,12 +172,17 @@
                                                                     toItem:self.contentView
                                                                  attribute:NSLayoutAttributeBottom
                                                                 multiplier:1.0 constant:0]];
+    
 }
 
 - (void)prepareForReuse {
     [super prepareForReuse];
     self.imageView.image = nil;
     self.textLabel.text = nil;
+    
+    [UIView performWithoutAnimation:^{
+        [self deviceOrientationChange];
+    }];
 }
 
 - (void)reloadWithType:(NHPhotoCropType)type {
@@ -173,5 +230,9 @@
     
     self.imageView.image = image;
     self.textLabel.text = text;
+}
+
+- (void)dealloc {
+    [[NSNotificationCenter defaultCenter] removeObserver:self.orientationChange];
 }
 @end

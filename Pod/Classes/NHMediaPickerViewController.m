@@ -17,11 +17,13 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
 
 @interface NHMediaPickerViewController ()<UICollectionViewDelegateFlowLayout, UICollectionViewDataSource>
 
-@property (nonatomic, strong) UICollectionView *photoCollectionView;
-@property (nonatomic, strong) UICollectionViewFlowLayout *photoCollectionViewLayout;
+@property (nonatomic, strong) UICollectionView *mediaCollectionView;
+@property (nonatomic, strong) UICollectionViewFlowLayout *mediaCollectionViewLayout;
 @property (nonatomic, strong) NSArray *mediaItems;
 @property (nonatomic, strong) ALAssetsLibrary *mediaLibrary;
-@property (nonatomic, strong) UIBarButtonItem *closeButton;
+@property (nonatomic, strong) NHRecorderButton *closeButton;
+
+@property (nonatomic, strong) id orientationChange;
 @end
 
 @implementation NHMediaPickerViewController
@@ -55,58 +57,129 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     self.linksToCamera = YES;
     self.view.backgroundColor = [UIColor whiteColor];
     
-    self.closeButton = [[UIBarButtonItem alloc]
-                        initWithImage:[UIImage imageNamed:@"NHRecorder.back.png"]
-                        style:UIBarButtonItemStylePlain target:self
-                        action:@selector(closeButtonTouch:)];
+    self.closeButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
+    self.closeButton.frame = CGRectMake(0, 0, 44, 44);
+    self.closeButton.customAlignmentInsets = UIEdgeInsetsMake(0, 11, 0, 0);
+    self.closeButton.tintColor = [UIColor blackColor];
+    [self.closeButton setImage:[UIImage imageNamed:@"NHRecorder.close.png"] forState:UIControlStateNormal];
+    self.closeButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+    [self.closeButton addTarget:self action:@selector(closeButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     
-    self.navigationItem.leftBarButtonItem = self.closeButton;
+    self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.closeButton];
     
-    self.photoCollectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
-    self.photoCollectionViewLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc]
+                                             initWithTitle:@" "
+                                             style:UIBarButtonItemStylePlain
+                                             target:nil
+                                             action:nil];
     
-    self.photoCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:self.photoCollectionViewLayout];
-    self.photoCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.photoCollectionView.backgroundColor = [UIColor whiteColor];
-    self.photoCollectionView.delegate = self;
-    self.photoCollectionView.dataSource = self;
-    [self.photoCollectionView registerClass:[NHMediaPickerCollectionViewCell class] forCellWithReuseIdentifier:@"cell"];
-    self.photoCollectionView.scrollsToTop = YES;
-    self.photoCollectionView.bounces = YES;
-    self.photoCollectionView.alwaysBounceVertical = YES;
+    self.mediaCollectionViewLayout = [[UICollectionViewFlowLayout alloc] init];
+    self.mediaCollectionViewLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
     
-    [self.view addSubview:self.photoCollectionView];
+    self.mediaCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:self.mediaCollectionViewLayout];
+    self.mediaCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.mediaCollectionView.backgroundColor = [UIColor whiteColor];
+    self.mediaCollectionView.delegate = self;
+    self.mediaCollectionView.dataSource = self;
+    [self.mediaCollectionView registerClass:[NHMediaPickerCollectionViewCell class] forCellWithReuseIdentifier:@"cell"];
+    self.mediaCollectionView.scrollsToTop = YES;
+    self.mediaCollectionView.bounces = YES;
+    self.mediaCollectionView.alwaysBounceVertical = YES;
+    
+    [self.view addSubview:self.mediaCollectionView];
     
     [self setupCollectionViewConstraints];
     
     [self loadImagesFromLibrary];
+    
+    __weak __typeof(self) weakSelf = self;
+    self.orientationChange = [[NSNotificationCenter defaultCenter]
+                              addObserverForName:UIDeviceOrientationDidChangeNotification
+                              object:nil
+                              queue:nil
+                              usingBlock:^(NSNotification *note) {
+                                  __strong __typeof(weakSelf) strongSelf = weakSelf;
+                                  if (strongSelf
+                                      && strongSelf.view.window) {
+                                      [strongSelf deviceOrientationChange];
+                                  }
+                              }];
 }
 
 //MARK: setup
 
+- (void)deviceOrientationChange {
+    UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
+    
+    CGFloat xScale = 1;
+    CGFloat yScale = 1;
+    
+    switch (deviceOrientation) {
+        case UIDeviceOrientationFaceUp:
+        case UIDeviceOrientationPortrait:
+            self.mediaCollectionViewLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
+            self.mediaCollectionView.alwaysBounceVertical = YES;
+            self.mediaCollectionView.alwaysBounceHorizontal = NO;
+            break;
+        case UIDeviceOrientationLandscapeLeft:
+            xScale = -1;
+            self.mediaCollectionViewLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+            self.mediaCollectionView.alwaysBounceVertical = NO;
+            self.mediaCollectionView.alwaysBounceHorizontal = YES;
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            xScale = 1;
+            yScale = -1;
+            self.mediaCollectionViewLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+            self.mediaCollectionView.alwaysBounceVertical = NO;
+            self.mediaCollectionView.alwaysBounceHorizontal = YES;
+            break;
+        case UIDeviceOrientationPortraitUpsideDown:
+            yScale = -1;
+            xScale = -1;
+            self.mediaCollectionViewLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
+            self.mediaCollectionView.alwaysBounceVertical = YES;
+            self.mediaCollectionView.alwaysBounceHorizontal = NO;
+            break;
+        default:
+            return;
+    }
+    
+    [UIView animateWithDuration:0.3
+                          delay:0
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         self.mediaCollectionView.transform = CGAffineTransformMakeScale(xScale, yScale);
+                     }
+                     completion:^(BOOL finished) {
+                         
+                     }];
+}
+
+
 - (void)setupCollectionViewConstraints {
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.photoCollectionView
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.mediaCollectionView
                                                           attribute:NSLayoutAttributeTop
                                                           relatedBy:NSLayoutRelationEqual
                                                              toItem:self.view
                                                           attribute:NSLayoutAttributeTop
                                                          multiplier:1.0 constant:0]];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.photoCollectionView
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.mediaCollectionView
                                                           attribute:NSLayoutAttributeBottom
                                                           relatedBy:NSLayoutRelationEqual
                                                              toItem:self.view
                                                           attribute:NSLayoutAttributeBottom
                                                          multiplier:1.0 constant:0]];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.photoCollectionView
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.mediaCollectionView
                                                           attribute:NSLayoutAttributeLeft
                                                           relatedBy:NSLayoutRelationEqual
                                                              toItem:self.view
                                                           attribute:NSLayoutAttributeLeft
                                                          multiplier:1.0 constant:0]];
     
-    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.photoCollectionView
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.mediaCollectionView
                                                           attribute:NSLayoutAttributeRight
                                                           relatedBy:NSLayoutRelationEqual
                                                              toItem:self.view
@@ -140,7 +213,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
                                    dispatch_async(dispatch_get_main_queue(), ^{
                                        strongSelf.navigationItem.title = newTitle;
                                        strongSelf.mediaItems = newArray;
-                                       [strongSelf.photoCollectionView reloadData];
+                                       [strongSelf.mediaCollectionView reloadData];
                                    });
                                    
                                    *stop = YES;
@@ -149,6 +222,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
                                NSLog(@"library error = %@", error);
                            }];
 }
+
 
 //MARK: buttons
 
@@ -165,7 +239,20 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
     
-    CGFloat width = [[UIScreen mainScreen] bounds].size.width;
+    UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
+    
+    switch (deviceOrientation) {
+        case UIDeviceOrientationLandscapeLeft:
+        case UIDeviceOrientationLandscapeRight: {
+            CGFloat height = self.view.bounds.size.height;
+            CGFloat cellHeight = height / 5 - kNHRecorderCollectionViewSpace;
+            return CGSizeMake(cellHeight, cellHeight);
+        }
+        default:
+            break;
+    }
+    
+    CGFloat width = self.view.bounds.size.width;
     CGFloat cellWidth = width / 4 - kNHRecorderCollectionViewSpace;
     return CGSizeMake(cellWidth, cellWidth);
 }
@@ -269,7 +356,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
 - (void)setLinksToCamera:(BOOL)linksToCamera {
     [self willChangeValueForKey:@"linksToCamera"];
     _linksToCamera = linksToCamera;
-    [self.photoCollectionView reloadData];
+    [self.mediaCollectionView reloadData];
     [self didChangeValueForKey:@"linksToCamera"];
 }
 
@@ -291,7 +378,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     [self willChangeValueForKey:@"firstController"];
     _firstController = firstController;
     
-    self.closeButton.image = firstController ? [UIImage imageNamed:@"NHRecorder.close.png"] : [UIImage imageNamed:@"NHRecorder.back.png"];
+    [self.closeButton setImage:(firstController ? [UIImage imageNamed:@"NHRecorder.close.png"] : [UIImage imageNamed:@"NHRecorder.back.png"]) forState:UIControlStateNormal];
     [self didChangeValueForKey:@"firstController"];
 }
 
@@ -306,7 +393,11 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     
     self.navigationController.navigationBar.barTintColor = self.barTintColor ?: [UIColor whiteColor];
     self.navigationController.navigationBar.tintColor = self.barButtonTintColor ?: [UIColor blackColor];
-    [self.photoCollectionView reloadData];
+    [self.mediaCollectionView reloadData];
+    
+    [UIView performWithoutAnimation:^{
+        [self deviceOrientationChange];
+    }];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -328,4 +419,10 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     return UIStatusBarStyleDefault;
 }
 
+- (void)dealloc {
+    self.mediaCollectionView.delegate = nil;
+    self.mediaCollectionView.dataSource = nil;
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self.orientationChange];
+}
 @end

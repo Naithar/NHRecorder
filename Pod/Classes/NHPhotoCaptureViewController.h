@@ -8,11 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <GPUImage.h>
-
-@interface AlignmentButton : UIButton
-
-@property (nonatomic, assign) UIEdgeInsets customAlignmentInsets;
-@end
+#import "NHRecorderButton.h"
 
 extern const CGFloat kNHRecorderBottomViewHeight;
 
@@ -39,13 +35,13 @@ extern const CGFloat kNHRecorderBottomViewHeight;
 @property (nonatomic, readonly, strong) NHCameraFocusView *cameraFocusView;
 @property (nonatomic, readonly, strong) UIView *bottomContainerView;
 
-@property (nonatomic, readonly, strong) AlignmentButton *closeButton;
-@property (nonatomic, readonly, strong) UIBarButtonItem *flashButton;
-@property (nonatomic, readonly, strong) UIBarButtonItem *gridButton;
-@property (nonatomic, readonly, strong) UIBarButtonItem *switchButton;
+@property (nonatomic, readonly, strong) NHRecorderButton *closeButton;
+@property (nonatomic, readonly, strong) NHRecorderButton *flashButton;
+@property (nonatomic, readonly, strong) NHRecorderButton *gridButton;
+@property (nonatomic, readonly, strong) NHRecorderButton *switchButton;
 
 @property (nonatomic, readonly, strong) UIButton *captureButton;
-@property (nonatomic, readonly, strong) UIButton *libraryButton;
+@property (nonatomic, readonly, strong) NHRecorderButton *libraryButton;
 
 @property (nonatomic, weak) id<NHPhotoCaptureViewControllerDelegate> nhDelegate;
 
