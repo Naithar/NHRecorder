@@ -42,6 +42,7 @@
 @property (nonatomic, readonly, strong) UIView *selectorView;
 @property (nonatomic, readonly, strong) UIView *selectorSeparatorView;
 @property (nonatomic, readonly, strong) UIView *selectionContainerView;
+@property (nonatomic, readonly, strong) UIView *photoSeparatorView;
 
 @property (nonatomic, readonly, strong) UIButton *filterButton;
 @property (nonatomic, readonly, strong) UIButton *cropButton;
