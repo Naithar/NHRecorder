@@ -124,7 +124,6 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     
     self.closeButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
     self.closeButton.frame = CGRectMake(0, 0, 44, 44);
-    self.closeButton.customAlignmentInsets = UIEdgeInsetsMake(0, 11, 0, 0);
     self.closeButton.tintColor = [UIColor whiteColor];
     [self.closeButton setImage:[UIImage imageNamed:@"NHRecorder.close.png"] forState:UIControlStateNormal];
     self.closeButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
@@ -132,7 +131,6 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     
     self.flashButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
     self.flashButton.frame = CGRectMake(0, 0, 44, 44);
-    self.flashButton.customAlignmentInsets = UIEdgeInsetsMake(0, 0, 0, 0);
     self.flashButton.tintColor = [UIColor whiteColor];
     [self.flashButton setImage:[[UIImage imageNamed:@"NHRecorder.flash.png"]
                                imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
@@ -141,7 +139,6 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     
     self.gridButton = [NHRecorderButton buttonWithType:UIButtonTypeCustom];
     self.gridButton.frame = CGRectMake(0, 0, 44, 44);
-    self.gridButton.customAlignmentInsets = UIEdgeInsetsMake(0, 0, 0, 0);
     self.gridButton.tintColor = [UIColor whiteColor];
     [self.gridButton setImage:[[UIImage imageNamed:@"NHRecorder.grid.png"]
                                imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
@@ -152,7 +149,6 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     
     self.switchButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
     self.switchButton.frame = CGRectMake(0, 0, 44, 44);
-    self.switchButton.customAlignmentInsets = UIEdgeInsetsMake(0, 0, 0, 0);
     self.switchButton.tintColor = [UIColor whiteColor];
     [self.switchButton setImage:[UIImage imageNamed:@"NHRecorder.switch.png"] forState:UIControlStateNormal];
     self.switchButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;

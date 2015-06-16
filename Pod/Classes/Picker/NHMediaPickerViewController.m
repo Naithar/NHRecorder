@@ -59,7 +59,6 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     
     self.closeButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
     self.closeButton.frame = CGRectMake(0, 0, 44, 44);
-    self.closeButton.customAlignmentInsets = UIEdgeInsetsMake(0, 11, 0, 0);
     self.closeButton.tintColor = [UIColor blackColor];
     [self.closeButton setImage:[UIImage imageNamed:@"NHRecorder.close.png"] forState:UIControlStateNormal];
     self.closeButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;

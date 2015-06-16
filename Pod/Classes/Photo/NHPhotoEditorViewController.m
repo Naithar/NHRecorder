@@ -63,7 +63,6 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
     
     self.backButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
     self.backButton.frame = CGRectMake(0, 0, 44, 44);
-    self.backButton.customAlignmentInsets = UIEdgeInsetsMake(0, 11, 0, 0);
     self.backButton.tintColor = [UIColor whiteColor];
     [self.backButton setImage:[UIImage imageNamed:@"NHRecorder.back.png"] forState:UIControlStateNormal];
     self.backButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
