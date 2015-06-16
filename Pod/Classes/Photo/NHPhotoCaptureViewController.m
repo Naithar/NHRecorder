@@ -730,6 +730,8 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     self.navigationController.navigationBar.barTintColor = self.barTintColor ?: [UIColor blackColor];
     self.navigationController.navigationBar.tintColor = self.barButtonTintColor ?: [UIColor whiteColor];
     
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
     [UIView performWithoutAnimation:^{
         [self deviceOrientationChange];
     }];

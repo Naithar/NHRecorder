@@ -19,8 +19,9 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
 @property (nonatomic, strong) NHPhotoView *photoView;
 
 @property (nonatomic, strong) UIView *selectorView;
-@property (nonatomic, strong) UIView *separatorView;
+@property (nonatomic, strong) UIView *selectorSeparatorView;
 @property (nonatomic, strong) UIView *selectionContainerView;
+@property (nonatomic, strong) UIView *photoSeparatorView;
 
 @property (nonatomic, strong) UIButton *filterButton;
 @property (nonatomic, strong) UIButton *cropButton;
@@ -262,36 +263,36 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
                                                                   attribute:NSLayoutAttributeHeight
                                                                  multiplier:0 constant:kNHRecorderSelectorViewHeight]];
     
-    self.separatorView = [[UIView alloc] init];
-    self.separatorView.backgroundColor = [UIColor groupTableViewBackgroundColor];
-    self.separatorView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.selectorView addSubview:self.separatorView];
+    self.selectorSeparatorView = [[UIView alloc] init];
+    self.selectorSeparatorView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    self.selectorSeparatorView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.selectorView addSubview:self.selectorSeparatorView];
     
-    [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.separatorView
+    [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.selectorSeparatorView
                                                                   attribute:NSLayoutAttributeTop
                                                                   relatedBy:NSLayoutRelationEqual
                                                                      toItem:self.selectorView
                                                                   attribute:NSLayoutAttributeTop
                                                                  multiplier:1.0 constant:0]];
     
-    [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.separatorView
+    [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.selectorSeparatorView
                                                                   attribute:NSLayoutAttributeLeft
                                                                   relatedBy:NSLayoutRelationEqual
                                                                      toItem:self.selectorView
                                                                   attribute:NSLayoutAttributeLeft
                                                                  multiplier:1.0 constant:0]];
     
-    [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.separatorView
+    [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.selectorSeparatorView
                                                                   attribute:NSLayoutAttributeRight
                                                                   relatedBy:NSLayoutRelationEqual
                                                                      toItem:self.selectorView
                                                                   attribute:NSLayoutAttributeRight
                                                                  multiplier:1.0 constant:0]];
     
-    [self.separatorView addConstraint:[NSLayoutConstraint constraintWithItem:self.separatorView
+    [self.selectorSeparatorView addConstraint:[NSLayoutConstraint constraintWithItem:self.selectorSeparatorView
                                                                    attribute:NSLayoutAttributeHeight
                                                                    relatedBy:NSLayoutRelationEqual
-                                                                      toItem:self.separatorView
+                                                                      toItem:self.selectorSeparatorView
                                                                    attribute:NSLayoutAttributeHeight
                                                                   multiplier:0 constant:0.5]];
 }
@@ -324,6 +325,39 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
                                                                                toItem:self.selectionContainerView
                                                                             attribute:NSLayoutAttributeHeight
                                                                            multiplier:0 constant:kNHRecorderSelectionContainerViewHeight]];
+    
+    self.photoSeparatorView = [[UIView alloc] init];
+    self.photoSeparatorView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    self.photoSeparatorView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.selectionContainerView addSubview:self.photoSeparatorView];
+    
+    [self.selectionContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.photoSeparatorView
+                                                                  attribute:NSLayoutAttributeTop
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self.selectionContainerView
+                                                                  attribute:NSLayoutAttributeTop
+                                                                 multiplier:1.0 constant:0]];
+    
+    [self.selectionContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.photoSeparatorView
+                                                                  attribute:NSLayoutAttributeLeft
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self.selectionContainerView
+                                                                  attribute:NSLayoutAttributeLeft
+                                                                 multiplier:1.0 constant:0]];
+    
+    [self.selectionContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.photoSeparatorView
+                                                                  attribute:NSLayoutAttributeRight
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self.selectionContainerView
+                                                                  attribute:NSLayoutAttributeRight
+                                                                 multiplier:1.0 constant:0]];
+    
+    [self.photoSeparatorView addConstraint:[NSLayoutConstraint constraintWithItem:self.photoSeparatorView
+                                                                           attribute:NSLayoutAttributeHeight
+                                                                           relatedBy:NSLayoutRelationEqual
+                                                                              toItem:self.photoSeparatorView
+                                                                           attribute:NSLayoutAttributeHeight
+                                                                          multiplier:0 constant:0.5]];
 }
 
 - (void)setupPhotoViewConstraints {
@@ -620,6 +654,8 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
     
     self.navigationController.navigationBar.barTintColor = self.barTintColor ?: [UIColor blackColor];
     self.navigationController.navigationBar.tintColor = self.barButtonTintColor ?: [UIColor whiteColor];
+    [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setShadowImage:[UIImage new]];
     
     [UIView performWithoutAnimation:^{
         [self deviceOrientationChange];

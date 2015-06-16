@@ -40,7 +40,7 @@
 @property (nonatomic, readonly, strong) NHPhotoView *photoView;
 
 @property (nonatomic, readonly, strong) UIView *selectorView;
-@property (nonatomic, readonly, strong) UIView *separatorView;
+@property (nonatomic, readonly, strong) UIView *selectorSeparatorView;
 @property (nonatomic, readonly, strong) UIView *selectionContainerView;
 
 @property (nonatomic, readonly, strong) UIButton *filterButton;

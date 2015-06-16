@@ -392,6 +392,9 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     
     self.navigationController.navigationBar.barTintColor = self.barTintColor ?: [UIColor whiteColor];
     self.navigationController.navigationBar.tintColor = self.barButtonTintColor ?: [UIColor blackColor];
+    
+    [self.navigationController.navigationBar setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
+    [self.navigationController.navigationBar setShadowImage:nil];
     [self.mediaCollectionView reloadData];
     
     [UIView performWithoutAnimation:^{
