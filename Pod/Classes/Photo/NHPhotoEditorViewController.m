@@ -128,7 +128,7 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
     [self setupSelectorButtons];
     
     self.filterCollectionView = [[NHFilterCollectionView alloc] initWithImage:self.image];
-    self.filterCollectionView.backgroundColor = [UIColor blackColor];
+    self.filterCollectionView.backgroundColor = [UIColor clearColor];
     self.filterCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
     self.filterCollectionView.nhDelegate = self;
     [self.selectionContainerView addSubview:self.filterCollectionView];
@@ -136,7 +136,7 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
 
     
     self.cropCollectionView = [[NHCropCollectionView alloc] init];
-    self.cropCollectionView.backgroundColor = [UIColor blackColor];
+    self.cropCollectionView.backgroundColor = [UIColor clearColor];
     self.cropCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
     self.cropCollectionView.nhDelegate = self;
     [self.selectionContainerView addSubview:self.cropCollectionView];
