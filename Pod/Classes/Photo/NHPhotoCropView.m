@@ -90,7 +90,7 @@ const CGFloat kNHRecorderLineWidth = 0.5;
 
 - (void)drawRect:(CGRect)rect {
     @autoreleasepool {
-        if (!CGSizeEqualToSize(self.bounds.size, CGSizeZero)
+        if (!CGSizeEqualToSize(rect.size, CGSizeZero)
             && self.cropRect.size.width > 0
             && self.cropRect.size.height > 0) {
             
@@ -98,7 +98,7 @@ const CGFloat kNHRecorderLineWidth = 0.5;
             
             if (context) {
                 
-                CGContextAddPath(context, [UIBezierPath bezierPathWithRect:self.bounds].CGPath);
+                CGContextAddPath(context, [UIBezierPath bezierPathWithRect:rect].CGPath);
                 
                 CGPathRef cropPath = NULL;
                 UIBezierPath *cropStrokePath;

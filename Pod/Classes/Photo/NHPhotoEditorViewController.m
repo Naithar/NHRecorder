@@ -494,6 +494,7 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
     self.filterButton.selected = YES;
     self.cropButton.selected = NO;
     
+    self.filterCollectionView.hidden = NO;
     self.cropCollectionView.hidden = YES;
 }
 
@@ -501,6 +502,7 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
     self.filterButton.selected = NO;
     self.cropButton.selected = YES;
     
+    self.filterCollectionView.hidden = YES;
     self.cropCollectionView.hidden = NO;
 }
 
