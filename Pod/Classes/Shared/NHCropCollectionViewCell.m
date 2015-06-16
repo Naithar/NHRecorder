@@ -40,6 +40,9 @@
 }
 
 - (void)commonInit {
+    self.backgroundColor = [UIColor clearColor];
+    self.contentView.backgroundColor = [UIColor clearColor];
+    
     self.imageView = [[UIImageView alloc] init];
     self.imageView.backgroundColor = [UIColor clearColor];
     self.imageView.translatesAutoresizingMaskIntoConstraints = NO;

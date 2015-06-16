@@ -39,8 +39,8 @@
 }
 
 - (void)commonInit {
-    
-    self.backgroundColor = [UIColor blackColor];
+    self.backgroundColor = [UIColor clearColor];
+    self.contentView.backgroundColor = [UIColor clearColor];
     
     self.filterImageView = [[UIImageView alloc] init];
     self.filterImageView.translatesAutoresizingMaskIntoConstraints = NO;
