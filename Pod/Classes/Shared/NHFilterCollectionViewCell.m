@@ -45,7 +45,7 @@
     self.filterImageView = [[UIImageView alloc] init];
     self.filterImageView.translatesAutoresizingMaskIntoConstraints = NO;
     self.filterImageView.contentMode = UIViewContentModeScaleAspectFill;
-    self.filterImageView.backgroundColor = [UIColor blackColor];
+    self.filterImageView.backgroundColor = [UIColor groupTableViewBackgroundColor];
     self.filterImageView.layer.cornerRadius = 5;
     self.filterImageView.clipsToBounds = YES;
     [self.contentView addSubview:self.filterImageView];
@@ -80,7 +80,7 @@
     
     self.selectionView = [[UIView alloc] init];
     self.selectionView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.selectionView.backgroundColor = [UIColor blackColor];
+    self.selectionView.backgroundColor = [UIColor clearColor];
     self.selectionView.layer.borderColor = [[UIColor whiteColor] CGColor];
     self.selectionView.layer.cornerRadius = 7.5;
     self.selectionView.layer.borderWidth = 1;
@@ -119,7 +119,7 @@
     self.filterLabel = [[UILabel alloc] init];
     self.filterLabel.textColor = [UIColor whiteColor];
     self.filterLabel.font = [UIFont systemFontOfSize:12];
-    self.filterLabel.backgroundColor = [UIColor blackColor];
+    self.filterLabel.backgroundColor = [UIColor clearColor];
     self.filterLabel.translatesAutoresizingMaskIntoConstraints = NO;
     self.filterLabel.textAlignment = NSTextAlignmentCenter;
     self.filterLabel.lineBreakMode = NSLineBreakByTruncatingTail;
