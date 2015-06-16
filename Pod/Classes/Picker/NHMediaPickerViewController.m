@@ -331,7 +331,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
                     resultImage = image;
                 }
                 else {
-                    resultImage = [image rescaleToFit:imageSizeToFit];
+                    resultImage = [image nhr_rescaleToFit:imageSizeToFit];
                 }
                 
                 if (resultImage) {

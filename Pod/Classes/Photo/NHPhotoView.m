@@ -258,17 +258,20 @@
     CGFloat newValue = 1;
     
     if (self.cropView.cropType != NHPhotoCropTypeNone) {
-        CGFloat widthZoom = self.cropView.cropRect.size.width / self.contentView.bounds.size.width;
-        CGFloat heightZoom = self.cropView.cropRect.size.height / self.contentView.bounds.size.height;
-        
-        if (self.cropView.cropRect.size.height > self.contentView.bounds.size.height) {
-            newValue = heightZoom;
-        }
-        else if (self.cropView.cropRect.size.width > self.contentView.bounds.size.width) {
-            newValue = widthZoom;
-        }
-        else {
-            newValue = MAX(widthZoom, heightZoom);
+        if (self.cropView.cropRect.size.width > 0
+            && self.cropView.cropRect.size.height > 0) {
+            CGFloat widthZoom = self.cropView.cropRect.size.width / self.contentView.bounds.size.width;
+            CGFloat heightZoom = self.cropView.cropRect.size.height / self.contentView.bounds.size.height;
+            
+            if (self.cropView.cropRect.size.height > self.contentView.bounds.size.height) {
+                newValue = heightZoom;
+            }
+            else if (self.cropView.cropRect.size.width > self.contentView.bounds.size.width) {
+                newValue = widthZoom;
+            }
+            else {
+                newValue = MAX(widthZoom, heightZoom);
+            }
         }
     }
 
@@ -346,7 +349,9 @@
     CGFloat cropVerticalOffset = 0;
     CGFloat cropHorizontalOffset = 0;
 
-    if (self.cropView.cropType != NHPhotoCropTypeNone) {
+    if (self.cropView.cropType != NHPhotoCropTypeNone
+        && self.cropView.cropRect.size.width > 0
+        && self.cropView.cropRect.size.height > 0) {
         cropVerticalOffset = (self.bounds.size.height - self.cropView.cropRect.size.height) / 2 - verticalOffset;
         cropHorizontalOffset = (self.bounds.size.width - self.cropView.cropRect.size.width) / 2 - horizontalOffset;
     }

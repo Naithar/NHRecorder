@@ -11,8 +11,8 @@
 
 @interface UIImage (NHRecorderResize)
 
-- (UIImage*)scaleImageByX:(CGFloat)x andY:(CGFloat)y;
-- (UIImage*)rescaleToFit:(CGSize)size;
-- (UIImage*)rescaleToFill:(CGSize)size;
+- (UIImage*)nhr_scaleImageByX:(CGFloat)x andY:(CGFloat)y;
+- (UIImage*)nhr_rescaleToFit:(CGSize)size;
+- (UIImage*)nhr_rescaleToFill:(CGSize)size;
 
 @end

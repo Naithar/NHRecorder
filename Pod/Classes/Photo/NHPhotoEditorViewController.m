@@ -552,7 +552,7 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
                     resultImage = image;
                 }
                 else {
-                    resultImage = [image rescaleToFit:imageSizeToFit];
+                    resultImage = [image nhr_rescaleToFit:imageSizeToFit];
                 }
                 
                 if (resultImage) {

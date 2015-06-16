@@ -592,7 +592,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                                                    resultImage = processedImage;
                                                }
                                                else {
-                                                   resultImage = [processedImage rescaleToFit:imageSizeToFit];
+                                                   resultImage = [processedImage nhr_rescaleToFit:imageSizeToFit];
                                                }
                                                
                                                if (resultImage) {

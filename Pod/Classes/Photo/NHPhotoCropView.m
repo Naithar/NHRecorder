@@ -55,29 +55,29 @@ const CGFloat kNHRecorderLineWidth = 0.5;
             return;
         case NHPhotoCropTypeSquare: {
             self.hidden = NO;
-            CGFloat value = MIN(self.maxCropSize.width, self.maxCropSize.height);
+            CGFloat value = MAX(MIN(self.maxCropSize.width, self.maxCropSize.height), 0);
             self.cropRect = CGRectMake(cropCenter.x - value / 2, cropCenter.y - value / 2, value, value);
         } break;
         case NHPhotoCropTypeCircle: {
             self.hidden = NO;
-            CGFloat value = MIN(self.maxCropSize.width, self.maxCropSize.height);
+            CGFloat value = MAX(MIN(self.maxCropSize.width, self.maxCropSize.height), 0);
             self.cropRect = CGRectMake(cropCenter.x - value / 2, cropCenter.y - value / 2, value, value);
         } break;
         case NHPhotoCropType4x3: {
             self.hidden = NO;
-            CGFloat width = MIN(self.maxCropSize.width, self.maxCropSize.height);
+            CGFloat width = MAX(MIN(self.maxCropSize.width, self.maxCropSize.height), 0);
             CGFloat height = round(width * 3 / 4);
             self.cropRect = CGRectMake(cropCenter.x - width / 2, cropCenter.y - height / 2, width, height);
         } break;
         case NHPhotoCropType16x9: {
             self.hidden = NO;
-            CGFloat width = MIN(self.maxCropSize.width, self.maxCropSize.height);
+            CGFloat width = MAX(MIN(self.maxCropSize.width, self.maxCropSize.height), 0);
             CGFloat height = round(width * 9 / 16);
             self.cropRect = CGRectMake(cropCenter.x - width / 2, cropCenter.y - height / 2, width, height);
         } break;
         case NHPhotoCropType3x4: {
             self.hidden = NO;
-            CGFloat height = MAX(self.maxCropSize.width, self.maxCropSize.height);
+            CGFloat height = MAX(MAX(self.maxCropSize.width, self.maxCropSize.height), 0);
             CGFloat width = round(height * 3 / 4);
             self.cropRect = CGRectMake(cropCenter.x - width / 2, cropCenter.y - height / 2, width, height);
         } break;
@@ -90,7 +90,9 @@ const CGFloat kNHRecorderLineWidth = 0.5;
 
 - (void)drawRect:(CGRect)rect {
     @autoreleasepool {
-        if (!CGSizeEqualToSize(self.bounds.size, CGSizeZero)) {
+        if (!CGSizeEqualToSize(self.bounds.size, CGSizeZero)
+            && self.cropRect.size.width > 0
+            && self.cropRect.size.height > 0) {
             
             CGContextRef context = UIGraphicsGetCurrentContext();
             

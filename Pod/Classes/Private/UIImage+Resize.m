@@ -10,7 +10,7 @@
 
 @implementation UIImage (NHRecorderResize)
 
-- (UIImage*)scaleImageByX:(CGFloat)x andY:(CGFloat)y {
+- (UIImage*)nhr_scaleImageByX:(CGFloat)x andY:(CGFloat)y {
     
     if (self) {
         CGFloat width = MAX(1, round(self.size.width * x));
@@ -44,17 +44,17 @@
     
     return nil;
 }
-- (UIImage*)rescaleToFit:(CGSize)size {
+- (UIImage*)nhr_rescaleToFit:(CGSize)size {
     CGFloat dX = size.width / self.size.width;
     CGFloat dY = size.height / self.size.height;
     CGFloat scaleValue = MIN(dX, dY);
-    return [self scaleImageByX:scaleValue andY:scaleValue];
+    return [self nhr_scaleImageByX:scaleValue andY:scaleValue];
 }
-- (UIImage*)rescaleToFill:(CGSize)size {
+- (UIImage*)nhr_rescaleToFill:(CGSize)size {
     CGFloat dX = size.width / self.size.width;
     CGFloat dY = size.height / self.size.height;
     CGFloat scaleValue = MAX(dX, dY);
-    return [self scaleImageByX:scaleValue andY:scaleValue];
+    return [self nhr_scaleImageByX:scaleValue andY:scaleValue];
 }
 
 @end

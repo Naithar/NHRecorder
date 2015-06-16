@@ -26,7 +26,7 @@
     self = [super init];
     
     if (self) {
-        _image = [image rescaleToFill:CGSizeMake(50, 50)];
+        _image = [image nhr_rescaleToFill:CGSizeMake(50, 50)];
     }
     
     return self;
