@@ -108,6 +108,7 @@
                         options:UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
                          self.contentView.transform = CGAffineTransformMakeRotation(angle);
+                         self.contentView.frame = self.bounds;
                      }
                      completion:^(BOOL finished) {
                          
