@@ -252,7 +252,6 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     CGFloat angle = 0;
     
     switch (deviceOrientation) {
-        case UIDeviceOrientationFaceUp:
         case UIDeviceOrientationPortrait:
             break;
         case UIDeviceOrientationLandscapeLeft:

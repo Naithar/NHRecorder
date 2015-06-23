@@ -187,7 +187,6 @@
     CGFloat angle = 0;
     
     switch (deviceOrientation) {
-        case UIDeviceOrientationFaceUp:
         case UIDeviceOrientationPortrait:
             break;
         case UIDeviceOrientationLandscapeLeft:

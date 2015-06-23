@@ -114,7 +114,6 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     CGFloat yScale = 1;
     
     switch (deviceOrientation) {
-        case UIDeviceOrientationFaceUp:
         case UIDeviceOrientationPortrait:
             self.mediaCollectionViewLayout.scrollDirection = UICollectionViewScrollDirectionVertical;
             self.mediaCollectionView.alwaysBounceVertical = YES;
