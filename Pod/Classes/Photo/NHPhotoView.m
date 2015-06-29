@@ -289,10 +289,10 @@
         default: {
             CGRect newRect = [self.cropView convertRect:self.cropView.cropRect toView:self.contentView];
             
-            CGFloat resultWidth = floor(newRect.size.width);
-            CGFloat resultHeight = floor(newRect.size.height);
-            CGFloat resultXOffset = floor(newRect.origin.x);
-            CGFloat resultYOffset = floor(newRect.origin.y);
+            CGFloat resultWidth = floor(newRect.size.width - 0.5);
+            CGFloat resultHeight = floor(newRect.size.height - 0.5);
+            CGFloat resultXOffset = ceil(newRect.origin.x + 0.5);
+            CGFloat resultYOffset = ceil(newRect.origin.y + 0.5);
             
             CGRect resultRect = CGRectMake(
                                            resultXOffset / ceil(self.contentView.bounds.size.width),
