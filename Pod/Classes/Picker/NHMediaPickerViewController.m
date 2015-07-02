@@ -13,6 +13,12 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "UIImage+Resize.h"
 
+#define image(name) \
+[[UIImage alloc] initWithContentsOfFile: \
+[[NSBundle bundleForClass:[NHMediaPickerViewController class]]\
+pathForResource:name ofType:@"png"]]
+
+
 const CGFloat kNHRecorderCollectionViewSpace = 1;
 
 @interface NHMediaPickerViewController ()<UICollectionViewDelegateFlowLayout, UICollectionViewDataSource>
@@ -60,7 +66,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     self.closeButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
     self.closeButton.frame = CGRectMake(0, 0, 44, 44);
     self.closeButton.tintColor = [UIColor blackColor];
-    [self.closeButton setImage:[UIImage imageNamed:@"NHRecorder.close.png"] forState:UIControlStateNormal];
+    [self.closeButton setImage:image(@"NHRecorder.close") forState:UIControlStateNormal];
     self.closeButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
     [self.closeButton addTarget:self action:@selector(closeButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -278,7 +284,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     
     if (itemNumber < 0) {
         cell.imageView.contentMode = UIViewContentModeCenter;
-        cell.imageView.image = [UIImage imageNamed:@"NHRecorder.photo.png"];
+        cell.imageView.image = image(@"NHRecorder.photo");
     }
     else {
         if (itemNumber < self.mediaItems.count) {
@@ -376,7 +382,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     [self willChangeValueForKey:@"firstController"];
     _firstController = firstController;
     
-    [self.closeButton setImage:(firstController ? [UIImage imageNamed:@"NHRecorder.close.png"] : [UIImage imageNamed:@"NHRecorder.back.png"]) forState:UIControlStateNormal];
+    [self.closeButton setImage:(firstController ? image(@"NHRecorder.close") : image(@"NHRecorder.back")) forState:UIControlStateNormal];
     [self didChangeValueForKey:@"firstController"];
 }
 

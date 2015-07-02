@@ -10,6 +10,12 @@
 #import "NHFilterCollectionViewCell.h"
 #import "UIImage+Resize.h"
 
+
+#define localization(name, table) \
+NSLocalizedStringFromTableInBundle(name, \
+table, \
+[NSBundle bundleForClass:[NHFilterCollectionView class]], nil)
+
 @interface NHFilterCollectionView ()<UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 
 @property (nonatomic, copy) UIImage *image;
@@ -71,14 +77,14 @@
                          ];
     
     self.filterNames = @[
-                         NSLocalizedStringFromTable(@"NHRecorder.filter.none", @"NHRecorder", nil),
-                         NSLocalizedStringFromTable(@"NHRecorder.filter.1977", @"NHRecorder", nil),
-                         NSLocalizedStringFromTable(@"NHRecorder.filter.amaro", @"NHRecorder", nil),
-                         NSLocalizedStringFromTable(@"NHRecorder.filter.grayscale", @"NHRecorder", nil),
-                         NSLocalizedStringFromTable(@"NHRecorder.filter.hudson", @"NHRecorder", nil),
-                         NSLocalizedStringFromTable(@"NHRecorder.filter.mayfair", @"NHRecorder", nil),
-                         NSLocalizedStringFromTable(@"NHRecorder.filter.nashville", @"NHRecorder", nil),
-                         NSLocalizedStringFromTable(@"NHRecorder.filter.valencia", @"NHRecorder", nil)
+                         localization(@"NHRecorder.filter.none", @"NHRecorder"),
+                         localization(@"NHRecorder.filter.1977", @"NHRecorder"),
+                         localization(@"NHRecorder.filter.amaro", @"NHRecorder"),
+                         localization(@"NHRecorder.filter.grayscale", @"NHRecorder"),
+                         localization(@"NHRecorder.filter.hudson", @"NHRecorder"),
+                         localization(@"NHRecorder.filter.mayfair", @"NHRecorder"),
+                         localization(@"NHRecorder.filter.nashville", @"NHRecorder"),
+                         localization(@"NHRecorder.filter.valencia", @"NHRecorder")
                          ];
     
     self.delegate = self;

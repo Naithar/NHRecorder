@@ -8,6 +8,16 @@
 
 #import "NHCropCollectionViewCell.h"
 
+#define image(name) \
+[[UIImage alloc] initWithContentsOfFile: \
+[[NSBundle bundleForClass:[NHCropCollectionViewCell class]]\
+pathForResource:name ofType:@"png"]]
+
+#define localization(name, table) \
+NSLocalizedStringFromTableInBundle(name, \
+table, \
+[NSBundle bundleForClass:[NHCropCollectionViewCell class]], nil)
+
 @interface NHCropCollectionViewCell ()
 
 @property (nonatomic, strong) UIImageView *imageView;
@@ -198,34 +208,34 @@
     
     switch (type) {
         case NHPhotoCropTypeNone:
-            text = NSLocalizedStringFromTable(@"NHRecorder.crop.none", @"NHRecorder", nil);
+            text = localization(@"NHRecorder.crop.none", @"NHRecorder");
             image = (selected
-            ? [UIImage imageNamed:@"NHRecorder.crop.none-active.png"]
-            : [UIImage imageNamed:@"NHRecorder.crop.none.png"]);
+            ? image(@"NHRecorder.crop.none-active")
+            : image(@"NHRecorder.crop.none"));
             break;
         case NHPhotoCropTypeSquare:
-            text = NSLocalizedStringFromTable(@"NHRecorder.crop.square", @"NHRecorder", nil);
+            text = localization(@"NHRecorder.crop.square", @"NHRecorder");
             image = (selected
-            ? [UIImage imageNamed:@"NHRecorder.crop.square-active.png"]
-            : [UIImage imageNamed:@"NHRecorder.crop.square.png"]);
+            ? image(@"NHRecorder.crop.square-active.png")
+            : image(@"NHRecorder.crop.square"));
             break;
         case NHPhotoCropType4x3:
-            text = NSLocalizedStringFromTable(@"NHRecorder.crop.4x3", @"NHRecorder", nil);
+            text = localization(@"NHRecorder.crop.4x3", @"NHRecorder");
             image = selected
-            ? [UIImage imageNamed:@"NHRecorder.crop.4x3-active.png"]
-            : [UIImage imageNamed:@"NHRecorder.crop.4x3.png"];
+            ? image(@"NHRecorder.crop.4x3-active.png")
+            : image(@"NHRecorder.crop.4x3.png");
             break;
         case NHPhotoCropType16x9:
-            text = NSLocalizedStringFromTable(@"NHRecorder.crop.16x9", @"NHRecorder", nil);
+            text = localization(@"NHRecorder.crop.16x9", @"NHRecorder");
             image = selected
-            ? [UIImage imageNamed:@"NHRecorder.crop.16x9-active.png"]
-            : [UIImage imageNamed:@"NHRecorder.crop.16x9.png"];
+            ? image(@"NHRecorder.crop.16x9-active")
+            : image(@"NHRecorder.crop.16x9");
             break;
         case NHPhotoCropType3x4:
-            text = NSLocalizedStringFromTable(@"NHRecorder.crop.3x4", @"NHRecorder", nil);
+            text = localization(@"NHRecorder.crop.3x4", @"NHRecorder");
             image = selected
-            ? [UIImage imageNamed:@"NHRecorder.crop.3x4-active.png"]
-            : [UIImage imageNamed:@"NHRecorder.crop.3x4.png"];
+            ? image(@"NHRecorder.crop.3x4-active")
+            : image(@"NHRecorder.crop.3x4");
             break;
         default:
             break;

@@ -9,7 +9,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "NHRecorder"
-  s.version          = "0.1.0"
+  s.version          = "0.5.0"
   s.summary          = "Custom ios camera"
 #  s.description      = <<-DESC
 #                       An optional longer description of NHRecorder
@@ -28,7 +28,7 @@ Pod::Spec.new do |s|
   s.requires_arc = true
 
   s.source_files = 'Pod/Classes/**/*'
-  s.resources = ['Pod/Assets/Filters/*', 'Pod/Assets/*']
+  s.resources = ['Pod/Assets/Filters/*', 'Pod/Assets/*.{png, lproj}']
 
   s.public_header_files = 'Pod/Classes/**/*.h'
   s.private_header_files = 'Pod/Classes/Private/*.h'

@@ -9,6 +9,16 @@
 #import "NHPhotoEditorViewController.h"
 #import "UIImage+Resize.h"
 
+#define image(name) \
+[[UIImage alloc] initWithContentsOfFile: \
+[[NSBundle bundleForClass:[NHPhotoEditorViewController class]]\
+pathForResource:name ofType:@"png"]]
+
+#define localization(name, table) \
+NSLocalizedStringFromTableInBundle(name, \
+table, \
+[NSBundle bundleForClass:[NHPhotoEditorViewController class]], nil)
+
 const CGFloat kNHRecorderSelectorViewHeight = 40;
 const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
 
@@ -65,14 +75,14 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
     self.backButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
     self.backButton.frame = CGRectMake(0, 0, 44, 44);
     self.backButton.tintColor = [UIColor whiteColor];
-    [self.backButton setImage:[UIImage imageNamed:@"NHRecorder.back.png"] forState:UIControlStateNormal];
+    [self.backButton setImage:image(@"NHRecorder.back") forState:UIControlStateNormal];
     self.backButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
     [self.backButton addTarget:self action:@selector(backButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithCustomView:self.backButton];
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
-                                              initWithTitle:NSLocalizedStringFromTable(@"NHRecorder.button.done", @"NHRecorder", nil)
+                                              initWithTitle:localization(@"NHRecorder.button.done", @"NHRecorder")
                                               style:UIBarButtonItemStylePlain
                                               target:self
                                               action:@selector(nextButtonTouch:)];
@@ -106,10 +116,10 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
     self.filterButton.backgroundColor = [UIColor clearColor];
     self.filterButton.translatesAutoresizingMaskIntoConstraints = NO;
     [self.filterButton setTitle:nil forState:UIControlStateNormal];
-    [self.filterButton setImage:[[UIImage imageNamed:@"NHRecorder.filter.button.png"]
+    [self.filterButton setImage:[image(@"NHRecorder.filter.button")
                                  imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
                        forState:UIControlStateNormal];
-    [self.filterButton setImage:[[UIImage imageNamed:@"NHRecorder.filter.button-active.png"]
+    [self.filterButton setImage:[image(@"NHRecorder.filter.button-active")
                                  imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
                        forState:UIControlStateSelected];
     [self.filterButton addTarget:self action:@selector(filterButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
@@ -118,10 +128,10 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
     self.cropButton.backgroundColor = [UIColor clearColor];
     self.cropButton.translatesAutoresizingMaskIntoConstraints = NO;
     [self.cropButton setTitle:nil forState:UIControlStateNormal];
-    [self.cropButton setImage:[[UIImage imageNamed:@"NHRecorder.crop.button.png"]
+    [self.cropButton setImage:[image(@"NHRecorder.crop.button")
                                imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
                      forState:UIControlStateNormal];
-    [self.cropButton setImage:[[UIImage imageNamed:@"NHRecorder.crop.button-active.png"]
+    [self.cropButton setImage:[image(@"NHRecorder.crop.button-active")
                                imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
                      forState:UIControlStateSelected];
     [self.cropButton addTarget:self action:@selector(cropButtonTouch:) forControlEvents:UIControlEventTouchUpInside];

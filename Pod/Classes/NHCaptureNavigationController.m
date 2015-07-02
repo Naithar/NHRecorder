@@ -8,6 +8,12 @@
 
 #import "NHCaptureNavigationController.h"
 
+#define image(name) \
+[[UIImage alloc] initWithContentsOfFile: \
+[[NSBundle bundleForClass:[NHCaptureNavigationController class]]\
+pathForResource:name ofType:@"png"]]
+
+
 @interface NHCaptureNavigationController ()
 
 @end
@@ -64,8 +70,8 @@
      self.navigationBar.barTintColor = [UIColor blackColor];
      self.navigationBar.tintColor = [UIColor whiteColor];
     
-    self.navigationBar.backIndicatorImage = [UIImage imageNamed:@"NHRecorder.back.png"];
-    self.navigationBar.backIndicatorTransitionMaskImage = [UIImage imageNamed:@"NHRecorder.back.png"];
+    self.navigationBar.backIndicatorImage = image(@"NHRecorder.back");//[UIImage imageNamed:@"NHRecorder.back.png"];
+    self.navigationBar.backIndicatorTransitionMaskImage = image(@"NHRecorder.back");//[UIImage imageNamed:@"NHRecorder.back.png"];
     
              if (viewController) {
     [self setViewControllers:@[viewController]];

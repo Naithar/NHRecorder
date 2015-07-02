@@ -15,6 +15,11 @@
 #import "UIImage+Resize.h"
 #import "NHMediaPickerViewController.h"
 
+#define image(name) \
+[[UIImage alloc] initWithContentsOfFile: \
+[[NSBundle bundleForClass:[NHPhotoCaptureViewController class]]\
+pathForResource:name ofType:@"png"]]
+
 
 const CGFloat kNHRecorderBottomViewHeight = 90;
 const CGFloat kNHRecorderCaptureButtonHeight = 60;
@@ -125,14 +130,14 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     self.closeButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
     self.closeButton.frame = CGRectMake(0, 0, 44, 44);
     self.closeButton.tintColor = [UIColor whiteColor];
-    [self.closeButton setImage:[UIImage imageNamed:@"NHRecorder.close.png"] forState:UIControlStateNormal];
+    [self.closeButton setImage:image(@"NHRecorder.close") forState:UIControlStateNormal];
     self.closeButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
     [self.closeButton addTarget:self action:@selector(closeButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     
     self.flashButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
     self.flashButton.frame = CGRectMake(0, 0, 44, 44);
     self.flashButton.tintColor = [UIColor whiteColor];
-    [self.flashButton setImage:[[UIImage imageNamed:@"NHRecorder.flash.png"]
+    [self.flashButton setImage:[image(@"NHRecorder.flash")
                                imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
     self.flashButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
     [self.flashButton addTarget:self action:@selector(flashButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
@@ -140,9 +145,9 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     self.gridButton = [NHRecorderButton buttonWithType:UIButtonTypeCustom];
     self.gridButton.frame = CGRectMake(0, 0, 44, 44);
     self.gridButton.tintColor = [UIColor whiteColor];
-    [self.gridButton setImage:[[UIImage imageNamed:@"NHRecorder.grid.png"]
+    [self.gridButton setImage:[image(@"NHRecorder.grid")
                                imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
-    [self.gridButton setImage:[[UIImage imageNamed:@"NHRecorder.grid-active.png"]
+    [self.gridButton setImage:[image(@"NHRecorder.grid-active")
                                imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateSelected];
     self.gridButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
     [self.gridButton addTarget:self action:@selector(gridButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
@@ -150,7 +155,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     self.switchButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
     self.switchButton.frame = CGRectMake(0, 0, 44, 44);
     self.switchButton.tintColor = [UIColor whiteColor];
-    [self.switchButton setImage:[UIImage imageNamed:@"NHRecorder.switch.png"] forState:UIControlStateNormal];
+    [self.switchButton setImage:image(@"NHRecorder.switch") forState:UIControlStateNormal];
     self.switchButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
     [self.switchButton addTarget:self action:@selector(switchButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -624,13 +629,13 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     NSString *imageName;
     switch (self.photoCamera.inputCamera.flashMode) {
         case AVCaptureFlashModeAuto:
-            imageName = @"NHRecorder.flash-auto.png";
+            imageName = @"NHRecorder.flash-auto";
             break;
         case AVCaptureFlashModeOn:
-            imageName = @"NHRecorder.flash-active.png";
+            imageName = @"NHRecorder.flash-active";
             break;
         case AVCaptureFlashModeOff:
-            imageName = @"NHRecorder.flash.png";
+            imageName = @"NHRecorder.flash";
             break;
         default:
             break;
@@ -638,7 +643,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     
     
     if (imageName) {
-    [self.flashButton setImage:[[UIImage imageNamed: imageName]
+    [self.flashButton setImage:[image(imageName)
                                    imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
                          forState:UIControlStateNormal];
     }
@@ -674,7 +679,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                                                           
                                                       }];
                            } failureBlock:^(NSError *error) {
-                               [self.libraryButton setImage:[UIImage imageNamed:@"NHRecorder.library.error.png"] forState:UIControlStateNormal];
+                               [self.libraryButton setImage:image(@"NHRecorder.library.error") forState:UIControlStateNormal];
                            }];
 }
 
@@ -699,7 +704,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     [self willChangeValueForKey:@"firstController"];
     _firstController = firstController;
     
-    [self.closeButton setImage:(firstController ? [UIImage imageNamed:@"NHRecorder.close.png"] : [UIImage imageNamed:@"NHRecorder.back.png"]) forState:UIControlStateNormal];
+    [self.closeButton setImage:(firstController ? image(@"NHRecorder.close") : image(@"NHRecorder.back")) forState:UIControlStateNormal];
     [self didChangeValueForKey:@"firstController"];
 }
 
