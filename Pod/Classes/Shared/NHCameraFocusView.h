@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <GPUImage.h>
+#import <GPUImage/GPUImage.h>
 
 @interface NHCameraFocusView : UIView
 

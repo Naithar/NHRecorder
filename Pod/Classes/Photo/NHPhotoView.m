@@ -8,7 +8,7 @@
 
 #import "NHPhotoView.h"
 
-#import <GPUImage.h>
+#import <GPUImage/GPUImage.h>
 
 @interface NHPhotoView ()<UIScrollViewDelegate>
 
