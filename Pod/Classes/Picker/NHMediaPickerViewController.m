@@ -14,7 +14,7 @@
 #import "UIImage+Resize.h"
 
 #define image(name) \
-[[UIImage alloc] initWithContentsOfFile: \
+[UIImage imageWithContentsOfFile: \
 [[NSBundle bundleForClass:[NHMediaPickerViewController class]]\
 pathForResource:name ofType:@"png"]]
 

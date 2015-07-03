@@ -9,7 +9,7 @@
 #import "NHCaptureNavigationController.h"
 
 #define image(name) \
-[[UIImage alloc] initWithContentsOfFile: \
+[UIImage imageWithContentsOfFile: \
 [[NSBundle bundleForClass:[NHCaptureNavigationController class]]\
 pathForResource:name ofType:@"png"]]
 

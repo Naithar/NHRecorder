@@ -10,7 +10,7 @@
 #import "UIImage+Resize.h"
 
 #define image(name) \
-[[UIImage alloc] initWithContentsOfFile: \
+[UIImage imageWithContentsOfFile: \
 [[NSBundle bundleForClass:[NHPhotoEditorViewController class]]\
 pathForResource:name ofType:@"png"]]
 
