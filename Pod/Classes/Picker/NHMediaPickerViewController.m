@@ -346,8 +346,11 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
                     if ([weakSelf.nhDelegate respondsToSelector:@selector(mediaPicker:shouldEditImage:)]) {
                         shouldEdit = [weakSelf.nhDelegate mediaPicker:weakSelf shouldEditImage:resultImage];
                     }
-                    NHPhotoEditorViewController *viewController = [[NHPhotoEditorViewController alloc] initWithUIImage:image];
-                    [self.navigationController pushViewController:viewController animated:YES];
+                    
+                    if (shouldEdit) {
+                        NHPhotoEditorViewController *viewController = [[NHPhotoEditorViewController alloc] initWithUIImage:image];
+                        [self.navigationController pushViewController:viewController animated:YES];
+                    }
                 }
             }
         }
