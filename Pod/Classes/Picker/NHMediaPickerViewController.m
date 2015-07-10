@@ -348,7 +348,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
                     }
                     
                     if (shouldEdit) {
-                        NHPhotoEditorViewController *viewController = [[NHPhotoEditorViewController alloc] initWithUIImage:image];
+                        NHPhotoEditorViewController *viewController = [[NHPhotoEditorViewController alloc] initWithUIImage:resultImage];
                         [self.navigationController pushViewController:viewController animated:YES];
                     }
                 }
