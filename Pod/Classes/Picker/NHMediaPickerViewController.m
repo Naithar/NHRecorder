@@ -429,6 +429,18 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     return UIStatusBarStyleDefault;
 }
 
+- (NSUInteger)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return UIInterfaceOrientationPortrait;
+}
+
+- (BOOL)shouldAutorotate {
+    return NO;
+}
+
 - (void)dealloc {
     self.mediaCollectionView.delegate = nil;
     self.mediaCollectionView.dataSource = nil;

@@ -43,6 +43,7 @@ extern const CGFloat kNHRecorderBottomViewHeight;
 
 @property (nonatomic, readonly, strong) UIButton *captureButton;
 @property (nonatomic, readonly, strong) NHRecorderButton *libraryButton;
+@property (nonatomic, readonly, strong) NHRecorderButton *videoCaptureButton;
 
 @property (nonatomic, weak) id<NHPhotoCaptureViewControllerDelegate> nhDelegate;
 

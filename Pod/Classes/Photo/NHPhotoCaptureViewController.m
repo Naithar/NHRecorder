@@ -10,6 +10,7 @@
 #import "NHCameraFocusView.h"
 #import "NHCameraGridView.h"
 #import "NHPhotoEditorViewController.h"
+#import "NHVideoCaptureViewController.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 
 #import "UIImage+Resize.h"
@@ -23,7 +24,7 @@ pathForResource:name ofType:@"png"]]
 
 const CGFloat kNHRecorderBottomViewHeight = 90;
 const CGFloat kNHRecorderCaptureButtonHeight = 60;
-const CGFloat kNHRecorderLibraryButtonHeight = 50;
+const CGFloat kNHRecorderSideButtonHeight = 50;
 const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 
 @interface NHPhotoCaptureViewController ()
@@ -44,6 +45,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 
 @property (nonatomic, strong) UIButton *captureButton;
 @property (nonatomic, strong) NHRecorderButton *libraryButton;
+@property (nonatomic, strong) NHRecorderButton *videoCaptureButton;
 
 @property (nonatomic, strong) id enterForegroundNotification;
 @property (nonatomic, strong) id resignActiveNotification;
@@ -207,8 +209,19 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     self.libraryButton.clipsToBounds = YES;
     [self.bottomContainerView addSubview:self.libraryButton];
     
+    self.videoCaptureButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.videoCaptureButton.translatesAutoresizingMaskIntoConstraints = NO;
+    self.videoCaptureButton.backgroundColor = [UIColor redColor];
+    [self.videoCaptureButton setTitle:nil forState:UIControlStateNormal];
+    [self.videoCaptureButton setImage:nil forState:UIControlStateNormal];
+    [self.videoCaptureButton addTarget:self action:@selector(videoCaptureButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
+    self.videoCaptureButton.layer.cornerRadius = 5;
+    self.videoCaptureButton.clipsToBounds = YES;
+    [self.bottomContainerView addSubview:self.videoCaptureButton];
+    
     [self setupCaptureButtonConstraints];
     [self setupLibraryButtonConstraints];
+    [self setupVideoCaptureButtonConstraints];
     [self resetLibrary];
    
     __weak __typeof(self) weakSelf = self;
@@ -492,12 +505,42 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                                                                          relatedBy:NSLayoutRelationEqual
                                                                             toItem:self.libraryButton
                                                                          attribute:NSLayoutAttributeHeight
-                                                                        multiplier:0 constant:kNHRecorderLibraryButtonHeight]];
+                                                                        multiplier:0 constant:kNHRecorderSideButtonHeight]];
     
     [self.libraryButton addConstraint:[NSLayoutConstraint constraintWithItem:self.libraryButton
                                                                    attribute:NSLayoutAttributeHeight
                                                                    relatedBy:NSLayoutRelationEqual
                                                                       toItem:self.libraryButton
+                                                                   attribute:NSLayoutAttributeWidth
+                                                                  multiplier:1.0 constant:0]];
+}
+
+- (void)setupVideoCaptureButtonConstraints {
+    [self.bottomContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.videoCaptureButton
+                                                                         attribute:NSLayoutAttributeCenterY
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.bottomContainerView
+                                                                         attribute:NSLayoutAttributeCenterY
+                                                                        multiplier:1.0 constant:0]];
+    
+    [self.bottomContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.videoCaptureButton
+                                                                         attribute:NSLayoutAttributeRight
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.bottomContainerView
+                                                                         attribute:NSLayoutAttributeRight
+                                                                        multiplier:1.0 constant:-25]];
+    
+    [self.videoCaptureButton addConstraint:[NSLayoutConstraint constraintWithItem:self.videoCaptureButton
+                                                                   attribute:NSLayoutAttributeHeight
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.videoCaptureButton
+                                                                   attribute:NSLayoutAttributeHeight
+                                                                  multiplier:0 constant:kNHRecorderSideButtonHeight]];
+    
+    [self.videoCaptureButton addConstraint:[NSLayoutConstraint constraintWithItem:self.videoCaptureButton
+                                                                   attribute:NSLayoutAttributeHeight
+                                                                   relatedBy:NSLayoutRelationEqual
+                                                                      toItem:self.videoCaptureButton
                                                                    attribute:NSLayoutAttributeWidth
                                                                   multiplier:1.0 constant:0]];
 }
@@ -620,6 +663,11 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     NHMediaPickerViewController *viewController = [[NHMediaPickerViewController alloc] init];
     viewController.firstController = NO;
     viewController.linksToCamera = NO;
+    [self.navigationController pushViewController:viewController animated:YES];
+}
+
+- (void)videoCaptureButtonTouch:(id)sender {
+    NHVideoCaptureViewController *viewController = [[NHVideoCaptureViewController alloc] init];
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
@@ -753,6 +801,17 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     return YES;
 }
 
+- (NSUInteger)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return UIInterfaceOrientationPortrait;
+}
+
+- (BOOL)shouldAutorotate {
+    return NO;
+}
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self.enterForegroundNotification];

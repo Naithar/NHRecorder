@@ -7,7 +7,12 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <GPUImage/GPUImage.h>
+#import "NHRecorderButton.h"
 
 @interface NHVideoCaptureViewController : UIViewController
+
+@property (nonatomic, strong) UIColor *barTintColor;
+@property (nonatomic, strong) UIColor *barButtonTintColor;
 
 @end

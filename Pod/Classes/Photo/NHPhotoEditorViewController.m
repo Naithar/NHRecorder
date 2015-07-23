@@ -676,6 +676,18 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
     return YES;
 }
 
+- (NSUInteger)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation {
+    return UIInterfaceOrientationPortrait;
+}
+
+- (BOOL)shouldAutorotate {
+    return NO;
+}
+
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self.orientationChange];
 }

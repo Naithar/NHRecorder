@@ -2,6 +2,7 @@ source 'https://github.com/CocoaPods/Specs.git'
 #use_frameworks!
 
 target 'NHRecorder_Example', :exclusive => true do
+    pod 'GPUImage', :git => "https://github.com/evfemist/GPUImage.git"
   pod "NHRecorder", :path => "../"
 end
 
