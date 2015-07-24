@@ -7,7 +7,7 @@
 //
 
 #import "NHPhotoCaptureViewController.h"
-#import "NHCameraFocusView.h"
+#import "NHPhotoFocusView.h"
 #import "NHCameraGridView.h"
 #import "NHPhotoEditorViewController.h"
 #import "NHVideoCaptureViewController.h"
@@ -34,7 +34,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 @property (nonatomic, strong) GPUImageView *photoCameraView;
 
 @property (nonatomic, strong) NHCameraGridView *cameraGridView;
-@property (nonatomic, strong) NHCameraFocusView *cameraFocusView;
+@property (nonatomic, strong) NHPhotoFocusView *cameraFocusView;
 
 @property (nonatomic, strong) UIView *bottomContainerView;
 
@@ -110,7 +110,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     [self setupBottomContainerViewContraints];
     [self setupCameraViewConstraints];
     
-    self.cameraFocusView = [[NHCameraFocusView alloc] init];
+    self.cameraFocusView = [[NHPhotoFocusView alloc] init];
     self.cameraFocusView.backgroundColor = [UIColor clearColor];
     self.cameraFocusView.translatesAutoresizingMaskIntoConstraints = NO;
     self.cameraFocusView.camera = self.photoCamera;
@@ -200,7 +200,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     self.captureButton.clipsToBounds = YES;
     [self.bottomContainerView addSubview:self.captureButton];
     
-    self.libraryButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.libraryButton = [NHRecorderButton buttonWithType:UIButtonTypeCustom];
     self.libraryButton.translatesAutoresizingMaskIntoConstraints = NO;
     self.libraryButton.backgroundColor = [UIColor clearColor];
     [self.libraryButton setTitle:nil forState:UIControlStateNormal];
@@ -209,7 +209,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     self.libraryButton.clipsToBounds = YES;
     [self.bottomContainerView addSubview:self.libraryButton];
     
-    self.videoCaptureButton = [UIButton buttonWithType:UIButtonTypeCustom];
+    self.videoCaptureButton = [NHRecorderButton buttonWithType:UIButtonTypeCustom];
     self.videoCaptureButton.translatesAutoresizingMaskIntoConstraints = NO;
     self.videoCaptureButton.backgroundColor = [UIColor redColor];
     [self.videoCaptureButton setTitle:nil forState:UIControlStateNormal];
@@ -233,7 +233,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                                             __strong __typeof(weakSelf) strongSelf = weakSelf;
                                             if (strongSelf
                                                 && strongSelf.view.window) {
-                                                [strongSelf.photoCamera startCameraCapture];
+                                                [strongSelf startCamera];
                                                 [strongSelf resetLibrary];
                                             }
                                         }];
@@ -246,7 +246,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                                          __strong __typeof(weakSelf) strongSelf = weakSelf;
                                          if (strongSelf
                                              && strongSelf.view.window) {
-                                             [strongSelf.photoCamera stopCameraCapture];
+//                                             [strongSelf stopCamera];
                                          }
                                      }];
 
@@ -335,7 +335,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                                                           relatedBy:NSLayoutRelationEqual
                                                              toItem:self.view
                                                           attribute:NSLayoutAttributeTop
-                                                         multiplier:1.0 constant:0]];
+                                                         multiplier:1.0 constant:-1]];
     
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.photoCameraView
                                                           attribute:NSLayoutAttributeLeft
@@ -766,14 +766,25 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    [self.photoCamera startCameraCapture];
+    
+    [self startCamera];
     [self resetLibrary];
+}
+
+- (void)startCamera {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [self.photoCamera startCameraCapture];
+    });
+}
+
+- (void)stopCamera {
+    [self.photoCamera stopCameraCapture];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
     [super viewDidDisappear:animated];
     
-    [self.photoCamera stopCameraCapture];
+    [self stopCamera];
 }
 
 - (void)viewWillAppear:(BOOL)animated {

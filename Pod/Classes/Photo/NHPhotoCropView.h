@@ -23,7 +23,6 @@ typedef NS_ENUM(NSUInteger, NHPhotoCropType) {
 @property (nonatomic, assign) CGSize maxCropSize;
 @property (nonatomic, assign) CGRect cropRect;
 
-@property (nonatomic, weak) UIScrollView *scrollView;
 @property (nonatomic, assign) NHPhotoCropType cropType;
 
 - (void)resetCrop;

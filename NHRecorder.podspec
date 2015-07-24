@@ -9,7 +9,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "NHRecorder"
-  s.version          = "0.5.0"
+  s.version          = "0.5.1"
   s.summary          = "Custom ios camera"
 #  s.description      = <<-DESC
 #                       An optional longer description of NHRecorder
@@ -33,4 +33,5 @@ Pod::Spec.new do |s|
   s.public_header_files = 'Pod/Classes/**/*.h'
   s.private_header_files = 'Pod/Classes/Private/*.h'
   s.dependency 'GPUImage'
+  s.frameworks   = ['UIKit', 'CoreGraphics', 'Foundation', 'QuartzCore', 'MobileCoreServices', 'MediaPlayer', 'CoreMedia', 'AssetsLibrary', 'AVFoundation']
 end

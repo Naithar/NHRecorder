@@ -11,9 +11,12 @@
 #import "NHRecorderButton.h"
 
 extern const CGFloat kNHRecorderBottomViewHeight;
+extern const CGFloat kNHRecorderCaptureButtonHeight;
+extern const CGFloat kNHRecorderSideButtonHeight;
+extern const CGFloat kNHRecorderCaptureButtonBorderOffset;
 
 @class NHCameraGridView;
-@class NHCameraFocusView;
+@class NHPhotoFocusView;
 @class NHPhotoCaptureViewController;
 
 @protocol NHPhotoCaptureViewControllerDelegate <NSObject>
@@ -33,7 +36,7 @@ extern const CGFloat kNHRecorderBottomViewHeight;
 
 @property (nonatomic, readonly, strong) GPUImageView *photoCameraView;
 @property (nonatomic, readonly, strong) NHCameraGridView *cameraGridView;
-@property (nonatomic, readonly, strong) NHCameraFocusView *cameraFocusView;
+@property (nonatomic, readonly, strong) NHPhotoFocusView *cameraFocusView;
 @property (nonatomic, readonly, strong) UIView *bottomContainerView;
 
 @property (nonatomic, readonly, strong) NHRecorderButton *closeButton;

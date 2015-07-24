@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <GPUImage/GPUImage.h>
 
-@interface NHCameraFocusView : UIView
+@interface NHPhotoFocusView : UIView
 
 @property (nonatomic, weak) GPUImageVideoCamera *camera;
 @property (nonatomic, weak) GPUImageCropFilter *cropFilter;

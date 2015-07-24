@@ -6,12 +6,12 @@
 //
 //
 
-#import "NHCameraFocusView.h"
+#import "NHPhotoFocusView.h"
 
 const CGFloat kNHRecorderMinZoom = 1;
 const CGFloat kNHRecorderMaxZoom = 5;
 
-@interface NHCameraFocusView ()
+@interface NHPhotoFocusView ()
 
 @property (nonatomic, strong) UITapGestureRecognizer *tapGesture;
 @property (nonatomic, strong) UIPinchGestureRecognizer *pinchGesture;
@@ -22,7 +22,7 @@ const CGFloat kNHRecorderMaxZoom = 5;
 @property (nonatomic, assign) CGFloat prevZoom;
 @end
 
-@implementation NHCameraFocusView
+@implementation NHPhotoFocusView
 
 - (instancetype)initWithFrame:(CGRect)frame {
     self = [super initWithFrame:frame];

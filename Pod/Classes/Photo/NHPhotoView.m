@@ -114,7 +114,6 @@
     self.cropView.userInteractionEnabled = NO;
     self.cropView.backgroundColor = [UIColor clearColor];
     self.cropView.cropBackgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
-    self.cropView.scrollView = self;
 }
 
 //MARK: setup
