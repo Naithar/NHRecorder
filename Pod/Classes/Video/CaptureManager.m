@@ -57,6 +57,27 @@
 
 #define MAX_DURATION 0.25
 
+@interface NHAssetContainer : NSObject
+
+@property (nonatomic, strong) AVAsset *asset;
+@property (nonatomic, assign) AVCaptureDevicePosition captureDevicePosition;
+
+@end
+
+@implementation NHAssetContainer
+
+- (instancetype)initWithAsset:(AVAsset*)asset andCameraPosition:(AVCaptureDevicePosition)position {
+    self = [super init];
+    if (self) {
+        _asset = asset;
+        _captureDevicePosition = position;
+    }
+    
+    return self;
+}
+
+@end
+
 @interface CaptureManager (RecorderDelegate) <AVCamRecorderDelegate>
 @end
 
@@ -250,6 +271,21 @@
     }
 }
 
+
+- (AVCaptureDevicePosition)currentCameraPosition {
+    __block AVCaptureDevicePosition position;
+    NSArray* inputs = self.session.inputs;
+    for (AVCaptureDeviceInput* input in inputs) {
+        AVCaptureDevice* device = input.device;
+        if ([device hasMediaType: AVMediaTypeVideo]) {
+            position = device.position;
+            break;
+        }
+    }
+    
+    return position;
+}
+
 - (void) startRecording
 {
     if ([[UIDevice currentDevice] isMultitaskingSupported]) {
@@ -260,8 +296,11 @@
         [self setBackgroundRecordingID:[[UIApplication sharedApplication] beginBackgroundTaskWithExpirationHandler:^{}]];
     }
     
+    self.recordingDevicePosition = [self currentCameraPosition];
+    
     [self removeFile:[[self recorder] outputFileURL]];
     [[self recorder] startRecordingWithOrientation:self.orientation];
+    
 }
 
 - (void) stopRecording
@@ -281,15 +320,42 @@
         AVMutableCompositionTrack *audioTrack = [mixComposition addMutableTrackWithMediaType:AVMediaTypeAudio
                                                                             preferredTrackID:kCMPersistentTrackID_Invalid];        
         __block CMTime time = kCMTimeZero;
-        __block CGAffineTransform translate;
-        __block CGSize size;
+//        __block 
+        __block CGSize size = CGSizeZero;
         
         // Also tried videoCompositionLayerInstructionWithAssetTrack:compositionVideoTrack
         AVMutableVideoCompositionLayerInstruction *vLayerInstruction = [AVMutableVideoCompositionLayerInstruction
                                                                         videoCompositionLayerInstructionWithAssetTrack:videoTrack];
         
-        [self.assets enumerateObjectsUsingBlock:^(AVAsset *asset, NSUInteger idx, BOOL *stop) {
-
+        [self.assets enumerateObjectsUsingBlock:^(NHAssetContainer *assetContainer, NSUInteger idx, BOOL *stop) {
+            AVAsset *asset = assetContainer.asset;
+            
+            AVAssetTrack *videoAssetTrack = [[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
+            CGFloat desiredAspectRatio = 1.0;
+            CGSize naturalSize = CGSizeMake(videoAssetTrack.naturalSize.width, videoAssetTrack.naturalSize.height);
+            CGSize adjustedSize = CGSizeApplyAffineTransform(naturalSize, videoAssetTrack.preferredTransform);
+            adjustedSize.width = ABS(adjustedSize.width);
+            adjustedSize.height = ABS(adjustedSize.height);
+            
+            CGSize newSize = CGSizeZero;
+            if (adjustedSize.width > adjustedSize.height) {
+                                    newSize = CGSizeMake(adjustedSize.height * desiredAspectRatio, adjustedSize.height);
+//                translate = CGAffineTransformMakeTranslation(-(adjustedSize.width - size.width) / 2.0, 0);
+            } else {
+                                    newSize = CGSizeMake(adjustedSize.width, adjustedSize.width / desiredAspectRatio);
+//                translate = CGAffineTransformMakeTranslation(0, -(adjustedSize.height - size.height) / 2.0);
+            }
+            
+            if (newSize.width
+                && newSize.height
+                && size.width < newSize.width) {
+                size = newSize;
+            }
+        }];
+        
+        [self.assets enumerateObjectsUsingBlock:^(NHAssetContainer *assetContainer, NSUInteger idx, BOOL *stop) {
+            AVAsset *asset = assetContainer.asset;
+            
            // AVAsset *asset = [AVAsset assetWithURL:[NSURL fileURLWithPath:string]];//obj]];
             AVAssetTrack *videoAssetTrack = [[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
             
@@ -300,24 +366,89 @@
                                 ofTrack:[[asset tracksWithMediaType:AVMediaTypeAudio] objectAtIndex:0] atTime:time error:nil];
 //            if(idx == 0)
 //            {
+            
                 // Set your desired output aspect ratio here. 1.0 for square, 16/9.0 for widescreen, etc.
-                CGFloat desiredAspectRatio = 1.0;
+            
+                CGAffineTransform translate;
                 CGSize naturalSize = CGSizeMake(videoAssetTrack.naturalSize.width, videoAssetTrack.naturalSize.height);
                 CGSize adjustedSize = CGSizeApplyAffineTransform(naturalSize, videoAssetTrack.preferredTransform);
                 adjustedSize.width = ABS(adjustedSize.width);
                 adjustedSize.height = ABS(adjustedSize.height);
-                if (adjustedSize.width > adjustedSize.height) {
-                    size = CGSizeMake(adjustedSize.height * desiredAspectRatio, adjustedSize.height);
-                    translate = CGAffineTransformMakeTranslation(-(adjustedSize.width - size.width) / 2.0, 0);
-                } else {
-                    size = CGSizeMake(adjustedSize.width, adjustedSize.width / desiredAspectRatio);
-                    translate = CGAffineTransformMakeTranslation(0, -(adjustedSize.height - size.height) / 2.0);
-                }
-                CGAffineTransform newTransform = CGAffineTransformConcat(videoAssetTrack.preferredTransform, translate);
-                
-                [videoTrack setPreferredTransform:newTransform];
             
-                [vLayerInstruction setTransform:videoTrack.preferredTransform atTime:time];
+            CGFloat xValue = (adjustedSize.width - size.width);
+            CGFloat yValue = (adjustedSize.height - size.height);
+            UIInterfaceOrientation orientation = [self orientationForTrack:asset];
+            BOOL isPortrait = orientation == UIInterfaceOrientationMaskPortrait || orientation == UIInterfaceOrientationMaskPortraitUpsideDown;
+            BOOL shouldMirror = assetContainer.captureDevicePosition == AVCaptureDevicePositionFront;
+            
+            if (adjustedSize.width > adjustedSize.height) {
+                translate = CGAffineTransformMakeTranslation(-xValue / 2.0, 0);
+            } else {
+                translate = CGAffineTransformMakeTranslation(0, -yValue / 2.0);
+            }
+            
+            CGAffineTransform newTransform = CGAffineTransformConcat(videoAssetTrack.preferredTransform, translate);
+            
+//            CGFloat xDelta = size.width / adjustedSize.width;
+//            CGFloat yDelta = size.height / adjustedSize.height;
+//            CGFloat scaleDelta = MAX(xDelta, yDelta);
+//            
+//            if (scaleDelta > 1) {
+//                
+//                CGFloat xScaleValue = 1;
+//                CGFloat yScaleValue = 1;
+//                
+//                switch (orientation) {
+//                    case UIInterfaceOrientationPortrait:
+//                        newTransform = CGAffineTransformTranslate(newTransform, size.width / 2, size.height / 2);
+//                        xScaleValue = -1;
+//                        yScaleValue = 4;
+//                        break;
+//                    case UIInterfaceOrientationPortraitUpsideDown:
+//                        newTransform = CGAffineTransformTranslate(newTransform, size.width / 2, -size.height / 2);
+//                        break;
+//                    case UIInterfaceOrientationLandscapeRight:
+//                        newTransform = CGAffineTransformTranslate(newTransform, -size.width / 2, size.height / 2);
+//                        xScaleValue = -1;
+//                        yScaleValue = -1;
+//                        break;
+//                    case UIInterfaceOrientationLandscapeLeft:
+//                        newTransform = CGAffineTransformTranslate(newTransform, size.width / 2, size.height / 2);
+//                        xScaleValue = -1;
+//                        yScaleValue = -1;
+//                        break;
+//                    default:
+//                        break;
+//                }
+//                
+//                newTransform = CGAffineTransformScale(newTransform, -scaleDelta, scaleDelta);
+//                newTransform = CGAffineTransformConcat(newTransform,
+//                                                       CGAffineTransformMakeTranslation(adjustedSize.width + xScaleValue * xValue / 2,
+//                                                                                        (isPortrait ? 1 : -1) * adjustedSize.height + yScaleValue * yValue / 2.0));
+//                
+//            }
+            
+            if (shouldMirror) {
+                switch (orientation) {
+                    case UIInterfaceOrientationPortraitUpsideDown:
+                        newTransform = CGAffineTransformTranslate(newTransform, size.width / 2, -size.height / 2);
+                        break;
+                    case UIInterfaceOrientationLandscapeRight:
+                        newTransform = CGAffineTransformTranslate(newTransform, -size.width / 2, size.height / 2);
+                        break;
+                    default:
+                        newTransform = CGAffineTransformTranslate(newTransform, size.width / 2, size.height / 2);
+                        break;
+                }
+                
+                newTransform = CGAffineTransformConcat(newTransform,
+                                                       CGAffineTransformMakeScale(-1, 1));
+                newTransform = CGAffineTransformConcat(newTransform,
+                                                       CGAffineTransformMakeTranslation(size.width / 2,
+                                                                                        (isPortrait ? 1 : -1) * size.height / 2));
+            }
+            
+                [vLayerInstruction setTransform:newTransform atTime:time];
             
                 // Check the output size - for best results use sizes that are multiples of 16
                 // More info: http://stackoverflow.com/questions/22883525/avassetexportsession-giving-me-a-green-border-on-right-and-bottom-of-output-vide
@@ -366,12 +497,42 @@
     }
 }
 
+//http://stackoverflow.com/questions/21077240/cropping-avasset-video-with-avfoundation
+- (UIInterfaceOrientation)orientationForTrack:(AVAsset *)asset {
+    UIInterfaceOrientation orientation = UIInterfaceOrientationPortrait;
+    NSArray *tracks = [asset tracksWithMediaType:AVMediaTypeVideo];
+    
+    if([tracks count] > 0) {
+        AVAssetTrack *videoTrack = [tracks objectAtIndex:0];
+        CGAffineTransform t = videoTrack.preferredTransform;
+        
+        // Portrait
+        if(t.a == 0 && t.b == 1.0 && t.c == -1.0 && t.d == 0) {
+            orientation = UIInterfaceOrientationPortrait;
+        }
+        // PortraitUpsideDown
+        if(t.a == 0 && t.b == -1.0 && t.c == 1.0 && t.d == 0) {
+            orientation = UIInterfaceOrientationPortraitUpsideDown;
+        }
+        // LandscapeRight
+        if(t.a == 1.0 && t.b == 0 && t.c == 0 && t.d == 1.0) {
+            orientation = UIInterfaceOrientationLandscapeRight;
+        }
+        // LandscapeLeft
+        if(t.a == -1.0 && t.b == 0 && t.c == 0 && t.d == -1.0) {
+            orientation = UIInterfaceOrientationLandscapeLeft;
+        }
+    }
+    return orientation;
+}
+
 -(void)exportDidFinish:(AVAssetExportSession*)session withCompletionBlock:(void(^)(NSURL* assetURL))completion {
     self.exportSession = nil;
     
     __block id weakSelf = self;
     //delete stored pieces
-    [self.assets enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(AVAsset *asset, NSUInteger idx, BOOL *stop) {
+    [self.assets enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(NHAssetContainer *assetContainer, NSUInteger idx, BOOL *stop) {
+        AVAsset *asset = assetContainer.asset;
         
         NSURL *fileURL = nil;
         if ([asset isKindOfClass:AVURLAsset.class])
@@ -473,21 +634,21 @@
 - (NSTimeInterval)currentDuration {
     __block NSTimeInterval returnValue = 0;
     
-    [self.assets enumerateObjectsUsingBlock:^(AVAsset *obj, NSUInteger idx, BOOL *stop) {
-        returnValue += CMTimeGetSeconds(obj.duration);
+    [self.assets enumerateObjectsUsingBlock:^(NHAssetContainer *obj, NSUInteger idx, BOOL *stop) {
+        returnValue += CMTimeGetSeconds(obj.asset.duration);
     }];
     
     return returnValue;
 }
 
 - (NSTimeInterval)lastAssetDuration {
-    AVAsset *asset = [self.assets lastObject];
+    AVAsset *asset = ((NHAssetContainer*)[self.assets lastObject]).asset;
     return CMTimeGetSeconds(asset.duration);
 }
 
 -(void) deleteLastAsset
 {
-    AVAsset *asset = [self.assets lastObject];
+    AVAsset *asset = ((NHAssetContainer*)[self.assets lastObject]).asset;
     
     NSTimeInterval duration = CMTimeGetSeconds(asset.duration);
     
@@ -581,7 +742,7 @@
     
     //add asset into the array or pieces
     AVAsset *asset = [AVAsset assetWithURL:[NSURL fileURLWithPath:destinationPath]];
-    [self.assets addObject:asset];
+    [self.assets addObject:[[NHAssetContainer alloc] initWithAsset:asset andCameraPosition:self.recordingDevicePosition]];
 }
 
 @end

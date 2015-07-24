@@ -191,7 +191,7 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
     self.switchButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
     self.switchButton.frame = CGRectMake(0, 0, 44, 44);
     self.switchButton.tintColor = [UIColor whiteColor];
-    self.switchButton.customAlignmentInsets = UIEdgeInsetsMake(0, 22, 0, 0);
+    self.switchButton.customAlignmentInsets = UIEdgeInsetsMake(0, 10, 0, 0);
     [self.switchButton setImage:image(@"NHRecorder.switch") forState:UIControlStateNormal];
     self.switchButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentRight;
     [self.switchButton addTarget:self action:@selector(switchButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
@@ -199,14 +199,13 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
     self.gridButton = [NHRecorderButton buttonWithType:UIButtonTypeCustom];
     self.gridButton.frame = CGRectMake(0, 0, 44, 44);
     self.gridButton.tintColor = [UIColor whiteColor];
-    self.gridButton.customAlignmentInsets = UIEdgeInsetsMake(0, 0, 0, 22);
+    self.gridButton.customAlignmentInsets = UIEdgeInsetsMake(0, 0, 0, 10);
     [self.gridButton setImage:[image(@"NHRecorder.grid")
                                imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateNormal];
     [self.gridButton setImage:[image(@"NHRecorder.grid-active")
                                imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal] forState:UIControlStateSelected];
     self.gridButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
     [self.gridButton addTarget:self action:@selector(gridButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
-    
     
     UIBarButtonItem *closeBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.backButton];
     UIBarButtonItem *gridBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.gridButton];

@@ -71,6 +71,8 @@
 @property (nonatomic,assign) NSTimer *exportProgressBarTimer;
 @property (nonatomic,strong) AVAssetExportSession *exportSession;
 
+@property (nonatomic,assign) AVCaptureDevicePosition recordingDevicePosition;
+
 - (BOOL) setupSession;
 - (void) startRecording;
 - (void) stopRecording;
