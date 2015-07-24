@@ -59,7 +59,7 @@
 
 @interface NHAssetContainer : NSObject
 
-@property (nonatomic, weak) AVAsset *asset;
+@property (nonatomic, strong) AVAsset *asset;
 @property (nonatomic, assign) AVCaptureDevicePosition captureDevicePosition;
 
 @end
