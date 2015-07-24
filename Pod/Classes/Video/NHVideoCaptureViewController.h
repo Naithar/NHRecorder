@@ -13,6 +13,7 @@
 @class CaptureManager;
 @class NHCameraGridView;
 @class NHVideoCaptureViewController;
+@class NHRecorderProgressView;
 
 @protocol NHVideoCaptureViewControllerDelegate <NSObject>
 
@@ -30,6 +31,8 @@
 - (BOOL)nhVideoCapture:(NHVideoCaptureViewController*)controller shouldEditVideoAtURL:(NSURL *)videoURL;
 - (BOOL)nhVideoCapture:(NHVideoCaptureViewController*)controller cameraAvailability:(AVAuthorizationStatus)status;
 
+
+- (void)nhVideoCaptureDidReset:(NHVideoCaptureViewController*)controller;
 @end
 
 @interface NHVideoCaptureViewController : UIViewController
@@ -51,6 +54,6 @@
 @property (nonatomic, readonly, strong) NHRecorderButton *gridButton;
 @property (nonatomic, readonly, strong) NHRecorderButton *switchButton;
 
-@property (nonatomic, readonly, strong) UIProgressView *durationProgressView;
+@property (nonatomic, readonly, strong) NHRecorderProgressView *durationProgressView;
 
 @end

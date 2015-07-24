@@ -15,6 +15,7 @@
 #import "NHVideoFocusView.h"
 #import "AVCamRecorder.h"
 #import "NHVideoEditViewController.h"
+#import "NHRecorderProgressView.h"
 
 #define image(name) \
 [UIImage imageWithContentsOfFile: \
@@ -26,7 +27,7 @@ NSLocalizedStringFromTableInBundle(name, \
 table, \
 [NSBundle bundleForClass:[NHVideoCaptureViewController class]], nil)
 
-const NSTimeInterval kNHVideoTimerInterval = 0.01;
+const NSTimeInterval kNHVideoTimerInterval = 0.05;
 const NSTimeInterval kNHVideoMaxDuration = 15.0;
 const NSTimeInterval kNHVideoMinDuration = 2.0;
 
@@ -51,7 +52,7 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 @property (nonatomic, strong) NHRecorderButton *gridButton;
 @property (nonatomic, strong) NHRecorderButton *switchButton;
 
-@property (nonatomic, strong) UIProgressView *durationProgressView;
+@property (nonatomic, strong) NHRecorderProgressView *durationProgressView;
 
 @property (nonatomic, assign) NSTimeInterval currentDuration;
 
@@ -152,10 +153,13 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
     [self setupRemoveFragmentButtonConstraints];
     [self setupCaptureButtonConstraints];
     
-    self.durationProgressView = [[UIProgressView alloc] initWithProgressViewStyle:UIProgressViewStyleDefault];
+    self.durationProgressView = [[NHRecorderProgressView alloc] init];
     self.durationProgressView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.durationProgressView.progressTintColor = [UIColor redColor];
+    self.durationProgressView.progressColor = [UIColor redColor];
     self.durationProgressView.backgroundColor = [UIColor darkGrayColor];
+    self.durationProgressView.minValue = kNHVideoMinDuration / kNHVideoMaxDuration;
+    self.durationProgressView.minValueColor = [UIColor lightGrayColor];
+    
     [self.bottomContainerView addSubview:self.durationProgressView];
     
     [self setupDurationProgressViewConstraints];
@@ -532,7 +536,7 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
                                                                           relatedBy:NSLayoutRelationEqual
                                                                              toItem:self.durationProgressView
                                                                           attribute:NSLayoutAttributeHeight
-                                                                         multiplier:0 constant:1.5]];
+                                                                         multiplier:0 constant:3]];
 }
 
 - (void)setupVideoViewConstraints {
@@ -714,10 +718,14 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
     self.navigationController.view.userInteractionEnabled = NO;
     
     [self.captureManager saveVideoWithCompletionBlock:^(NSURL *assetURL) {
+        
+#ifdef DEBUG
+        NSLog(@"save with url = %@", assetURL);
+#endif
+        
         self.navigationController.view.userInteractionEnabled = YES;
         
         if (assetURL) {
-//            [self resetRecorder];
             
             BOOL shouldEdit = YES;
             if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoCapture:shouldEditVideoAtURL:)]) {
@@ -750,7 +758,7 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 }
 
 - (void)removeTimeFromDuration:(float)removeTime {
-    self.currentDuration = MAX(0, self.currentDuration - removeTime);
+    self.currentDuration = MAX(0, [self.captureManager currentDuration]);
 }
 
 - (void)captureManagerRecordingBegan:(CaptureManager *)captureManager {
@@ -779,6 +787,10 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 - (void)captureManagerRecordingFinished:(CaptureManager *)captureManager {
     self.captureButton.backgroundColor = [UIColor whiteColor];
     
+    self.currentDuration = [self.captureManager currentDuration];
+    
+    [self.durationProgressView addSeparatorAtProgress:self.durationProgressView.progress];
+    
     __weak __typeof(self) weakSelf = self;
     if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoCaptureDidFinish:)]) {
         [weakSelf.nhDelegate nhVideoCaptureDidFinish:weakSelf];
@@ -805,6 +817,9 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
     __weak __typeof(self) weakSelf = self;
     if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoCapture:didFailWithError:)]) {
         [weakSelf.nhDelegate nhVideoCapture:weakSelf didFailWithError:error];
+#ifdef DEBUG
+        NSLog(@"fail with: %@", error);
+#endif
     }
 }
 
@@ -814,7 +829,13 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 
 - (void)resetRecorder {
     [self stopCapture];
+    [self.durationProgressView removeAllSeparators];
     self.currentDuration = 0;
+    
+    __weak __typeof(self) weakSelf = self;
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoCaptureDidReset:)]) {
+        [weakSelf.nhDelegate nhVideoCaptureDidReset:weakSelf];
+    }
 }
 
 - (BOOL)prefersStatusBarHidden {

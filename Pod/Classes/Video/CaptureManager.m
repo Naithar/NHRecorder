@@ -331,10 +331,7 @@
         }];
         
         AVMutableVideoCompositionInstruction *vtemp = [AVMutableVideoCompositionInstruction videoCompositionInstruction];
-        vtemp.timeRange = CMTimeRangeMake(kCMTimeZero, time);
-        NSLog(@"\nInstruction vtemp's time range is %f %f", CMTimeGetSeconds( vtemp.timeRange.start),
-              CMTimeGetSeconds(vtemp.timeRange.duration));
-        
+        vtemp.timeRange = CMTimeRangeMake(kCMTimeZero, time);        
         vtemp.layerInstructions = @[vLayerInstruction];
         
         AVMutableVideoComposition *videoComposition = [AVMutableVideoComposition videoComposition];
@@ -362,7 +359,6 @@
         __block id weakSelf = self;
         
         [self.exportSession exportAsynchronouslyWithCompletionHandler:^{
-            NSLog (@"i is in your block, exportin. status is %ld",(long)self.exportSession.status);
             dispatch_async(dispatch_get_main_queue(), ^{
                 [weakSelf exportDidFinish:self.exportSession withCompletionBlock:completion];
             });
@@ -408,9 +404,9 @@
                     [weakSelf removeFile:outputURL];
                     
                     if (error) {
-                        completion (assetURL);
-                    } else {
                         completion (nil);
+                    } else {
+                        completion (assetURL);
                     }
                 }];
             }
@@ -474,12 +470,26 @@
 	}
 }
 
+- (NSTimeInterval)currentDuration {
+    __block NSTimeInterval returnValue = 0;
+    
+    [self.assets enumerateObjectsUsingBlock:^(AVAsset *obj, NSUInteger idx, BOOL *stop) {
+        returnValue += CMTimeGetSeconds(obj.duration);
+    }];
+    
+    return returnValue;
+}
+
+- (NSTimeInterval)lastAssetDuration {
+    AVAsset *asset = [self.assets lastObject];
+    return CMTimeGetSeconds(asset.duration);
+}
 
 -(void) deleteLastAsset
 {
     AVAsset *asset = [self.assets lastObject];
     
-    [self.delegate removeTimeFromDuration:CMTimeGetSeconds(asset.duration)];
+    NSTimeInterval duration = CMTimeGetSeconds(asset.duration);
     
     NSURL *fileURL = nil;
     if ([asset isKindOfClass:AVURLAsset.class])
@@ -492,6 +502,8 @@
         [self removeFile:fileURL];
     
     [self.assets removeLastObject];
+    
+    [self.delegate removeTimeFromDuration:duration];
 }
 
 @end

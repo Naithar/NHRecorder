@@ -81,6 +81,8 @@
 - (void) continuousFocusAtPoint:(CGPoint)point;
 - (void) switchCamera;
 - (void) deleteLastAsset;
+- (NSTimeInterval) lastAssetDuration;
+- (NSTimeInterval) currentDuration;
 
 @end
 
