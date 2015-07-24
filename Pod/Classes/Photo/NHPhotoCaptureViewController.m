@@ -217,6 +217,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     [self.videoCaptureButton addTarget:self action:@selector(videoCaptureButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     self.videoCaptureButton.layer.cornerRadius = 5;
     self.videoCaptureButton.clipsToBounds = YES;
+    self.videoCaptureButton.hidden = !self.videoCaptureEnabled;
     [self.bottomContainerView addSubview:self.videoCaptureButton];
     
     [self setupCaptureButtonConstraints];
@@ -604,14 +605,15 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 
 - (void)captureButtonTouch:(id)sender {
     
-    if ([AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo] != AVAuthorizationStatusAuthorized) {
+    AVAuthorizationStatus cameraStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    
+    if (cameraStatus != AVAuthorizationStatusAuthorized) {
         
         __weak __typeof(self) weakSelf = self;
         if ([weakSelf.nhDelegate respondsToSelector:@selector(photoCapture:cameraAvailability:)]) {
             [weakSelf.nhDelegate
              photoCapture:weakSelf
-             cameraAvailability:[AVCaptureDevice
-                                 authorizationStatusForMediaType:AVMediaTypeVideo]];
+             cameraAvailability:cameraStatus];
         }
         return;
     }
@@ -754,6 +756,14 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     
     [self.closeButton setImage:(firstController ? image(@"NHRecorder.close") : image(@"NHRecorder.back")) forState:UIControlStateNormal];
     [self didChangeValueForKey:@"firstController"];
+}
+
+- (void)setVideoCaptureEnabled:(BOOL)videoCaptureEnabled {
+    [self willChangeValueForKey:@"videoCaptureEnabled"];
+    _videoCaptureEnabled = videoCaptureEnabled;
+    
+    self.videoCaptureButton.hidden = !videoCaptureEnabled;
+    [self didChangeValueForKey:@"videoCaptureEnabled"];
 }
 
 //MARK: View overrides

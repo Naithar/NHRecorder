@@ -74,7 +74,7 @@
 - (BOOL) setupSession;
 - (void) startRecording;
 - (void) stopRecording;
-- (void) saveVideoWithCompletionBlock:(void(^)(BOOL success))completion;
+- (void) saveVideoWithCompletionBlock:(void (^)(NSURL* assetURL))completion;
 - (NSUInteger) cameraCount;
 - (NSUInteger) micCount;
 - (void) autoFocusAtPoint:(CGPoint)point;
@@ -98,4 +98,7 @@
 - (void) captureManagerRecordingFinished:(CaptureManager *)captureManager;
 - (void) captureManagerStillImageCaptured:(CaptureManager *)captureManager;
 - (void) captureManagerDeviceConfigurationChanged:(CaptureManager *)captureManager;
+
+
+- (BOOL)captureManagerShouldSaveToCameraRoll:(CaptureManager*)captureManager;
 @end

@@ -6,17 +6,40 @@
 //
 //
 
-#import <UIKit/UIKit.h>
+@import UIKit;
+@import AVFoundation;
 
-#import "NHRecorderButton.h"
-
+@class NHRecorderButton;
+@class CaptureManager;
 @class NHCameraGridView;
+@class NHVideoCaptureViewController;
+
+@protocol NHVideoCaptureViewControllerDelegate <NSObject>
+
+@optional
+- (void)nhVideoCaptureDidStart:(NHVideoCaptureViewController*)controller;
+- (void)nhVideoCaptureDidFinish:(NHVideoCaptureViewController*)controller;
+
+- (void)nhVideoCapture:(NHVideoCaptureViewController*)controller exportProgressChanged:(float)progress;
+- (void)nhVideoCaptureDidStartSaving:(NHVideoCaptureViewController*)controller;
+
+- (void)nhVideoCapture:(NHVideoCaptureViewController *)controller didFailWithError:(NSError*)error;
+
+- (void)nhVideoCapture:(NHVideoCaptureViewController *)controller didFinishExportingWithSuccess:(BOOL)success;
+
+- (BOOL)nhVideoCapture:(NHVideoCaptureViewController*)controller shouldEditVideoAtURL:(NSURL *)videoURL;
+- (BOOL)nhVideoCapture:(NHVideoCaptureViewController*)controller cameraAvailability:(AVAuthorizationStatus)status;
+
+@end
 
 @interface NHVideoCaptureViewController : UIViewController
+
+@property (nonatomic, weak) id<NHVideoCaptureViewControllerDelegate> nhDelegate;
 
 @property (nonatomic, strong) UIColor *barTintColor;
 @property (nonatomic, strong) UIColor *barButtonTintColor;
 
+@property (nonatomic, readonly, strong) CaptureManager *captureManager;
 @property (nonatomic, readonly, strong) UIView *videoCameraView;
 @property (nonatomic, readonly, strong) NHCameraGridView *cameraGridView;
 

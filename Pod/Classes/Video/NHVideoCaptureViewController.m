@@ -8,11 +8,13 @@
 
 #import "NHVideoCaptureViewController.h"
 #import "CaptureManager.h"
+#import "NHRecorderButton.h"
 #import "NHCameraGridView.h"
 #import "NHPhotoCaptureViewController.h"
 #import "NHVideoCropView.h"
 #import "NHVideoFocusView.h"
 #import "AVCamRecorder.h"
+#import "NHVideoEditViewController.h"
 
 #define image(name) \
 [UIImage imageWithContentsOfFile: \
@@ -222,7 +224,7 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 
     
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
-                                              initWithTitle:localization(@"NHRecorder.button.done", @"NHRecorder")
+                                              initWithTitle:localization(@"NHRecorder.button.next", @"NHRecorder")
                                               style:UIBarButtonItemStylePlain
                                               target:self
                                               action:@selector(nextButtonTouch:)];
@@ -305,9 +307,22 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 }
 
 - (void)startCapture {
+    
+    AVAuthorizationStatus cameraStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    
+    if (cameraStatus != AVAuthorizationStatusAuthorized) {
+        
+        __weak __typeof(self) weakSelf = self;
+        if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoCapture:cameraAvailability:)]) {
+            [weakSelf.nhDelegate
+             nhVideoCapture:weakSelf
+             cameraAvailability:cameraStatus];
+        }
+        return;
+    }
+    
     if (![self.captureManager.recorder isRecording]
         && self.currentDuration < kNHVideoMaxDuration) {
-//        [self deviceOrientationChange];
         [self.captureManager startRecording];
         self.captureButton.selected = YES;
     }
@@ -334,9 +349,6 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 - (void)stopTimer {
     [self.recordTimer invalidate];
     self.recordTimer = nil;
-}
-
-- (void)saveVideo {
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -696,14 +708,31 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 
 
 - (void)nextButtonTouch:(id)sender {
-    [self.captureManager saveVideoWithCompletionBlock:^(BOOL success) {
-        if (success) {
-            NSLog(@"suc");
+    
+    __weak __typeof(self) weakSelf = self;
+    
+    self.navigationController.view.userInteractionEnabled = NO;
+    
+    [self.captureManager saveVideoWithCompletionBlock:^(NSURL *assetURL) {
+        self.navigationController.view.userInteractionEnabled = YES;
+        
+        if (assetURL) {
+//            [self resetRecorder];
             
-            [self resetRecorder];
+            BOOL shouldEdit = YES;
+            if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoCapture:shouldEditVideoAtURL:)]) {
+                shouldEdit = [weakSelf.nhDelegate nhVideoCapture:weakSelf shouldEditVideoAtURL:assetURL];
+            }
+            
+            if (shouldEdit) {
+                NHVideoEditViewController *editViewController = [[NHVideoEditViewController alloc] init];
+                [self.navigationController pushViewController:editViewController animated:YES];
+            }
         }
-        else {
-            NSLog(@"fail");
+        
+        if (weakSelf
+            && [weakSelf.nhDelegate respondsToSelector:@selector(nhVideoCapture:didFinishExportingWithSuccess:)]) {
+            [weakSelf.nhDelegate nhVideoCapture:weakSelf didFinishExportingWithSuccess:assetURL != nil];
         }
     }];
 }
@@ -725,11 +754,14 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 }
 
 - (void)captureManagerRecordingBegan:(CaptureManager *)captureManager {
-    NSLog(@"st");
     [self startTimer];
     self.captureButton.backgroundColor = [UIColor redColor];
     
-    //delegate for start
+    __weak __typeof(self) weakSelf = self;
+    
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoCaptureDidStart:)]) {
+        [weakSelf.nhDelegate nhVideoCaptureDidStart:weakSelf];
+    }
 }
 
 - (void)updateCaptureDuration:(NSTimer *)timer {
@@ -745,18 +777,35 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 }
 
 - (void)captureManagerRecordingFinished:(CaptureManager *)captureManager {
-    NSLog(@"fi");
     self.captureButton.backgroundColor = [UIColor whiteColor];
     
-    //delegate for end
+    __weak __typeof(self) weakSelf = self;
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoCaptureDidFinish:)]) {
+        [weakSelf.nhDelegate nhVideoCaptureDidFinish:weakSelf];
+    }
 }
 
 - (void)updateProgress {
- //self.captureManager.exportSession.progress
+    __weak __typeof(self) weakSelf = self;
+    
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoCapture:exportProgressChanged:)]) {
+        [weakSelf.nhDelegate nhVideoCapture:weakSelf exportProgressChanged:weakSelf.captureManager.exportSession.progress];
+    }
 }
 
 - (void)removeProgress {
-    NSLog(@"Saving to Camera Roll");
+    __weak __typeof(self) weakSelf = self;
+    
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoCaptureDidStartSaving:)]) {
+        [weakSelf.nhDelegate nhVideoCaptureDidStartSaving:weakSelf];
+    }
+}
+
+- (void)captureManager:(CaptureManager *)captureManager didFailWithError:(NSError *)error {
+    __weak __typeof(self) weakSelf = self;
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoCapture:didFailWithError:)]) {
+        [weakSelf.nhDelegate nhVideoCapture:weakSelf didFailWithError:error];
+    }
 }
 
 - (void)resetGrid {

@@ -269,7 +269,7 @@
     [[self recorder] stopRecording];
 }
 
-- (void) saveVideoWithCompletionBlock:(void (^)(BOOL))completion
+- (void) saveVideoWithCompletionBlock:(void (^)(NSURL*))completion
 {
     if ([self.assets count] != 0) {
 
@@ -370,7 +370,7 @@
     }
 }
 
--(void)exportDidFinish:(AVAssetExportSession*)session withCompletionBlock:(void(^)(BOOL success))completion {
+-(void)exportDidFinish:(AVAssetExportSession*)session withCompletionBlock:(void(^)(NSURL* assetURL))completion {
     self.exportSession = nil;
     
     __block id weakSelf = self;
@@ -388,26 +388,38 @@
             [weakSelf removeFile:fileURL];
     }];
     
-    [self.assets removeAllObjects];
     [self.delegate removeProgress];
+    
+    BOOL shouldSave = YES;
+    
+    if ([self.delegate respondsToSelector:@selector(captureManagerShouldSaveToCameraRoll:)]) {
+        shouldSave = [self.delegate captureManagerShouldSaveToCameraRoll:self];
+    }
+    
     
     if (session.status == AVAssetExportSessionStatusCompleted) {
         NSURL *outputURL = session.outputURL;
-        ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-        if ([library videoAtPathIsCompatibleWithSavedPhotosAlbum:outputURL]) {
-            [library writeVideoAtPathToSavedPhotosAlbum:outputURL completionBlock:^(NSURL *assetURL, NSError *error){
-                //delete file from documents after saving to camera roll
-                [weakSelf removeFile:outputURL];
-                
-                if (error) {
-                    completion (NO);
-                } else {
-                    completion (YES);
-                }
-            }];
+        
+        if (shouldSave) {
+            ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+            if ([library videoAtPathIsCompatibleWithSavedPhotosAlbum:outputURL]) {
+                [library writeVideoAtPathToSavedPhotosAlbum:outputURL completionBlock:^(NSURL *assetURL, NSError *error){
+                    //delete file from documents after saving to camera roll
+                    [weakSelf removeFile:outputURL];
+                    
+                    if (error) {
+                        completion (assetURL);
+                    } else {
+                        completion (nil);
+                    }
+                }];
+            }
+            
+        }
+        else {
+            completion (outputURL);
         }
     }
-    [self.assets removeAllObjects];
 }
 
 
