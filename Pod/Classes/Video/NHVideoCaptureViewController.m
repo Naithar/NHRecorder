@@ -866,6 +866,9 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 }
 
 - (void)dealloc {
+    [self stopCapture];
+    [self stopCamera];
+    self.captureManager = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self.enterForegroundNotification];
     [[NSNotificationCenter defaultCenter] removeObserver:self.resignActiveNotification];
     [[NSNotificationCenter defaultCenter] removeObserver:self.orientationChange];

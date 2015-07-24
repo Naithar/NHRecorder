@@ -835,6 +835,8 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 }
 
 - (void)dealloc {
+    [self stopCamera];
+    self.photoCamera = nil;
     [[NSNotificationCenter defaultCenter] removeObserver:self.enterForegroundNotification];
     [[NSNotificationCenter defaultCenter] removeObserver:self.resignActiveNotification];
     [[NSNotificationCenter defaultCenter] removeObserver:self.orientationChange];

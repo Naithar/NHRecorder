@@ -59,7 +59,7 @@
 
 @interface NHAssetContainer : NSObject
 
-@property (nonatomic, strong) AVAsset *asset;
+@property (nonatomic, weak) AVAsset *asset;
 @property (nonatomic, assign) AVCaptureDevicePosition captureDevicePosition;
 
 @end
@@ -101,7 +101,7 @@
 {
     self = [super init];
     if (self != nil) {
-		__block id weakSelf = self;
+		__weak __typeof(self) weakSelf = self;
         void (^deviceConnectedBlock)(NSNotification *) = ^(NSNotification *notification) {
 			AVCaptureDevice *device = [notification object];
 			
@@ -113,7 +113,7 @@
                 deviceMediaType = AVMediaTypeVideo;
 			
 			if (deviceMediaType != nil) {
-				for (AVCaptureDeviceInput *input in [self.session inputs])
+				for (AVCaptureDeviceInput *input in [weakSelf.session inputs])
 				{
 					if ([[input device] hasMediaType:deviceMediaType]) {
 						sessionHasDeviceWithMatchingMediaType = YES;
@@ -124,29 +124,29 @@
 				if (!sessionHasDeviceWithMatchingMediaType) {
 					NSError	*error;
 					AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
-					if ([self.session canAddInput:input])
-						[self.session addInput:input];
+					if ([weakSelf.session canAddInput:input])
+						[weakSelf.session addInput:input];
 				}				
 			}
             
-			if ([self.delegate respondsToSelector:@selector(captureManagerDeviceConfigurationChanged:)]) {
-				[self.delegate captureManagerDeviceConfigurationChanged:self];
+			if ([weakSelf.delegate respondsToSelector:@selector(captureManagerDeviceConfigurationChanged:)]) {
+				[weakSelf.delegate captureManagerDeviceConfigurationChanged:weakSelf];
 			}			
         };
         void (^deviceDisconnectedBlock)(NSNotification *) = ^(NSNotification *notification) {
 			AVCaptureDevice *device = [notification object];
 			
 			if ([device hasMediaType:AVMediaTypeAudio]) {
-				[self.session removeInput:[weakSelf audioInput]];
+				[weakSelf.session removeInput:[weakSelf audioInput]];
 				[weakSelf setAudioInput:nil];
 			}
 			else if ([device hasMediaType:AVMediaTypeVideo]) {
-				[self.session removeInput:[weakSelf videoInput]];
+				[weakSelf.session removeInput:[weakSelf videoInput]];
 				[weakSelf setVideoInput:nil];
 			}
 			
-			if ([self.delegate respondsToSelector:@selector(captureManagerDeviceConfigurationChanged:)]) {
-				[self.delegate captureManagerDeviceConfigurationChanged:self];
+			if ([weakSelf.delegate respondsToSelector:@selector(captureManagerDeviceConfigurationChanged:)]) {
+				[weakSelf.delegate captureManagerDeviceConfigurationChanged:weakSelf];
 			}			
         };
         
@@ -487,11 +487,10 @@
         
         self.exportProgressBarTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self.delegate selector:@selector(updateProgress) userInfo:nil repeats:YES];
         
-        __block id weakSelf = self;
-        
+        __weak __typeof(self) weakSelf = self;
         [self.exportSession exportAsynchronouslyWithCompletionHandler:^{
             dispatch_async(dispatch_get_main_queue(), ^{
-                [weakSelf exportDidFinish:self.exportSession withCompletionBlock:completion];
+                [weakSelf exportDidFinish:weakSelf.exportSession withCompletionBlock:completion];
             });
         }];
     }
