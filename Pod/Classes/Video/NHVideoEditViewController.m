@@ -8,6 +8,8 @@
 
 #import "NHVideoEditViewController.h"
 #import "NHRecorderButton.h"
+#import "NHFilterCollectionView.h"
+#import "NHPhotoEditorViewController.h"
 
 #define image(name) \
 [UIImage imageWithContentsOfFile: \
@@ -19,7 +21,7 @@ NSLocalizedStringFromTableInBundle(name, \
 table, \
 [NSBundle bundleForClass:[NHVideoEditViewController class]], nil)
 
-@interface NHVideoEditViewController ()
+@interface NHVideoEditViewController ()<NHFilterCollectionViewDelegate>
 
 @property (nonatomic, strong) NSURL *assetURL;
 
@@ -34,6 +36,14 @@ table, \
 
 @property (nonatomic, strong) GPUImageMovie *videoFileForSaving;
 @property (nonatomic, strong) GPUImageFilter *videoFilterForSaving;
+
+@property (nonatomic, strong) UIView *selectorView;
+@property (nonatomic, strong) UIView *selectorSeparatorView;
+@property (nonatomic, strong) UIView *selectionContainerView;
+@property (nonatomic, strong) UIView *videoSeparatorView;
+
+@property (nonatomic, strong) UIButton *filterButton;
+@property (nonatomic, strong) NHFilterCollectionView *filterCollectionView;
 
 @end
 
@@ -55,7 +65,7 @@ table, \
 }
 
 - (void)commonInit {
-    self.view.backgroundColor = [UIColor redColor];
+    self.view.backgroundColor = [UIColor blackColor];
     
     self.backButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
     self.backButton.frame = CGRectMake(0, 0, 44, 44);
@@ -87,14 +97,13 @@ table, \
     self.videoFile.playAtActualSpeed = YES;
     self.videoFile.shouldRepeat = YES;
     
-    self.videoFilter = [[GPUImageGrayscaleFilter alloc] init];
+    self.videoFilter = [[GPUImageFilter alloc] init];
     [self.videoFile addTarget:self.videoFilter];
-    
     
     self.videoFileForSaving = [[GPUImageMovie alloc] initWithURL:self.assetURL];
     self.videoFileForSaving.playAtActualSpeed = YES;
     
-    self.videoFilterForSaving = [[GPUImageGrayscaleFilter alloc] init];
+    self.videoFilterForSaving = [[GPUImageFilter alloc] init];
     [self.videoFileForSaving addTarget:self.videoFilterForSaving];
     
     NSString *pathToMovie = [self filteredVideoPath];
@@ -109,13 +118,48 @@ table, \
     
     self.videoEditView = [[GPUImageView alloc] init];
     self.videoEditView.translatesAutoresizingMaskIntoConstraints = NO;
-    self.videoEditView.backgroundColor = [UIColor blueColor];
-    
+    self.videoEditView.backgroundColor = [UIColor blackColor];
     [self.view addSubview:self.videoEditView];
+    
+    self.selectorView = [[UIView alloc] init];
+    self.selectorView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.selectorView.backgroundColor = [UIColor blackColor];
+    [self.view addSubview:self.selectorView];
+    
+    self.selectionContainerView = [[UIView alloc] init];
+    self.selectionContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.selectionContainerView.backgroundColor = [UIColor blackColor];
+    [self.view addSubview:self.selectionContainerView];
+    
+    [self setupSelectorViewConstraints];
+    [self setupSelectionContainerViewConstraints];
     [self setupVideoEditViewConstraints];
     
     [self.videoFilter addTarget:self.videoEditView];
     [self.videoFile startProcessing];
+    
+    self.filterButton = [[UIButton alloc] init];
+    self.filterButton.backgroundColor = [UIColor clearColor];
+    self.filterButton.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.filterButton setTitle:nil forState:UIControlStateNormal];
+    [self.filterButton setImage:[image(@"NHRecorder.filter.button")
+                                 imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
+                       forState:UIControlStateNormal];
+    [self.filterButton setImage:[image(@"NHRecorder.filter.button-active")
+                                 imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
+                       forState:UIControlStateSelected];
+    [self.selectorView addSubview:self.filterButton];
+    self.filterButton.selected = YES;
+//    [self.filterButton addTarget:self action:@selector(filterButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self setupFilterButtonConstraints];
+    
+    self.filterCollectionView = [[NHFilterCollectionView alloc] initWithImage:nil];
+    self.filterCollectionView.backgroundColor = [UIColor clearColor];
+    self.filterCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.filterCollectionView.nhDelegate = self;
+    [self.selectionContainerView addSubview:self.filterCollectionView];
+    [self setupFilterCollectionViewConstraints];
     
     __weak __typeof(self) weakSelf = self;
     self.orientationChange = [[NSNotificationCenter defaultCenter]
@@ -220,17 +264,233 @@ table, \
     [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.videoEditView
                                                           attribute:NSLayoutAttributeBottom
                                                           relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.view
-                                                          attribute:NSLayoutAttributeBottom
+                                                             toItem:self.selectionContainerView
+                                                          attribute:NSLayoutAttributeTop
                                                          multiplier:1.0 constant:0]];
 }
 
+- (void)setupSelectorViewConstraints {
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.selectorView
+                                                          attribute:NSLayoutAttributeBottom
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeBottom
+                                                         multiplier:1.0 constant:0]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.selectorView
+                                                          attribute:NSLayoutAttributeLeft
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeLeft
+                                                         multiplier:1.0 constant:0]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.selectorView
+                                                          attribute:NSLayoutAttributeRight
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeRight
+                                                         multiplier:1.0 constant:0]];
+    
+    [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.selectorView
+                                                                  attribute:NSLayoutAttributeHeight
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self.selectorView
+                                                                  attribute:NSLayoutAttributeHeight
+                                                                 multiplier:0 constant:kNHRecorderSelectorViewHeight]];
+    
+    self.selectorSeparatorView = [[UIView alloc] init];
+    self.selectorSeparatorView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    self.selectorSeparatorView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.selectorView addSubview:self.selectorSeparatorView];
+    
+    [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.selectorSeparatorView
+                                                                  attribute:NSLayoutAttributeTop
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self.selectorView
+                                                                  attribute:NSLayoutAttributeTop
+                                                                 multiplier:1.0 constant:0]];
+    
+    [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.selectorSeparatorView
+                                                                  attribute:NSLayoutAttributeLeft
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self.selectorView
+                                                                  attribute:NSLayoutAttributeLeft
+                                                                 multiplier:1.0 constant:0]];
+    
+    [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.selectorSeparatorView
+                                                                  attribute:NSLayoutAttributeRight
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self.selectorView
+                                                                  attribute:NSLayoutAttributeRight
+                                                                 multiplier:1.0 constant:0]];
+    
+    [self.selectorSeparatorView addConstraint:[NSLayoutConstraint constraintWithItem:self.selectorSeparatorView
+                                                                           attribute:NSLayoutAttributeHeight
+                                                                           relatedBy:NSLayoutRelationEqual
+                                                                              toItem:self.selectorSeparatorView
+                                                                           attribute:NSLayoutAttributeHeight
+                                                                          multiplier:0 constant:0.5]];
+}
+
+- (void)setupSelectionContainerViewConstraints {
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.selectionContainerView
+                                                          attribute:NSLayoutAttributeBottom
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.selectorView
+                                                          attribute:NSLayoutAttributeTop
+                                                         multiplier:1.0 constant:0]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.selectionContainerView
+                                                          attribute:NSLayoutAttributeLeft
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeLeft
+                                                         multiplier:1.0 constant:0]];
+    
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.selectionContainerView
+                                                          attribute:NSLayoutAttributeRight
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeRight
+                                                         multiplier:1.0 constant:0]];
+    
+    [self.selectionContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.selectionContainerView
+                                                                            attribute:NSLayoutAttributeHeight
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:self.selectionContainerView
+                                                                            attribute:NSLayoutAttributeHeight
+                                                                           multiplier:0 constant:kNHRecorderSelectionContainerViewHeight]];
+    
+    self.videoSeparatorView = [[UIView alloc] init];
+    self.videoSeparatorView.backgroundColor = [UIColor groupTableViewBackgroundColor];
+    self.videoSeparatorView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.selectionContainerView addSubview:self.videoSeparatorView];
+    
+    [self.selectionContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.videoSeparatorView
+                                                                            attribute:NSLayoutAttributeTop
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:self.selectionContainerView
+                                                                            attribute:NSLayoutAttributeTop
+                                                                           multiplier:1.0 constant:0]];
+    
+    [self.selectionContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.videoSeparatorView
+                                                                            attribute:NSLayoutAttributeLeft
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:self.selectionContainerView
+                                                                            attribute:NSLayoutAttributeLeft
+                                                                           multiplier:1.0 constant:0]];
+    
+    [self.selectionContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.videoSeparatorView
+                                                                            attribute:NSLayoutAttributeRight
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:self.selectionContainerView
+                                                                            attribute:NSLayoutAttributeRight
+                                                                           multiplier:1.0 constant:0]];
+    
+    [self.videoSeparatorView addConstraint:[NSLayoutConstraint constraintWithItem:self.videoSeparatorView
+                                                                        attribute:NSLayoutAttributeHeight
+                                                                        relatedBy:NSLayoutRelationEqual
+                                                                           toItem:self.videoSeparatorView
+                                                                        attribute:NSLayoutAttributeHeight
+                                                                       multiplier:0 constant:0.5]];
+}
+
+- (void)setupFilterButtonConstraints {
+    [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.filterButton
+                                                                  attribute:NSLayoutAttributeTop
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self.selectorView
+                                                                  attribute:NSLayoutAttributeTop
+                                                                 multiplier:1.0 constant:0]];
+    
+    [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.filterButton
+                                                                  attribute:NSLayoutAttributeLeft
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self.selectorView
+                                                                  attribute:NSLayoutAttributeLeft
+                                                                 multiplier:1.0 constant:0]];
+    
+    [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.filterButton
+                                                                  attribute:NSLayoutAttributeBottom
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self.selectorView
+                                                                  attribute:NSLayoutAttributeBottom
+                                                                 multiplier:1.0 constant:0]];
+    
+    [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.filterButton
+                                                                  attribute:NSLayoutAttributeRight
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self.selectorView
+                                                                  attribute:NSLayoutAttributeRight
+                                                                 multiplier:1.0 constant:0]];
+    
+}
+
+- (void)setupFilterCollectionViewConstraints {
+    [self.selectionContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.filterCollectionView
+                                                                            attribute:NSLayoutAttributeTop
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:self.selectionContainerView
+                                                                            attribute:NSLayoutAttributeTop
+                                                                           multiplier:1.0 constant:5]];
+    
+    [self.selectionContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.filterCollectionView
+                                                                            attribute:NSLayoutAttributeBottom
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:self.selectionContainerView
+                                                                            attribute:NSLayoutAttributeBottom
+                                                                           multiplier:1.0 constant:-5]];
+    
+    [self.selectionContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.filterCollectionView
+                                                                            attribute:NSLayoutAttributeLeft
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:self.selectionContainerView
+                                                                            attribute:NSLayoutAttributeLeft
+                                                                           multiplier:1.0 constant:15]];
+    
+    [self.selectionContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.filterCollectionView
+                                                                            attribute:NSLayoutAttributeRight
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:self.selectionContainerView
+                                                                            attribute:NSLayoutAttributeRight
+                                                                           multiplier:1.0 constant:-15]];
+}
+
+
+- (void)filterView:(NHFilterCollectionView *)filterView didSelectFilterType:(NHFilterType)filterType {
+    [self.videoFilter removeAllTargets];
+    [self.videoFile removeTarget:self.videoFilter];
+    [self.videoFilter removeOutputFramebuffer];
+    self.videoFilter = [filterView filterForType:filterType];
+    [self.videoFile addTarget:self.videoFilter];
+    [self.videoFilter addTarget:self.videoEditView];
+    
+    [self.videoFilterForSaving removeAllTargets];
+    [self.videoFileForSaving removeTarget:self.videoFilterForSaving];
+    self.videoFilterForSaving = [filterView filterForType:filterType];
+    [self.videoFileForSaving addTarget:self.videoFilterForSaving];
+    [self.videoFilterForSaving addTarget:self.videoMovieWriter];
+}
 - (void)savedFilteredVideo:(NSString*)path error:(NSError*)error context:(void*)contextInfo {
     NSLog(@"%@", error);
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)dealloc {
+    [self.videoFileForSaving endProcessing];
+    [self.videoMovieWriter finishRecording];
+    [self.videoFilterForSaving removeAllTargets];
+    [self.videoFileForSaving removeAllTargets];
+    
+    [self.videoFile endProcessing];
+    [self.videoFilter removeAllTargets];
+    [self.videoFile removeAllTargets];
+    self.videoFilter = nil;
+    self.videoFile = nil;
+    self.videoFilterForSaving = nil;
+    self.videoFilterForSaving = nil;
+    self.videoMovieWriter = nil;
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self.orientationChange];
 }
 

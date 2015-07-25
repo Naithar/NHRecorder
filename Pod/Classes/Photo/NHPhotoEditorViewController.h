@@ -13,6 +13,9 @@
 #import "NHFilterCollectionView.h"
 #import "NHRecorderButton.h"
 
+extern const CGFloat kNHRecorderSelectorViewHeight;
+extern const CGFloat kNHRecorderSelectionContainerViewHeight;
+
 @class NHPhotoEditorViewController;
 
 @protocol NHPhotoEditorViewControllerDelegate <NSObject>

@@ -11,6 +11,7 @@
 
 @class NHRecorderButton;
 @class NHVideoEditViewController;
+@class NHFilterCollectionView;
 
 @protocol NHVideoEditViewControllerDelegate <NSObject>
 
@@ -32,6 +33,14 @@
 
 @property (nonatomic, readonly, strong) NHRecorderButton *backButton;
 @property (nonatomic, readonly, strong) GPUImageView *videoEditView;
+
+@property (nonatomic, readonly, strong) UIView *selectorView;
+@property (nonatomic, readonly, strong) UIView *selectorSeparatorView;
+@property (nonatomic, readonly, strong) UIView *selectionContainerView;
+@property (nonatomic, readonly, strong) UIView *videoSeparatorView;
+
+@property (nonatomic, readonly, strong) UIButton *filterButton;
+@property (nonatomic, readonly, strong) NHFilterCollectionView *filterCollectionView;
 
 - (instancetype)initWithAssetURL:(NSURL*)url;
 

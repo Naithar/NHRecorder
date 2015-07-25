@@ -152,6 +152,33 @@ table, \
     if ([weakSelf.nhDelegate respondsToSelector:@selector(filterView:didSelectFilter:)]) {
         [weakSelf.nhDelegate filterView:weakSelf didSelectFilter:filter];
     }
+    
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(filterView:didSelectFilterType:)]) {
+        [weakSelf.nhDelegate filterView:weakSelf didSelectFilterType:index];
+    }
+}
+
+- (GPUImageFilter*)filterForType:(NHFilterType)type {
+    switch (type) {
+        case NHFilterType1997:
+            return [[GPUImageToneCurveFilter alloc] initWithACV:@"1977"];
+        case NHFilterTypeAmaro:
+            return [[GPUImageToneCurveFilter alloc] initWithACV:@"amaro"];
+        case NHFilterTypeGray:
+            return [[GPUImageGrayscaleFilter alloc] init];
+        case NHFilterTypeHudson:
+            return [[GPUImageToneCurveFilter alloc] initWithACV:@"hudson"];
+        case NHFilterTypeMayfair:
+            return [[GPUImageToneCurveFilter alloc] initWithACV:@"mayfair"];
+        case NHFilterTypeNashville:
+            return [[GPUImageToneCurveFilter alloc] initWithACV:@"nashville"];
+        case NHFilterTypeValencia:
+            return [[GPUImageToneCurveFilter alloc] initWithACV:@"valencia"];
+        default:
+            break;
+    }
+    
+    return [[GPUImageFilter alloc] init];
 }
 
 
