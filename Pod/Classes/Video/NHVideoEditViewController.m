@@ -136,6 +136,7 @@ table, \
     [self setupVideoEditViewConstraints];
     
     [self.videoFilter addTarget:self.videoEditView];
+    [self.videoFile startProcessing];
     
     self.filterButton = [[UIButton alloc] init];
     self.filterButton.backgroundColor = [UIColor clearColor];
@@ -185,7 +186,7 @@ table, \
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    [self.videoFile startProcessing];
+//    [self.videoFile startProcessing];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -256,6 +257,12 @@ table, \
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
+    
+    [self.videoFilter removeAllTargets];
+    [self.videoFile removeTarget:self.videoFilter];
+    [self.videoFilter removeOutputFramebuffer];
+    [self.videoFile addTarget:self.videoFilter];
+    [self.videoFilter addTarget:self.videoEditView];
 }
 
 - (void)setupVideoEditViewConstraints {
