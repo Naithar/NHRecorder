@@ -136,7 +136,6 @@ table, \
     [self setupVideoEditViewConstraints];
     
     [self.videoFilter addTarget:self.videoEditView];
-    [self.videoFile startProcessing];
     
     self.filterButton = [[UIButton alloc] init];
     self.filterButton.backgroundColor = [UIColor clearColor];
@@ -154,7 +153,7 @@ table, \
     
     [self setupFilterButtonConstraints];
     
-    self.filterCollectionView = [[NHFilterCollectionView alloc] initWithImage:nil];
+    self.filterCollectionView = [[NHFilterCollectionView alloc] initWithImage:[self generateThumbImage:self.assetURL]];
     self.filterCollectionView.backgroundColor = [UIColor clearColor];
     self.filterCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
     self.filterCollectionView.nhDelegate = self;
@@ -183,6 +182,12 @@ table, \
     [super didReceiveMemoryWarning];
 }
 
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    
+    [self.videoFile startProcessing];
+}
+
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
@@ -194,6 +199,20 @@ table, \
     [UIView performWithoutAnimation:^{
         [self deviceOrientationChange];
     }];
+}
+
+//http://stackoverflow.com/questions/1347562/getting-thumbnail-from-a-video-url-or-data-in-iphone-sdk
+-(UIImage *)generateThumbImage:(NSURL *)url
+{
+    AVAsset *asset = [AVAsset assetWithURL:url];
+    AVAssetImageGenerator *imageGenerator = [[AVAssetImageGenerator alloc]initWithAsset:asset];
+    CMTime time = [asset duration];
+    time.value = 1;
+    CGImageRef imageRef = [imageGenerator copyCGImageAtTime:time actualTime:NULL error:NULL];
+    UIImage *thumbnail = [UIImage imageWithCGImage:imageRef];
+    CGImageRelease(imageRef);  // CGImageRef won't be released by ARC
+    
+    return thumbnail;
 }
 
 - (void)deviceOrientationChange {
@@ -490,6 +509,8 @@ table, \
     self.videoFilterForSaving = nil;
     self.videoFilterForSaving = nil;
     self.videoMovieWriter = nil;
+    
+    [[GPUImageContext sharedFramebufferCache] purgeAllUnassignedFramebuffers];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self.orientationChange];
 }
