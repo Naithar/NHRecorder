@@ -61,6 +61,8 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 @property (nonatomic, strong) NHVideoFocusView *cameraFocusView;
 
 @property (nonatomic, strong) NSTimer *recordTimer;
+
+@property (nonatomic, strong) UILongPressGestureRecognizer *longGestureRecognizer;
 @end
 
 @implementation NHVideoCaptureViewController
@@ -143,9 +145,10 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
     self.captureButton.translatesAutoresizingMaskIntoConstraints = NO;
     [self.captureButton setTitle:nil forState:UIControlStateNormal];
     self.captureButton.backgroundColor = [UIColor whiteColor];
-    [self.captureButton addTarget:self action:@selector(captureButtonPressed:) forControlEvents:UIControlEventTouchDown];
-    [self.captureButton addTarget:self action:@selector(captureButtonFinished:)
-                 forControlEvents:UIControlEventTouchUpInside|UIControlEventTouchDragExit];
+    self.longGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(captureGestureAction:)];
+    self.longGestureRecognizer.minimumPressDuration = 0.15;
+    self.longGestureRecognizer.numberOfTouchesRequired = 1;
+    [self.captureButton addGestureRecognizer:self.longGestureRecognizer];
     self.captureButton.layer.cornerRadius = kNHRecorderCaptureButtonHeight / 2;
     self.captureButton.clipsToBounds = YES;
     [self.bottomContainerView addSubview:self.captureButton];
@@ -207,11 +210,11 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
     self.gridButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
     [self.gridButton addTarget:self action:@selector(gridButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     
-    UIBarButtonItem *closeBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.backButton];
+    UIBarButtonItem *backBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.backButton];
     UIBarButtonItem *gridBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.gridButton];
     UIBarButtonItem *switchBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.switchButton];
     
-    self.navigationItem.leftBarButtonItems = @[closeBarButton,
+    self.navigationItem.leftBarButtonItems = @[backBarButton,
                                                [[UIBarButtonItem alloc]
                                                 initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace
                                                 target:nil action:nil],
@@ -300,9 +303,9 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 }
 
 - (void)startCamera {
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [self.captureManager.session startRunning];
-    });
+//    });
 }
 
 - (void)stopCamera {
@@ -732,7 +735,7 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
             }
             
             if (shouldEdit) {
-                NHVideoEditViewController *editViewController = [[NHVideoEditViewController alloc] init];
+                NHVideoEditViewController *editViewController = [[NHVideoEditViewController alloc] initWithAssetURL:assetURL];
                 [self.navigationController pushViewController:editViewController animated:YES];
             }
         }
@@ -744,13 +747,23 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
     }];
 }
 
-- (void)captureButtonPressed:(id)sender {
-    [self startCapture];
+- (void)captureGestureAction:(UILongPressGestureRecognizer*)recognizer {
+    switch (recognizer.state) {
+        case UIGestureRecognizerStateBegan:
+        case UIGestureRecognizerStateChanged:
+            if (CGRectContainsPoint(self.captureButton.bounds, [recognizer locationInView:self.captureButton])) {
+                [self startCapture];
+            }
+            else {
+                [self stopCapture];
+            }
+            break;
+        default:
+            [self stopCapture];
+            break;
+    }
 }
 
-- (void)captureButtonFinished:(id)sender {
-    [self stopCapture];
-}
 
 - (void)removeFragmentButtonTouch:(id)sender {
     [self.captureManager deleteLastAsset];
@@ -820,6 +833,15 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
         NSLog(@"fail with: %@", error);
 #endif
     }
+}
+
+- (BOOL)captureManagerShouldSaveToCameraRoll:(CaptureManager *)captureManager {
+    __weak __typeof(self) weakSelf = self;
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoCaptureShouldSaveNonFilteredVideo:)]) {
+        return [weakSelf.nhDelegate nhVideoCaptureShouldSaveNonFilteredVideo:weakSelf];
+    }
+    
+    return YES;
 }
 
 - (void)resetGrid {

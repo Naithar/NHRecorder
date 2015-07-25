@@ -33,6 +33,9 @@
 
 
 - (void)nhVideoCaptureDidReset:(NHVideoCaptureViewController*)controller;
+
+- (BOOL)nhVideoCaptureShouldSaveNonFilteredVideo:(NHVideoCaptureViewController*)controller;
+
 @end
 
 @interface NHVideoCaptureViewController : UIViewController
