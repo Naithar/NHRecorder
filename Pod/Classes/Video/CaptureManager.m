@@ -389,45 +389,6 @@
             
             CGAffineTransform newTransform = CGAffineTransformConcat(videoAssetTrack.preferredTransform, translate);
             
-//            CGFloat xDelta = size.width / adjustedSize.width;
-//            CGFloat yDelta = size.height / adjustedSize.height;
-//            CGFloat scaleDelta = MAX(xDelta, yDelta);
-//            
-//            if (scaleDelta > 1) {
-//                
-//                CGFloat xScaleValue = 1;
-//                CGFloat yScaleValue = 1;
-//                
-//                switch (orientation) {
-//                    case UIInterfaceOrientationPortrait:
-//                        newTransform = CGAffineTransformTranslate(newTransform, size.width / 2, size.height / 2);
-//                        xScaleValue = -1;
-//                        yScaleValue = 4;
-//                        break;
-//                    case UIInterfaceOrientationPortraitUpsideDown:
-//                        newTransform = CGAffineTransformTranslate(newTransform, size.width / 2, -size.height / 2);
-//                        break;
-//                    case UIInterfaceOrientationLandscapeRight:
-//                        newTransform = CGAffineTransformTranslate(newTransform, -size.width / 2, size.height / 2);
-//                        xScaleValue = -1;
-//                        yScaleValue = -1;
-//                        break;
-//                    case UIInterfaceOrientationLandscapeLeft:
-//                        newTransform = CGAffineTransformTranslate(newTransform, size.width / 2, size.height / 2);
-//                        xScaleValue = -1;
-//                        yScaleValue = -1;
-//                        break;
-//                    default:
-//                        break;
-//                }
-//                
-//                newTransform = CGAffineTransformScale(newTransform, -scaleDelta, scaleDelta);
-//                newTransform = CGAffineTransformConcat(newTransform,
-//                                                       CGAffineTransformMakeTranslation(adjustedSize.width + xScaleValue * xValue / 2,
-//                                                                                        (isPortrait ? 1 : -1) * adjustedSize.height + yScaleValue * yValue / 2.0));
-//                
-//            }
-            
             if (shouldMirror) {
                 switch (orientation) {
                     case UIInterfaceOrientationPortraitUpsideDown:
@@ -446,6 +407,34 @@
                 newTransform = CGAffineTransformConcat(newTransform,
                                                        CGAffineTransformMakeTranslation(size.width / 2,
                                                                                         (isPortrait ? 1 : -1) * size.height / 2));
+            }
+            
+            CGFloat xDelta = size.width / adjustedSize.width;
+            CGFloat yDelta = size.height / adjustedSize.height;
+            CGFloat scaleDelta = MAX(xDelta, yDelta);
+            
+            if (scaleDelta > 1) {
+                switch (orientation) {
+                    case UIInterfaceOrientationPortrait:
+                    case UIInterfaceOrientationPortraitUpsideDown:
+                        newTransform = CGAffineTransformConcat(newTransform,
+                                                               CGAffineTransformMakeTranslation(
+                                                                                                (shouldMirror
+                                                                                                 ? -size.width / 2 - xValue / 2
+                                                                                                 : 0),
+                                                                                                -yValue));
+                        newTransform = CGAffineTransformConcat(newTransform, CGAffineTransformMakeScale(scaleDelta, scaleDelta));
+                        break;
+                    case UIInterfaceOrientationLandscapeLeft:
+                    case UIInterfaceOrientationLandscapeRight:
+                        newTransform = CGAffineTransformConcat(newTransform,
+                                                               CGAffineTransformMakeTranslation(-xValue,
+                                                                                                0));
+                        newTransform = CGAffineTransformConcat(newTransform, CGAffineTransformMakeScale(scaleDelta, scaleDelta));
+                        break;
+                    default:
+                        break;
+                }
             }
             
                 [vLayerInstruction setTransform:newTransform atTime:time];
