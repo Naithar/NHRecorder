@@ -10,8 +10,22 @@
 #import <GPUImage/GPUImage.h>
 
 @class NHRecorderButton;
+@class NHVideoEditViewController;
+
+@protocol NHVideoEditViewControllerDelegate <NSObject>
+
+@optional
+//didsave
+//didstart processing
+//didfinish processing
+//file path?
+//error
+
+@end
 
 @interface NHVideoEditViewController : UIViewController
+
+@property (nonatomic, weak) id<NHVideoEditViewControllerDelegate> nhDelegate;
 
 @property (nonatomic, strong) UIColor *barTintColor;
 @property (nonatomic, strong) UIColor *barButtonTintColor;
