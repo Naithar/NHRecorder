@@ -34,7 +34,6 @@ table, \
 
 @property (nonatomic, strong) GPUImageMovie *videoFileForSaving;
 @property (nonatomic, strong) GPUImageFilter *videoFilterForSaving;
-@property (nonatomic, strong) NSURL *fileURL;
 
 @end
 
@@ -49,6 +48,10 @@ table, \
     }
     
     return self;
+}
+
+- (NSString *)filteredVideoPath {
+    return [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Movie.m4v"];
 }
 
 - (void)commonInit {
@@ -94,12 +97,10 @@ table, \
     self.videoFilterForSaving = [[GPUImageGrayscaleFilter alloc] init];
     [self.videoFileForSaving addTarget:self.videoFilterForSaving];
     
-    NSString *pathToMovie = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Movie.m4v"];
+    NSString *pathToMovie = [self filteredVideoPath];
     unlink([pathToMovie UTF8String]);
-    self.fileURL = [NSURL fileURLWithPath:pathToMovie];
-    self.videoMovieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:self.fileURL size:CGSizeMake(videoAssetTrack.naturalSize.width, videoAssetTrack.naturalSize.height)];
-    
-    
+    NSURL *fileURL = [NSURL fileURLWithPath:pathToMovie];
+    self.videoMovieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:fileURL size:CGSizeMake(videoAssetTrack.naturalSize.width, videoAssetTrack.naturalSize.height)];
     
     self.videoMovieWriter.shouldPassthroughAudio = YES;
     self.videoFileForSaving.audioEncodingTarget = self.videoMovieWriter;
@@ -179,11 +180,13 @@ table, \
     [self.videoMovieWriter startRecording];
     [self.videoFileForSaving startProcessing];
     
-    
     __weak __typeof(self) weakSelf = self;
     [self.videoMovieWriter setCompletionBlock:^{
         [weakSelf.videoMovieWriter finishRecordingWithCompletionHandler:^{
-                    UISaveVideoAtPathToSavedPhotosAlbum([NSHomeDirectory() stringByAppendingPathComponent:@"Documents/Movie.m4v"], weakSelf, @selector(savedFilteredVideo:error:context:), nil);
+                    UISaveVideoAtPathToSavedPhotosAlbum([weakSelf filteredVideoPath],
+                                                        weakSelf,
+                                                        @selector(savedFilteredVideo:error:context:),
+                                                        nil);
         }];
     }];
 }

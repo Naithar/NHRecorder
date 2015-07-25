@@ -17,6 +17,7 @@
 @property (nonatomic, strong) UIColor *barButtonTintColor;
 
 @property (nonatomic, readonly, strong) NHRecorderButton *backButton;
+@property (nonatomic, readonly, strong) GPUImageView *videoEditView;
 
 - (instancetype)initWithAssetURL:(NSURL*)url;
 
