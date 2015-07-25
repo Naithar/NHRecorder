@@ -99,6 +99,11 @@ table, \
     self.fileURL = [NSURL fileURLWithPath:pathToMovie];
     self.videoMovieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:self.fileURL size:CGSizeMake(videoAssetTrack.naturalSize.width, videoAssetTrack.naturalSize.height)];
     
+    
+    
+    self.videoMovieWriter.shouldPassthroughAudio = YES;
+    self.videoFileForSaving.audioEncodingTarget = self.videoMovieWriter;
+    [self.videoFileForSaving enableSynchronizedEncodingUsingMovieWriter:self.videoMovieWriter];
     [self.videoFilterForSaving addTarget:self.videoMovieWriter];
     
     self.videoEditView = [[GPUImageView alloc] init];
@@ -171,8 +176,9 @@ table, \
 }
 
 - (void)nextButtonTouch:(id)sender {
-    [self.videoFileForSaving startProcessing];
     [self.videoMovieWriter startRecording];
+    [self.videoFileForSaving startProcessing];
+    
     
     __weak __typeof(self) weakSelf = self;
     [self.videoMovieWriter setCompletionBlock:^{
