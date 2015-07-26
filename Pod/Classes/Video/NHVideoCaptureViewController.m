@@ -715,17 +715,20 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 
 - (void)nextButtonTouch:(id)sender {
     
+    [self stopCapture];
+    
     __weak __typeof(self) weakSelf = self;
     
-    self.navigationController.view.userInteractionEnabled = NO;
+
     
-    [self.captureManager saveVideoWithCompletionBlock:^(NSURL *assetURL) {
+    BOOL isExporting = [self.captureManager saveVideoWithCompletionBlock:^(NSURL *assetURL) {
         
 #ifdef DEBUG
         NSLog(@"save with url = %@", assetURL);
 #endif
         
         self.navigationController.view.userInteractionEnabled = YES;
+//        self.navigationItem.rightBarButtonItem.enabled = [self nextButtonEnabled];
         
         if (assetURL) {
             
@@ -745,6 +748,21 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
             [weakSelf.nhDelegate nhVideoCapture:weakSelf didFinishExportingWithSuccess:assetURL != nil];
         }
     }];
+    
+    if (isExporting) {
+        self.navigationController.view.userInteractionEnabled = NO;
+//        self.navigationItem.rightBarButtonItem.enabled = NO;
+        
+        __weak __typeof(self) weakSelf = self;
+        
+        if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoCaptureDidStartExporting:)]) {
+            [weakSelf.nhDelegate nhVideoCaptureDidStartExporting:weakSelf];
+        }
+    }
+    else {
+        self.navigationController.view.userInteractionEnabled = YES;
+//        self.navigationItem.rightBarButtonItem.enabled = [self nextButtonEnabled];
+    }
 }
 
 - (void)captureGestureAction:(UILongPressGestureRecognizer*)recognizer {
@@ -810,6 +828,9 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 }
 
 - (void)updateProgress {
+    
+    NSLog(@"progress");
+    
     __weak __typeof(self) weakSelf = self;
     
     if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoCapture:exportProgressChanged:)]) {
@@ -880,11 +901,15 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
     _currentDuration = currentDuration;
     
     self.durationProgressView.progress = currentDuration / kNHVideoMaxDuration;
-    self.navigationItem.rightBarButtonItem.enabled = currentDuration >= kNHVideoMinDuration;
+    self.navigationItem.rightBarButtonItem.enabled = [self nextButtonEnabled];
     if (self.currentDuration >= kNHVideoMaxDuration) {
         [self stopCapture];
     }
     [self didChangeValueForKey:@"currentDuration"];
+}
+
+- (BOOL)nextButtonEnabled {
+    return self.currentDuration >= kNHVideoMinDuration;
 }
 
 - (void)dealloc {

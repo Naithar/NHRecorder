@@ -103,18 +103,17 @@ pathForResource:name ofType:@"png"]]
 - (BOOL)shouldAutorotate {
     return NO;
 }
-//
-//- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-//    
-//    if (self.view.window
-//        && ([self respondsToSelector:@selector(interactivePopGestureRecognizer)]
-//            && self.interactivePopGestureRecognizer.state == UIGestureRecognizerStatePossible)) {
-//        self.view.userInteractionEnabled = NO;
-//    }
-//}
-//
-//- (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
-//    self.view.userInteractionEnabled = YES;
-//}
+
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    if (self.view.window
+        && ([self respondsToSelector:@selector(interactivePopGestureRecognizer)]
+            && self.interactivePopGestureRecognizer.state == UIGestureRecognizerStatePossible)) {
+        self.view.userInteractionEnabled = NO;
+    }
+}
+
+- (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    self.view.userInteractionEnabled = YES;
+}
 
 @end

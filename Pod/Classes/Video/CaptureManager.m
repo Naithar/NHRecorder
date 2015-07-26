@@ -308,9 +308,10 @@
     [[self recorder] stopRecording];
 }
 
-- (void) saveVideoWithCompletionBlock:(void (^)(NSURL*))completion
+- (BOOL) saveVideoWithCompletionBlock:(void (^)(NSURL*))completion
 {
-    if ([self.assets count] != 0) {
+    if ([self.assets count]
+        && !self.exportSession) {
 
         // 1 - Create AVMutableComposition object. This object will hold your AVMutableCompositionTrack instances.
         AVMutableComposition *mixComposition = [[AVMutableComposition alloc] init];
@@ -474,6 +475,8 @@
         self.exportSession.shouldOptimizeForNetworkUse = YES;
         self.exportSession.videoComposition = videoComposition;
         
+        [self.exportProgressBarTimer invalidate];
+        self.exportProgressBarTimer = nil;
         self.exportProgressBarTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self.delegate selector:@selector(updateProgress) userInfo:nil repeats:YES];
         
         __weak __typeof(self) weakSelf = self;
@@ -482,7 +485,11 @@
                 [weakSelf exportDidFinish:weakSelf.exportSession withCompletionBlock:completion];
             });
         }];
+        
+        return YES;
     }
+    
+    return NO;
 }
 
 //http://stackoverflow.com/questions/21077240/cropping-avasset-video-with-avfoundation
@@ -533,6 +540,8 @@
             [weakSelf removeFile:fileURL];
     }];
     
+    [self.exportProgressBarTimer invalidate];
+    self.exportProgressBarTimer = nil;
     [self.delegate removeProgress];
     
     BOOL shouldSave = YES;

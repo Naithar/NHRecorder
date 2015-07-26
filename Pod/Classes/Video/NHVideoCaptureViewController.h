@@ -22,11 +22,11 @@
 - (void)nhVideoCaptureDidFinish:(NHVideoCaptureViewController*)controller;
 
 - (void)nhVideoCapture:(NHVideoCaptureViewController*)controller exportProgressChanged:(float)progress;
+- (void)nhVideoCaptureDidStartExporting:(NHVideoCaptureViewController*)controller;
 - (void)nhVideoCaptureDidStartSaving:(NHVideoCaptureViewController*)controller;
+- (void)nhVideoCapture:(NHVideoCaptureViewController *)controller didFinishExportingWithSuccess:(BOOL)success;
 
 - (void)nhVideoCapture:(NHVideoCaptureViewController *)controller didFailWithError:(NSError*)error;
-
-- (void)nhVideoCapture:(NHVideoCaptureViewController *)controller didFinishExportingWithSuccess:(BOOL)success;
 
 - (BOOL)nhVideoCapture:(NHVideoCaptureViewController*)controller shouldEditVideoAtURL:(NSURL *)videoURL;
 - (BOOL)nhVideoCapture:(NHVideoCaptureViewController*)controller cameraAvailability:(AVAuthorizationStatus)status;

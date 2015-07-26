@@ -76,7 +76,7 @@
 - (BOOL) setupSession;
 - (void) startRecording;
 - (void) stopRecording;
-- (void) saveVideoWithCompletionBlock:(void (^)(NSURL* assetURL))completion;
+- (BOOL) saveVideoWithCompletionBlock:(void (^)(NSURL* assetURL))completion;
 - (NSUInteger) cameraCount;
 - (NSUInteger) micCount;
 - (void) autoFocusAtPoint:(CGPoint)point;

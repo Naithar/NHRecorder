@@ -241,12 +241,15 @@ table, \
 }
 
 - (void)nextButtonTouch:(id)sender {
+    
+    self.navigationController.view.userInteractionEnabled = NO;
     [self.videoMovieWriter startRecording];
     [self.videoFileForSaving startProcessing];
     
     __weak __typeof(self) weakSelf = self;
     [self.videoMovieWriter setCompletionBlock:^{
         [weakSelf.videoMovieWriter finishRecordingWithCompletionHandler:^{
+            weakSelf.navigationController.view.userInteractionEnabled = YES;
                     UISaveVideoAtPathToSavedPhotosAlbum([weakSelf filteredVideoPath],
                                                         weakSelf,
                                                         @selector(savedFilteredVideo:error:context:),
@@ -503,7 +506,6 @@ table, \
 }
 
 - (void)dealloc {
-    [self.videoFileForSaving endProcessing];
     [self.videoMovieWriter finishRecording];
     [self.videoFilterForSaving removeAllTargets];
     [self.videoFileForSaving removeAllTargets];
