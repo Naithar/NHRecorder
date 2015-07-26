@@ -727,8 +727,8 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
         NSLog(@"save with url = %@", assetURL);
 #endif
         
-        self.navigationController.view.userInteractionEnabled = YES;
-//        self.navigationItem.rightBarButtonItem.enabled = [self nextButtonEnabled];
+        self.view.userInteractionEnabled = YES;
+        self.navigationItem.rightBarButtonItem.enabled = [self nextButtonEnabled];
         
         if (assetURL) {
             
@@ -750,8 +750,8 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
     }];
     
     if (isExporting) {
-        self.navigationController.view.userInteractionEnabled = NO;
-//        self.navigationItem.rightBarButtonItem.enabled = NO;
+        self.view.userInteractionEnabled = YES;
+        self.navigationItem.rightBarButtonItem.enabled = [self nextButtonEnabled];
         
         __weak __typeof(self) weakSelf = self;
         
@@ -760,8 +760,8 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
         }
     }
     else {
-        self.navigationController.view.userInteractionEnabled = YES;
-//        self.navigationItem.rightBarButtonItem.enabled = [self nextButtonEnabled];
+        self.view.userInteractionEnabled = YES;
+        self.navigationItem.rightBarButtonItem.enabled = [self nextButtonEnabled];
     }
 }
 

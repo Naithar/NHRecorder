@@ -16,11 +16,12 @@
 @protocol NHVideoEditViewControllerDelegate <NSObject>
 
 @optional
-//didsave
-//didstart processing
-//didfinish processing
-//file path?
-//error
+
+- (void)nhVideoEditorDidStartExporting:(NHVideoEditViewController*)controller;
+- (void)nhVideoEditor:(NHVideoEditViewController*)controller didFailWithError:(NSError*)error;
+- (void)nhVideoEditor:(NHVideoEditViewController*)controller didSaveAtURL:(NSURL*)url;
+- (void)nhVideoEditor:(NHVideoEditViewController*)controller didFinishExportingAtURL:(NSURL*)url;
+- (BOOL)nhVideoEditor:(NHVideoEditViewController*)controller shouldSaveFilteredVideoAtURL:(NSURL*)url;
 
 @end
 

@@ -11,6 +11,8 @@
 #import "NHFilterCollectionView.h"
 #import "NHPhotoEditorViewController.h"
 
+@import AssetsLibrary;
+
 #define image(name) \
 [UIImage imageWithContentsOfFile: \
 [[NSBundle bundleForClass:[NHVideoEditViewController class]]\
@@ -24,6 +26,9 @@ table, \
 @interface NHVideoEditViewController ()<NHFilterCollectionViewDelegate>
 
 @property (nonatomic, strong) NSURL *assetURL;
+
+@property (nonatomic, strong) id enterForegroundNotification;
+@property (nonatomic, strong) id resignActiveNotification;
 
 @property (nonatomic, strong) id orientationChange;
 
@@ -91,8 +96,8 @@ table, \
                                              action:nil];
     
     
-    AVURLAsset *asset = [AVURLAsset URLAssetWithURL:self.assetURL options:nil];
-    AVAssetTrack *videoAssetTrack = [[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
+//    AVURLAsset *asset = [AVURLAsset URLAssetWithURL:self.assetURL options:nil];
+//    AVAssetTrack *videoAssetTrack = [[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
     self.videoFile = [[GPUImageMovie alloc] initWithURL:self.assetURL];
     self.videoFile.playAtActualSpeed = YES;
     self.videoFile.shouldRepeat = YES;
@@ -100,21 +105,21 @@ table, \
     self.videoFilter = [[GPUImageFilter alloc] init];
     [self.videoFile addTarget:self.videoFilter];
     
-    self.videoFileForSaving = [[GPUImageMovie alloc] initWithURL:self.assetURL];
-    self.videoFileForSaving.playAtActualSpeed = YES;
+//    self.videoFileForSaving = [[GPUImageMovie alloc] initWithURL:self.assetURL];
+//    self.videoFileForSaving.playAtActualSpeed = YES;
     
     self.videoFilterForSaving = [[GPUImageFilter alloc] init];
-    [self.videoFileForSaving addTarget:self.videoFilterForSaving];
+//    [self.videoFileForSaving addTarget:self.videoFilterForSaving];
     
-    NSString *pathToMovie = [self filteredVideoPath];
-    unlink([pathToMovie UTF8String]);
-    NSURL *fileURL = [NSURL fileURLWithPath:pathToMovie];
-    self.videoMovieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:fileURL size:CGSizeMake(videoAssetTrack.naturalSize.width, videoAssetTrack.naturalSize.height)];
-    
-    self.videoMovieWriter.shouldPassthroughAudio = YES;
-    self.videoFileForSaving.audioEncodingTarget = self.videoMovieWriter;
-    [self.videoFileForSaving enableSynchronizedEncodingUsingMovieWriter:self.videoMovieWriter];
-    [self.videoFilterForSaving addTarget:self.videoMovieWriter];
+//    NSString *pathToMovie = [self filteredVideoPath];
+//    unlink([pathToMovie UTF8String]);
+//    NSURL *fileURL = [NSURL fileURLWithPath:pathToMovie];
+//    self.videoMovieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:fileURL size:CGSizeMake(videoAssetTrack.naturalSize.width, videoAssetTrack.naturalSize.height)];
+//    
+//    self.videoMovieWriter.shouldPassthroughAudio = YES;
+//    self.videoFileForSaving.audioEncodingTarget = self.videoMovieWriter;
+//    [self.videoFileForSaving enableSynchronizedEncodingUsingMovieWriter:self.videoMovieWriter];
+//    [self.videoFilterForSaving addTarget:self.videoMovieWriter];
     
     self.videoEditView = [[GPUImageView alloc] init];
     self.videoEditView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -150,7 +155,6 @@ table, \
                        forState:UIControlStateSelected];
     [self.selectorView addSubview:self.filterButton];
     self.filterButton.selected = YES;
-//    [self.filterButton addTarget:self action:@selector(filterButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     
     [self setupFilterButtonConstraints];
     
@@ -162,6 +166,29 @@ table, \
     [self setupFilterCollectionViewConstraints];
     
     __weak __typeof(self) weakSelf = self;
+    self.enterForegroundNotification = [[NSNotificationCenter defaultCenter]
+                                        addObserverForName:UIApplicationWillEnterForegroundNotification
+                                        object:nil
+                                        queue:nil
+                                        usingBlock:^(NSNotification *note) {
+                                            __strong __typeof(weakSelf) strongSelf = weakSelf;
+                                            if (strongSelf
+                                                && strongSelf.view.window) {
+                                                [self.videoFile startProcessing];
+                                            }
+                                        }];
+    
+    self.resignActiveNotification = [[NSNotificationCenter defaultCenter]
+                                     addObserverForName:UIApplicationWillResignActiveNotification
+                                     object:nil
+                                     queue:nil
+                                     usingBlock:^(NSNotification *note) {
+                                         __strong __typeof(weakSelf) strongSelf = weakSelf;
+                                         if (strongSelf
+                                             && strongSelf.view.window) {
+                                         }
+                                     }];
+    
     self.orientationChange = [[NSNotificationCenter defaultCenter]
                               addObserverForName:UIDeviceOrientationDidChangeNotification
                               object:nil
@@ -186,7 +213,7 @@ table, \
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-//    [self.videoFile startProcessing];
+    [self.videoFile startProcessing];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -217,7 +244,33 @@ table, \
 }
 
 - (void)deviceOrientationChange {
+    CGFloat angle = 0;
     
+    switch ([[UIDevice currentDevice] orientation]) {
+        case UIDeviceOrientationPortrait:
+            break;
+        case UIDeviceOrientationLandscapeLeft:
+            angle = M_PI_2;
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            angle = -M_PI_2;
+            break;
+        case UIDeviceOrientationPortraitUpsideDown:
+            angle = M_PI;
+            break;
+        default:
+            return;
+    }
+    
+    [UIView animateWithDuration:0.3
+                          delay:0
+                        options:UIViewAnimationOptionBeginFromCurrentState
+                     animations:^{
+                         self.filterButton.imageView.transform = CGAffineTransformMakeRotation(angle);
+                     }
+                     completion:^(BOOL finished) {
+                         
+                     }];
 }
 
 - (BOOL)prefersStatusBarHidden {
@@ -240,20 +293,91 @@ table, \
     [self.navigationController popViewControllerAnimated:YES];
 }
 
+
+- (void)startSaving {
+    AVURLAsset *asset = [AVURLAsset URLAssetWithURL:self.assetURL options:nil];
+    AVAssetTrack *videoAssetTrack = [[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
+    NSString *pathToMovie = [self filteredVideoPath];
+    unlink([pathToMovie UTF8String]);
+    NSURL *fileURL = [NSURL fileURLWithPath:pathToMovie];
+
+    [self.videoFileForSaving endProcessing];
+    [self.videoMovieWriter finishRecording];
+    [self.videoFilterForSaving removeAllTargets];
+    [self.videoFileForSaving removeAllTargets];
+    self.videoFileForSaving = nil;
+    self.videoMovieWriter = nil;
+
+    self.videoFileForSaving = [[GPUImageMovie alloc] initWithURL:self.assetURL];
+    self.videoFileForSaving.playAtActualSpeed = YES;
+    [self.videoFileForSaving addTarget:self.videoFilterForSaving];
+    
+    self.videoMovieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:fileURL size:CGSizeMake(videoAssetTrack.naturalSize.width, videoAssetTrack.naturalSize.height)];
+    self.videoMovieWriter.shouldPassthroughAudio = YES;
+    self.videoFileForSaving.audioEncodingTarget = self.videoMovieWriter;
+    [self.videoFileForSaving enableSynchronizedEncodingUsingMovieWriter:self.videoMovieWriter];
+    [self.videoFilterForSaving addTarget:self.videoMovieWriter];
+    
+    [self.videoMovieWriter startRecording];
+    [self.videoFileForSaving startProcessing];
+}
+
 - (void)nextButtonTouch:(id)sender {
     
     self.navigationController.view.userInteractionEnabled = NO;
-    [self.videoMovieWriter startRecording];
-    [self.videoFileForSaving startProcessing];
+    
+    [self startSaving];
     
     __weak __typeof(self) weakSelf = self;
+    
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditorDidStartExporting:)]) {
+        [weakSelf.nhDelegate nhVideoEditorDidStartExporting:weakSelf];
+    }
+    
     [self.videoMovieWriter setCompletionBlock:^{
         [weakSelf.videoMovieWriter finishRecordingWithCompletionHandler:^{
             weakSelf.navigationController.view.userInteractionEnabled = YES;
-                    UISaveVideoAtPathToSavedPhotosAlbum([weakSelf filteredVideoPath],
-                                                        weakSelf,
-                                                        @selector(savedFilteredVideo:error:context:),
-                                                        nil);
+            
+        
+            BOOL shouldSave = YES;
+            NSURL *outputURL = [NSURL fileURLWithPath:[weakSelf filteredVideoPath]];
+            
+            if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:shouldSaveFilteredVideoAtURL:)]) {
+                shouldSave = [weakSelf.nhDelegate nhVideoEditor:weakSelf shouldSaveFilteredVideoAtURL:outputURL];
+            }
+            
+            if (shouldSave) {
+                ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+                if ([library videoAtPathIsCompatibleWithSavedPhotosAlbum:outputURL]) {
+                    [library writeVideoAtPathToSavedPhotosAlbum:outputURL completionBlock:^(NSURL *assetURL, NSError *error){
+                        if (!error
+                            && assetURL) {
+#ifdef DEBUG
+                            NSLog(@"saved");
+#endif
+                            if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didSaveAtURL:)]) {
+                                [weakSelf.nhDelegate nhVideoEditor:weakSelf didSaveAtURL:assetURL];
+                            }
+                            
+                            if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didFinishExportingAtURL:)]) {
+                                [weakSelf.nhDelegate nhVideoEditor:weakSelf didFinishExportingAtURL:assetURL];
+                            }
+                        }
+                        else {
+                            if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didFailWithError:)]) {
+                                [weakSelf.nhDelegate nhVideoEditor:weakSelf didFailWithError:error];
+                            }
+                        }
+                    }];
+                }
+                
+            }
+            else {
+                
+                if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didFinishExportingAtURL:)]) {
+                    [weakSelf.nhDelegate nhVideoEditor:weakSelf didFinishExportingAtURL:outputURL];
+                }
+            }
         }];
     }];
 }
@@ -494,18 +618,15 @@ table, \
     [self.videoFile addTarget:self.videoFilter];
     [self.videoFilter addTarget:self.videoEditView];
     
-    [self.videoFilterForSaving removeAllTargets];
-    [self.videoFileForSaving removeTarget:self.videoFilterForSaving];
+//    [self.videoFilterForSaving removeAllTargets];
+//    [self.videoFileForSaving removeTarget:self.videoFilterForSaving];
     self.videoFilterForSaving = [filterView filterForType:filterType];
-    [self.videoFileForSaving addTarget:self.videoFilterForSaving];
-    [self.videoFilterForSaving addTarget:self.videoMovieWriter];
-}
-- (void)savedFilteredVideo:(NSString*)path error:(NSError*)error context:(void*)contextInfo {
-    NSLog(@"%@", error);
-    [self dismissViewControllerAnimated:YES completion:nil];
+//    [self.videoFileForSaving addTarget:self.videoFilterForSaving];
+//    [self.videoFilterForSaving addTarget:self.videoMovieWriter];
 }
 
 - (void)dealloc {
+    [self.videoFileForSaving endProcessing];
     [self.videoMovieWriter finishRecording];
     [self.videoFilterForSaving removeAllTargets];
     [self.videoFileForSaving removeAllTargets];
@@ -521,6 +642,8 @@ table, \
     
     [[GPUImageContext sharedFramebufferCache] purgeAllUnassignedFramebuffers];
     
+    [[NSNotificationCenter defaultCenter] removeObserver:self.enterForegroundNotification];
+    [[NSNotificationCenter defaultCenter] removeObserver:self.resignActiveNotification];
     [[NSNotificationCenter defaultCenter] removeObserver:self.orientationChange];
 }
 
