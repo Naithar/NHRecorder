@@ -22,6 +22,10 @@ extern const CGFloat kNHRecorderCaptureButtonBorderOffset;
 @protocol NHPhotoCaptureViewControllerDelegate <NSObject>
 
 @optional
+
+- (void)photoCaptureDidStartExporting:(NHPhotoCaptureViewController*)controller;
+- (void)photoCaptureDidFinishExporting:(NHPhotoCaptureViewController*)controller;
+
 - (BOOL)photoCapture:(NHPhotoCaptureViewController*)controller shouldEditImage:(UIImage*)image;
 - (BOOL)photoCapture:(NHPhotoCaptureViewController*)controller cameraAvailability:(AVAuthorizationStatus)status;
 - (CGSize)imageSizeToFitForPhotoCapture:(NHPhotoCaptureViewController*)controller;

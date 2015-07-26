@@ -608,16 +608,22 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 - (void)captureButtonTouch:(id)sender {
     
     AVAuthorizationStatus cameraStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    __weak __typeof(self) weakSelf = self;
     
     if (cameraStatus != AVAuthorizationStatusAuthorized) {
-        
-        __weak __typeof(self) weakSelf = self;
         if ([weakSelf.nhDelegate respondsToSelector:@selector(photoCapture:cameraAvailability:)]) {
             [weakSelf.nhDelegate
              photoCapture:weakSelf
              cameraAvailability:cameraStatus];
         }
         return;
+    }
+    
+    
+    
+    
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(photoCaptureDidStartExporting:)]) {
+        [weakSelf.nhDelegate photoCaptureDidStartExporting:weakSelf];
     }
     
     [self.photoCamera capturePhotoAsImageProcessedUpToFilter:self.photoCropFilter
@@ -634,7 +640,6 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                                                
                                                CGSize imageSizeToFit = CGSizeZero;
                                                
-                                               __weak __typeof(self) weakSelf = self;
                                                if ([weakSelf.nhDelegate respondsToSelector:@selector(imageSizeToFitForPhotoCapture:)]) {
                                                    imageSizeToFit = [weakSelf.nhDelegate imageSizeToFitForPhotoCapture:weakSelf];
                                                }
@@ -644,6 +649,10 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                                                }
                                                else {
                                                    resultImage = [processedImage nhr_rescaleToFit:imageSizeToFit];
+                                               }
+                                               
+                                               if ([weakSelf.nhDelegate respondsToSelector:@selector(photoCaptureDidFinishExporting:)]) {
+                                                   [weakSelf.nhDelegate photoCaptureDidFinishExporting:weakSelf];
                                                }
                                                
                                                if (resultImage) {
