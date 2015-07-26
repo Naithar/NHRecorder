@@ -619,8 +619,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
         return;
     }
     
-    
-    
+    self.navigationController.view.userInteractionEnabled = NO;
     
     if ([weakSelf.nhDelegate respondsToSelector:@selector(photoCaptureDidStartExporting:)]) {
         [weakSelf.nhDelegate photoCaptureDidStartExporting:weakSelf];
@@ -629,6 +628,8 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     [self.photoCamera capturePhotoAsImageProcessedUpToFilter:self.photoCropFilter
                                        withCompletionHandler:^(UIImage *processedImage, NSError *error) {
                                            @autoreleasepool {
+                                               
+                                               weakSelf.navigationController.view.userInteractionEnabled = YES;
                                                
                                                if (error
                                                    || !processedImage) {

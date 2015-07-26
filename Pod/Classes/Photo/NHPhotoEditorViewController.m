@@ -582,13 +582,23 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
 - (void)nextButtonTouch:(id)sender {
     if (self.photoView.panGestureRecognizer.state == UIGestureRecognizerStatePossible
         && self.photoView.pinchGestureRecognizer.state == UIGestureRecognizerStatePossible) {
+        
+        self.navigationController.view.userInteractionEnabled = NO;
+        __weak __typeof(self) weakSelf = self;
+        
+        if ([weakSelf.nhDelegate respondsToSelector:@selector(photoEditorDidStartExporting:)]) {
+            [weakSelf.nhDelegate photoEditorDidStartExporting:weakSelf];
+        }
+        
         [self.photoView processImageWithBlock:^(UIImage *image) {
+            
+            weakSelf.navigationController.view.userInteractionEnabled = YES;
+            
             if (image) {
                 UIImage *resultImage;
                 
                 CGSize imageSizeToFit = CGSizeZero;
                 
-                __weak __typeof(self) weakSelf = self;
                 if ([weakSelf.nhDelegate respondsToSelector:@selector(imageSizeToFitForPhotoEditor:)]) {
                     imageSizeToFit = [weakSelf.nhDelegate imageSizeToFitForPhotoEditor:weakSelf];
                 }
@@ -598,6 +608,10 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
                 }
                 else {
                     resultImage = [image nhr_rescaleToFit:imageSizeToFit];
+                }
+                
+                if ([weakSelf.nhDelegate respondsToSelector:@selector(photoEditorDidFinishExporting:)]) {
+                    [weakSelf.nhDelegate photoEditorDidFinishExporting:weakSelf];
                 }
                 
                 if (resultImage) {
