@@ -82,6 +82,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     self.photoCamera = [[GPUImageStillCamera alloc]
                         initWithSessionPreset:AVCaptureSessionPresetPhoto
                         cameraPosition:AVCaptureDevicePositionBack];
+    
     self.photoCamera.outputImageOrientation = UIInterfaceOrientationPortrait;
     self.photoCamera.horizontallyMirrorFrontFacingCamera = YES;
     if ([self.photoCamera.inputCamera isFlashModeSupported:AVCaptureFlashModeAuto]) {
@@ -188,7 +189,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                                              target:nil
                                              action:nil];
     
-    [self resetFocus];
+    [self resetFlash];
     [self resetGrid];
     
     self.captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
@@ -584,7 +585,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
         [self.photoCamera.inputCamera unlockForConfiguration];
     }
     
-    [self resetFocus];
+    [self resetFlash];
 }
 
 - (void)gridButtonTouch:(id)sender {
@@ -601,6 +602,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     else {
         self.flashButton.enabled = YES;
     }
+    [self resetFlash];
 }
 
 - (void)captureButtonTouch:(id)sender {
@@ -675,7 +677,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 
 //MARK: resets
 
-- (void)resetFocus {
+- (void)resetFlash {
     NSString *imageName;
     switch (self.photoCamera.inputCamera.flashMode) {
         case AVCaptureFlashModeAuto:
@@ -783,8 +785,29 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 
 - (void)startCamera {
 //    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    
+    [self.photoCamera stopCameraCapture];
+    [self.photoCamera removeAllTargets];
+    
+    AVCaptureDevicePosition cameraPosition = self.photoCamera.cameraPosition;
+    AVCaptureFlashMode flashMode = self.photoCamera.inputCamera.flashMode;
+    
+    self.photoCamera = [[GPUImageStillCamera alloc]
+                        initWithSessionPreset:AVCaptureSessionPresetPhoto
+                        cameraPosition:cameraPosition];
+    
+    self.photoCamera.outputImageOrientation = UIInterfaceOrientationPortrait;
+    self.photoCamera.horizontallyMirrorFrontFacingCamera = YES;
+    if ([self.photoCamera.inputCamera isFlashModeSupported:flashMode]) {
+        [self.photoCamera.inputCamera lockForConfiguration:nil];
+        [self.photoCamera.inputCamera setFlashMode:flashMode];
+        [self.photoCamera.inputCamera unlockForConfiguration];
+    }
+    
+    [self.photoCamera addTarget:self.photoCropFilter];
+    [self resetFlash];
+    
         [self.photoCamera startCameraCapture];
-//    });
 }
 
 - (void)stopCamera {
