@@ -727,7 +727,7 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
         NSLog(@"save with url = %@", assetURL);
 #endif
         
-        self.navigationController.view.userInteractionEnabled = YES;
+        weakSelf.navigationController.view.userInteractionEnabled = YES;
         
         if (assetURL) {
             
