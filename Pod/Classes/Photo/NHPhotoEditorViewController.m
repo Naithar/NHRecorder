@@ -632,16 +632,20 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
 }
 
 - (void)savedCapturedImage:(UIImage*)image error:(NSError*)error context:(void*)context {
+    BOOL shouldContinue = YES;
+    __weak __typeof(self) weakSelf = self;
     if (error) {
-        __weak __typeof(self) weakSelf = self;
         if ([weakSelf.nhDelegate respondsToSelector:@selector(photoEditor:receivedErrorOnSave:)]) {
             [weakSelf.nhDelegate photoEditor:weakSelf receivedErrorOnSave:error];
         }
-        return;
+        
+        if ([weakSelf.nhDelegate respondsToSelector:@selector(photoEditorShouldContinueAfterSaveFail:)]) {
+            shouldContinue = [weakSelf.nhDelegate photoEditorShouldContinueAfterSaveFail:weakSelf];
+        }
     }
     
-    __weak __typeof(self) weakSelf = self;
-    if ([weakSelf.nhDelegate respondsToSelector:@selector(photoEditor:savedImage:)]) {
+    if (shouldContinue
+        && [weakSelf.nhDelegate respondsToSelector:@selector(photoEditor:savedImage:)]) {
         [weakSelf.nhDelegate photoEditor:weakSelf savedImage:image];
     }
 }

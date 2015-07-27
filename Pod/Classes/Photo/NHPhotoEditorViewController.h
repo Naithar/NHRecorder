@@ -33,6 +33,8 @@ extern const CGFloat kNHRecorderSelectionContainerViewHeight;
          savedImage:(UIImage*)image;
 - (void)photoEditor:(NHPhotoEditorViewController*)editor
          receivedErrorOnSave:(NSError*)error;
+
+- (BOOL)photoEditorShouldContinueAfterSaveFail:(NHPhotoEditorViewController*)editor;
 @end
 
 @interface NHPhotoEditorViewController : UIViewController
