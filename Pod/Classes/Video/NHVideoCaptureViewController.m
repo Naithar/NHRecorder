@@ -134,7 +134,8 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
     
     self.removeFragmentButton = [NHRecorderButton buttonWithType:UIButtonTypeCustom];
     self.removeFragmentButton.translatesAutoresizingMaskIntoConstraints = NO;
-    self.removeFragmentButton.backgroundColor = [UIColor greenColor];
+    self.removeFragmentButton.backgroundColor = [UIColor clearColor];
+    [self.removeFragmentButton setImage:image(@"NHRecorder.remove") forState:UIControlStateNormal];
     [self.removeFragmentButton setTitle:nil forState:UIControlStateNormal];
     [self.removeFragmentButton addTarget:self action:@selector(removeFragmentButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     self.removeFragmentButton.layer.cornerRadius = 5;

@@ -212,9 +212,9 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     
     self.videoCaptureButton = [NHRecorderButton buttonWithType:UIButtonTypeCustom];
     self.videoCaptureButton.translatesAutoresizingMaskIntoConstraints = NO;
-    self.videoCaptureButton.backgroundColor = [UIColor redColor];
+    self.videoCaptureButton.backgroundColor = [UIColor clearColor];
     [self.videoCaptureButton setTitle:nil forState:UIControlStateNormal];
-    [self.videoCaptureButton setImage:nil forState:UIControlStateNormal];
+    [self.videoCaptureButton setImage:image(@"NHRecorder.video") forState:UIControlStateNormal];
     [self.videoCaptureButton addTarget:self action:@selector(videoCaptureButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     self.videoCaptureButton.layer.cornerRadius = 5;
     self.videoCaptureButton.clipsToBounds = YES;
