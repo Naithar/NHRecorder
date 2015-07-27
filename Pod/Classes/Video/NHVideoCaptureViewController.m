@@ -16,6 +16,9 @@
 #import "AVCamRecorder.h"
 #import "NHVideoEditViewController.h"
 #import "NHRecorderProgressView.h"
+#import "NHMediaPickerViewController.h"
+
+@import AssetsLibrary;
 
 #define image(name) \
 [UIImage imageWithContentsOfFile: \
@@ -47,6 +50,7 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 @property (nonatomic, strong) NHRecorderButton *removeFragmentButton;
 @property (nonatomic, strong) UIButton *captureButton;
 
+@property (nonatomic, strong) NHRecorderButton *libraryButton;
 
 @property (nonatomic, strong) NHRecorderButton *backButton;
 @property (nonatomic, strong) NHRecorderButton *gridButton;
@@ -154,8 +158,19 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
     self.captureButton.clipsToBounds = YES;
     [self.bottomContainerView addSubview:self.captureButton];
     
+    self.libraryButton = [NHRecorderButton buttonWithType:UIButtonTypeCustom];
+    self.libraryButton.translatesAutoresizingMaskIntoConstraints = NO;
+    self.libraryButton.backgroundColor = [UIColor clearColor];
+    [self.libraryButton setTitle:nil forState:UIControlStateNormal];
+    [self.libraryButton addTarget:self action:@selector(libraryButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
+    self.libraryButton.layer.cornerRadius = 5;
+    self.libraryButton.clipsToBounds = YES;
+    [self.bottomContainerView addSubview:self.libraryButton];
+    
     [self setupRemoveFragmentButtonConstraints];
+    [self setupLibraryButtonConstraints];
     [self setupCaptureButtonConstraints];
+    [self resetLibrary];
     
     self.durationProgressView = [[NHRecorderProgressView alloc] init];
     self.durationProgressView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -255,6 +270,7 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
                                             if (strongSelf
                                                 && strongSelf.view.window) {
                                                 [strongSelf startCamera];
+                                                [strongSelf resetLibrary];
                                             }
                                         }];
     
@@ -366,6 +382,7 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
     [super viewDidAppear:animated];
     
     [self startCamera];
+    [self resetLibrary];
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
@@ -414,6 +431,36 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
                                                                             toItem:self.bottomContainerView
                                                                          attribute:NSLayoutAttributeHeight
                                                                         multiplier:0 constant:kNHRecorderBottomViewHeight]];
+}
+
+- (void)setupLibraryButtonConstraints {
+    [self.bottomContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.libraryButton
+                                                                         attribute:NSLayoutAttributeCenterY
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.bottomContainerView
+                                                                         attribute:NSLayoutAttributeCenterY
+                                                                        multiplier:1.0 constant:0]];
+    
+    [self.bottomContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.libraryButton
+                                                                         attribute:NSLayoutAttributeRight
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.bottomContainerView
+                                                                         attribute:NSLayoutAttributeRight
+                                                                        multiplier:1.0 constant:-25]];
+    
+    [self.libraryButton addConstraint:[NSLayoutConstraint constraintWithItem:self.libraryButton
+                                                                          attribute:NSLayoutAttributeHeight
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:self.libraryButton
+                                                                          attribute:NSLayoutAttributeHeight
+                                                                         multiplier:0 constant:kNHRecorderSideButtonHeight]];
+    
+    [self.libraryButton addConstraint:[NSLayoutConstraint constraintWithItem:self.libraryButton
+                                                                          attribute:NSLayoutAttributeHeight
+                                                                          relatedBy:NSLayoutRelationEqual
+                                                                             toItem:self.libraryButton
+                                                                          attribute:NSLayoutAttributeWidth
+                                                                         multiplier:1.0 constant:0]];
 }
 
 - (void)setupRemoveFragmentButtonConstraints {
@@ -695,6 +742,7 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
                          self.gridButton.imageView.transform = CGAffineTransformMakeRotation(angle);
                          self.switchButton.imageView.transform = CGAffineTransformMakeRotation(angle);
                          self.removeFragmentButton.transform = CGAffineTransformMakeRotation(angle);
+                         self.libraryButton.transform = CGAffineTransformMakeRotation(angle);
                      } completion:^(BOOL finished) {
                          
                      }];
@@ -782,6 +830,13 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
     }
 }
 
+- (void)libraryButtonTouch:(id)sender {
+    NHMediaPickerViewController *viewController = [[NHMediaPickerViewController alloc]
+                                                   initWithMediaType:NHMediaPickerTypeVideo];
+    viewController.firstController = NO;
+    viewController.linksToCamera = NO;
+    [self.navigationController pushViewController:viewController animated:YES];
+}
 
 - (void)removeFragmentButtonTouch:(id)sender {
     [self.captureManager deleteLastAsset];
@@ -878,6 +933,36 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
     if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoCaptureDidReset:)]) {
         [weakSelf.nhDelegate nhVideoCaptureDidReset:weakSelf];
     }
+}
+
+- (void)resetLibrary {
+    ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+    
+    [library enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
+                           usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+                               [group enumerateAssetsWithOptions:NSEnumerationReverse
+                                                      usingBlock:^(ALAsset *result,
+                                                                   NSUInteger index,
+                                                                   BOOL *stop) {
+                                                          
+                                                          if (result
+                                                              && [[result valueForProperty:ALAssetPropertyType]
+                                                                  isEqualToString:ALAssetTypeVideo]) {
+                                                                  UIImage *image = [UIImage imageWithCGImage:[result thumbnail]];
+                                                                  
+                                                                  if (image) {
+                                                                      dispatch_async(dispatch_get_main_queue(), ^{
+                                                                          [self.libraryButton setImage:image forState:UIControlStateNormal];
+                                                                      });
+                                                                      
+                                                                      *stop = YES;
+                                                                  }
+                                                              }
+                                                          
+                                                      }];
+                           } failureBlock:^(NSError *error) {
+                               [self.libraryButton setImage:image(@"NHRecorder.video.error") forState:UIControlStateNormal];
+                           }];
 }
 
 - (BOOL)prefersStatusBarHidden {

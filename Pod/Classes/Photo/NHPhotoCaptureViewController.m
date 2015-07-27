@@ -295,6 +295,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                           self.gridButton.imageView.transform = CGAffineTransformMakeRotation(angle);
                          self.switchButton.imageView.transform = CGAffineTransformMakeRotation(angle);
                          self.libraryButton.transform = CGAffineTransformMakeRotation(angle);
+                         self.videoCaptureButton.transform = CGAffineTransformMakeRotation(angle);
                      } completion:^(BOOL finished) {
                          
                      }];
@@ -674,7 +675,8 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 }
 
 - (void)libraryButtonTouch:(id)sender {
-    NHMediaPickerViewController *viewController = [[NHMediaPickerViewController alloc] init];
+    NHMediaPickerViewController *viewController = [[NHMediaPickerViewController alloc]
+                                                   initWithMediaType:NHMediaPickerTypePhoto];
     viewController.firstController = NO;
     viewController.linksToCamera = NO;
     [self.navigationController pushViewController:viewController animated:YES];

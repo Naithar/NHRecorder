@@ -12,6 +12,7 @@
 #import "NHPhotoEditorViewController.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "UIImage+Resize.h"
+#import "NHVideoEditViewController.h"
 
 #define image(name) \
 [UIImage imageWithContentsOfFile: \
@@ -33,6 +34,14 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
 @end
 
 @implementation NHMediaPickerViewController
+
+- (instancetype)initWithMediaType:(NHMediaPickerType)type {
+    
+    _mediaType = type;
+    self = [super init];
+    
+    return self;
+}
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
@@ -95,7 +104,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     
     [self setupCollectionViewConstraints];
     
-    [self loadImagesFromLibrary];
+    [self loadMediaFromLibrary];
     
     __weak __typeof(self) weakSelf = self;
     self.orientationChange = [[NSNotificationCenter defaultCenter]
@@ -191,7 +200,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
                                                          multiplier:1.0 constant:0]];
 }
 
-- (void)loadImagesFromLibrary {
+- (void)loadMediaFromLibrary {
     
     __weak __typeof(self) weakSelf = self;
     [self.mediaLibrary enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
@@ -206,11 +215,27 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
                                    NSMutableArray *newArray = [[NSMutableArray alloc] init];
                                    
                                    [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
-                                       NSString *type = [result valueForProperty:ALAssetPropertyType];
-                                       if ([type isEqualToString:ALAssetTypeVideo]) {
-                                       }
-                                       else if ([type isEqualToString:ALAssetTypePhoto]) {
-                                           [newArray insertObject:result atIndex:0];
+                                       
+                                       if (result) {
+                                           NSString *type = [result valueForProperty:ALAssetPropertyType];
+                                           
+                                           switch (strongSelf.mediaType) {
+                                               case NHMediaPickerTypeAll:
+                                                   [newArray insertObject:result atIndex:0];
+                                                   break;
+                                               case NHMediaPickerTypePhoto:
+                                                   if ([type isEqualToString:ALAssetTypePhoto]) {
+                                                       [newArray insertObject:result atIndex:0];
+                                                   }
+                                                   break;
+                                               case NHMediaPickerTypeVideo:
+                                                   if ([type isEqualToString:ALAssetTypeVideo]) {
+                                                       [newArray insertObject:result atIndex:0];
+                                                   }
+                                                   break;
+                                               default:
+                                                   break;
+                                           }
                                        }
                                    }];
                                    
@@ -289,7 +314,16 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     else {
         if (itemNumber < self.mediaItems.count) {
             ALAsset *asset = self.mediaItems[itemNumber];
+            NSString *type = [asset valueForProperty:ALAssetPropertyType];
+        
             cell.imageView.image = [UIImage imageWithCGImage:[asset thumbnail]];
+            
+            if ([type isEqualToString:ALAssetTypePhoto]) {
+                cell.durationLabel.text = nil;
+            }
+            else if ([type isEqualToString:ALAssetTypeVideo]) {
+                cell.durationLabel.text = @"12:34";
+            }
         }
         
     }
@@ -312,47 +346,57 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     else {
         if (itemNumber < self.mediaItems.count) {
             ALAsset *asset = self.mediaItems[itemNumber];
-            
+            NSString *type = [asset valueForProperty:ALAssetPropertyType];
             ALAssetRepresentation *representation = [asset defaultRepresentation];
-            CGFloat scale = [representation scale];
-            UIImageOrientation orientation = UIImageOrientationUp;
-            NSNumber* orientationValue = [asset valueForProperty:ALAssetPropertyOrientation];
-            if (orientationValue != nil) {
-                orientation = [orientationValue intValue];
-            }
             
-            UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:scale orientation:orientation];
-            
-            if (image) {
-                UIImage *resultImage;
-                CGSize imageSizeToFit = CGSizeZero;
-                
-                __weak __typeof(self) weakSelf = self;
-                if ([weakSelf.nhDelegate respondsToSelector:@selector(imageSizeToFitForMediaPicker:)]) {
-                    imageSizeToFit = [weakSelf.nhDelegate imageSizeToFitForMediaPicker:weakSelf];
+            if ([type isEqualToString:ALAssetTypePhoto]) {
+                CGFloat scale = [representation scale];
+                UIImageOrientation orientation = UIImageOrientationUp;
+                NSNumber* orientationValue = [asset valueForProperty:ALAssetPropertyOrientation];
+                if (orientationValue != nil) {
+                    orientation = [orientationValue intValue];
                 }
                 
-                if (CGSizeEqualToSize(imageSizeToFit, CGSizeZero)) {
-                    resultImage = image;
-                }
-                else {
-                    resultImage = [image nhr_rescaleToFit:imageSizeToFit];
-                }
+                UIImage *image = [UIImage imageWithCGImage:[representation fullResolutionImage] scale:scale orientation:orientation];
                 
-                if (resultImage) {
-                    BOOL shouldEdit = YES;
+                if (image) {
+                    UIImage *resultImage;
+                    CGSize imageSizeToFit = CGSizeZero;
                     
                     __weak __typeof(self) weakSelf = self;
-                    if ([weakSelf.nhDelegate respondsToSelector:@selector(mediaPicker:shouldEditImage:)]) {
-                        shouldEdit = [weakSelf.nhDelegate mediaPicker:weakSelf shouldEditImage:resultImage];
+                    if ([weakSelf.nhDelegate respondsToSelector:@selector(imageSizeToFitForMediaPicker:)]) {
+                        imageSizeToFit = [weakSelf.nhDelegate imageSizeToFitForMediaPicker:weakSelf];
                     }
                     
-                    if (shouldEdit) {
-                        NHPhotoEditorViewController *viewController = [[NHPhotoEditorViewController alloc] initWithUIImage:resultImage];
-                        [self.navigationController pushViewController:viewController animated:YES];
+                    if (CGSizeEqualToSize(imageSizeToFit, CGSizeZero)) {
+                        resultImage = image;
+                    }
+                    else {
+                        resultImage = [image nhr_rescaleToFit:imageSizeToFit];
+                    }
+                    
+                    if (resultImage) {
+                        BOOL shouldEdit = YES;
+                        
+                        __weak __typeof(self) weakSelf = self;
+                        if ([weakSelf.nhDelegate respondsToSelector:@selector(mediaPicker:shouldEditImage:)]) {
+                            shouldEdit = [weakSelf.nhDelegate mediaPicker:weakSelf shouldEditImage:resultImage];
+                        }
+                        
+                        if (shouldEdit) {
+                            NHPhotoEditorViewController *viewController = [[NHPhotoEditorViewController alloc] initWithUIImage:resultImage];
+                            [self.navigationController pushViewController:viewController animated:YES];
+                        }
                     }
                 }
-            }
+            } //if type is Photo
+            else if ([type isEqualToString:ALAssetTypeVideo]) {
+                NSURL *assetURL = [representation url];
+                if (assetURL) {
+                    NHVideoEditViewController *viewController = [[NHVideoEditViewController alloc] initWithAssetURL:assetURL];
+                    [self.navigationController pushViewController:viewController animated:YES];
+                }
+            } //if type is Video
         }
     }
     
@@ -423,6 +467,14 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
 
 - (BOOL)prefersStatusBarHidden {
     return NO;
+}
+
+- (void)setMediaType:(NHMediaPickerType)mediaType {
+    [self willChangeValueForKey:@"mediaType"];
+    _mediaType = mediaType;
+    
+    [self loadMediaFromLibrary];
+    [self didChangeValueForKey:@"mediaType"];
 }
 
 - (UIStatusBarStyle)preferredStatusBarStyle {

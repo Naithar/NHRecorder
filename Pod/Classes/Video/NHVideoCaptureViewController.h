@@ -53,6 +53,8 @@
 @property (nonatomic, readonly, strong) NHRecorderButton *removeFragmentButton;
 @property (nonatomic, readonly, strong) UIButton *captureButton;
 
+@property (nonatomic, readonly, strong) NHRecorderButton *libraryButton;
+
 @property (nonatomic, readonly, strong) NHRecorderButton *backButton;
 @property (nonatomic, readonly, strong) NHRecorderButton *gridButton;
 @property (nonatomic, readonly, strong) NHRecorderButton *switchButton;
