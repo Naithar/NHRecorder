@@ -21,9 +21,6 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 - [ ] Fix delegates
 - [ ] Custom Views
 
-
-## Requirements
-
 ## Installation
 
 NHRecorder is available through [CocoaPods](http://cocoapods.org). To install
