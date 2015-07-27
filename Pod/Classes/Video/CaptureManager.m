@@ -364,7 +364,7 @@
                            ofTrack:videoAssetTrack atTime:time error:nil];
             
             [audioTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, asset.duration)
-                                ofTrack:[[asset tracksWithMediaType:AVMediaTypeAudio] objectAtIndex:0] atTime:time error:nil];
+                                ofTrack:[asset tracksWithMediaType:AVMediaTypeAudio].firstObject atTime:time error:nil];
 //            if(idx == 0)
 //            {
             

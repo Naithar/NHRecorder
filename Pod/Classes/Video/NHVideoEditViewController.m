@@ -314,7 +314,12 @@ table, \
     
     self.videoMovieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:fileURL size:CGSizeMake(videoAssetTrack.naturalSize.width, videoAssetTrack.naturalSize.height)];
     self.videoMovieWriter.shouldPassthroughAudio = YES;
-    self.videoFileForSaving.audioEncodingTarget = self.videoMovieWriter;
+    if ([asset tracksWithMediaType:AVMediaTypeAudio].count) {
+        self.videoFileForSaving.audioEncodingTarget = self.videoMovieWriter;
+    } else {//no audio
+        self.videoFileForSaving.audioEncodingTarget = nil;
+    }
+    
     [self.videoFileForSaving enableSynchronizedEncodingUsingMovieWriter:self.videoMovieWriter];
     [self.videoFilterForSaving addTarget:self.videoMovieWriter];
     
