@@ -9,6 +9,19 @@
 
 To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
+##TODO
+
+- [x] Photo capture
+- [x] Photo cropping
+- [x] Photo filtering
+- [x] Video capture
+- [x] Video filtering
+- [ ] Video cropping
+- [ ] Subsclassing
+- [ ] Fix delegates
+- [ ] Custom Views
+
+
 ## Requirements
 
 ## Installation
