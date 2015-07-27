@@ -31,7 +31,6 @@
 - (BOOL)nhVideoCapture:(NHVideoCaptureViewController*)controller shouldEditVideoAtURL:(NSURL *)videoURL;
 - (BOOL)nhVideoCapture:(NHVideoCaptureViewController*)controller cameraAvailability:(AVAuthorizationStatus)status;
 
-
 - (void)nhVideoCaptureDidReset:(NHVideoCaptureViewController*)controller;
 
 - (BOOL)nhVideoCaptureShouldSaveNonFilteredVideo:(NHVideoCaptureViewController*)controller;

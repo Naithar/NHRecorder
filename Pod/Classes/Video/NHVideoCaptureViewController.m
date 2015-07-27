@@ -903,11 +903,12 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 
 - (void)captureManager:(CaptureManager *)captureManager didFailWithError:(NSError *)error {
     __weak __typeof(self) weakSelf = self;
+#ifdef DEBUG
+    NSLog(@"fail with: %@", error);
+#endif
+    
     if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoCapture:didFailWithError:)]) {
         [weakSelf.nhDelegate nhVideoCapture:weakSelf didFailWithError:error];
-#ifdef DEBUG
-        NSLog(@"fail with: %@", error);
-#endif
     }
 }
 

@@ -22,7 +22,7 @@
 - (void)nhVideoEditor:(NHVideoEditViewController*)controller didSaveAtURL:(NSURL*)url;
 - (void)nhVideoEditor:(NHVideoEditViewController*)controller didFinishExportingAtURL:(NSURL*)url;
 - (BOOL)nhVideoEditor:(NHVideoEditViewController*)controller shouldSaveFilteredVideoAtURL:(NSURL*)url;
-
+- (BOOL)nhVideoEditorShouldContinueAfterSaveFail:(NHVideoEditViewController*)controller;
 @end
 
 @interface NHVideoEditViewController : UIViewController

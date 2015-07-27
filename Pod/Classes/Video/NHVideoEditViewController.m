@@ -364,8 +364,25 @@ table, \
                             }
                         }
                         else {
+#ifdef DEBUG
+                            NSLog(@"error = %@", error);
+#endif
+                            
                             if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didFailWithError:)]) {
                                 [weakSelf.nhDelegate nhVideoEditor:weakSelf didFailWithError:error];
+                            }
+                            
+                            BOOL shouldContinue = YES;
+                            
+                            if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditorShouldContinueAfterSaveFail:)]) {
+                                shouldContinue = [weakSelf.nhDelegate nhVideoEditorShouldContinueAfterSaveFail:weakSelf];
+                            }
+                            
+                            if (shouldContinue) {
+                                if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didFinishExportingAtURL:)]) {
+                                    [weakSelf.nhDelegate nhVideoEditor:weakSelf
+                                               didFinishExportingAtURL:outputURL];
+                                }
                             }
                         }
                     }];

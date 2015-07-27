@@ -532,7 +532,7 @@
 -(void)exportDidFinish:(AVAssetExportSession*)session withCompletionBlock:(void(^)(NSURL* assetURL))completion {
     self.exportSession = nil;
     
-    __block id weakSelf = self;
+    __weak __typeof(self) weakSelf = self;
     //delete stored pieces
     [self.assets enumerateObjectsWithOptions:NSEnumerationConcurrent usingBlock:^(NHAssetContainer *assetContainer, NSUInteger idx, BOOL *stop) {
         AVAsset *asset = assetContainer.asset;
@@ -566,12 +566,16 @@
             ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
             if ([library videoAtPathIsCompatibleWithSavedPhotosAlbum:outputURL]) {
                 [library writeVideoAtPathToSavedPhotosAlbum:outputURL completionBlock:^(NSURL *assetURL, NSError *error){
-                    //delete file from documents after saving to camera roll
-                    [weakSelf removeFile:outputURL];
-                    
                     if (error) {
-                        completion (nil);
+#ifdef DEBUG
+                        NSLog(@"error = %@", error);
+#endif
+                        if ([weakSelf.delegate respondsToSelector:@selector(captureManager:didFailWithError:)]) {
+                            [weakSelf.delegate captureManager:weakSelf didFailWithError:error];
+                        }
+                        completion (outputURL);
                     } else {
+                        [weakSelf removeFile:outputURL];
                         completion (assetURL);
                     }
                 }];
