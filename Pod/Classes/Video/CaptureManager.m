@@ -464,7 +464,8 @@
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         NSString *documentsDirectory = [paths objectAtIndex:0];
         NSString *path =  [documentsDirectory stringByAppendingPathComponent:
-                                 [NSString stringWithFormat:@"mergeVideo-%d.mov",arc4random() % 1000]];
+                                 [NSString stringWithFormat:@"mergedVideo.mov"]];
+        unlink([path UTF8String]);
         NSURL *url = [NSURL fileURLWithPath:path];
 
         // 5 - Create exporter
@@ -477,7 +478,7 @@
         
         [self.exportProgressBarTimer invalidate];
         self.exportProgressBarTimer = nil;
-        self.exportProgressBarTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self.delegate selector:@selector(updateProgress) userInfo:nil repeats:YES];
+        self.exportProgressBarTimer = [NSTimer scheduledTimerWithTimeInterval:.1 target:self selector:@selector(updateExportProgress:) userInfo:nil repeats:YES];
         
         __weak __typeof(self) weakSelf = self;
         [self.exportSession exportAsynchronouslyWithCompletionHandler:^{
@@ -490,6 +491,13 @@
     }
     
     return NO;
+}
+
+- (void)updateExportProgress:(NSTimer*)timer {
+    __weak __typeof(self) weakSelf = self;
+    if ([weakSelf.delegate respondsToSelector:@selector(updateProgress)]) {
+        [weakSelf.delegate updateProgress];
+    }
 }
 
 //http://stackoverflow.com/questions/21077240/cropping-avasset-video-with-avfoundation

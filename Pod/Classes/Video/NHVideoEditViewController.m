@@ -141,7 +141,7 @@ table, \
     [self setupVideoEditViewConstraints];
     
     [self.videoFilter addTarget:self.videoEditView];
-    [self.videoFile startProcessing];
+    [self startVideo];
     
     self.filterButton = [[UIButton alloc] init];
     self.filterButton.backgroundColor = [UIColor clearColor];
@@ -174,7 +174,7 @@ table, \
                                             __strong __typeof(weakSelf) strongSelf = weakSelf;
                                             if (strongSelf
                                                 && strongSelf.view.window) {
-                                                [self.videoFile startProcessing];
+                                                [self startVideo];
                                             }
                                         }];
     
@@ -213,7 +213,7 @@ table, \
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
     
-    [self.videoFile startProcessing];
+//    [self startVideo];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -623,6 +623,11 @@ table, \
     self.videoFilterForSaving = [filterView filterForType:filterType];
 //    [self.videoFileForSaving addTarget:self.videoFilterForSaving];
 //    [self.videoFilterForSaving addTarget:self.videoMovieWriter];
+}
+
+- (void)startVideo {
+    [self.videoFile endProcessing];
+    [self.videoFile startProcessing];
 }
 
 - (void)dealloc {
