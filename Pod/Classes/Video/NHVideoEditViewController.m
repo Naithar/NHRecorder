@@ -197,6 +197,9 @@ table, \
                                       [strongSelf deviceOrientationChange];
                                   }
                               }];
+    
+    [self.videoView.panGestureRecognizer addTarget:self action:@selector(videoGestureAction:)];
+    [self.videoView.pinchGestureRecognizer addTarget:self action:@selector(videoGestureAction:)];
 }
 
 - (void)viewDidLoad {
@@ -224,6 +227,27 @@ table, \
     [UIView performWithoutAnimation:^{
         [self deviceOrientationChange];
     }];
+}
+
+- (void)videoGestureAction:(UIGestureRecognizer*)recognizer {
+    switch (recognizer.state) {
+        case UIGestureRecognizerStateBegan:
+        case UIGestureRecognizerStateChanged:
+            self.navigationItem.rightBarButtonItem.enabled = NO;
+            [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(checkNextEnabled) object:nil];
+            break;
+        default: {
+            [self performSelector:@selector(checkNextEnabled) withObject:nil afterDelay:0.5];
+        } break;
+    }
+}
+
+- (void)checkNextEnabled {
+    self.navigationItem.rightBarButtonItem.enabled =
+    ((self.videoView.panGestureRecognizer.state == UIGestureRecognizerStateFailed
+      || self.videoView.panGestureRecognizer.state == UIGestureRecognizerStatePossible)
+     && (self.videoView.pinchGestureRecognizer.state == UIGestureRecognizerStateFailed
+         || self.videoView.pinchGestureRecognizer.state == UIGestureRecognizerStatePossible));
 }
 
 //http://stackoverflow.com/questions/1347562/getting-thumbnail-from-a-video-url-or-data-in-iphone-sdk
@@ -369,14 +393,17 @@ table, \
 
 - (void)nextButtonTouch:(id)sender {
     
-    self.navigationController.view.userInteractionEnabled = NO;
-    
-    [self startSaving];
-    
-    __weak __typeof(self) weakSelf = self;
-    
-    if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditorDidStartExporting:)]) {
-        [weakSelf.nhDelegate nhVideoEditorDidStartExporting:weakSelf];
+    if (self.videoView.panGestureRecognizer.state == UIGestureRecognizerStatePossible
+        && self.videoView.pinchGestureRecognizer.state == UIGestureRecognizerStatePossible) {
+        self.navigationController.view.userInteractionEnabled = NO;
+        
+        [self startSaving];
+        
+        __weak __typeof(self) weakSelf = self;
+        
+        if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditorDidStartExporting:)]) {
+            [weakSelf.nhDelegate nhVideoEditorDidStartExporting:weakSelf];
+        }
     }
     
 }
