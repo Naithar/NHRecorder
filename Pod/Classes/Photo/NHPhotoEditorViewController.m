@@ -43,8 +43,6 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
 
 @property (nonatomic, strong) id orientationChange;
 
-@property (nonatomic, assign) NSTimeInterval photoGestureTimestamp;
-
 @end
 
 @implementation NHPhotoEditorViewController
@@ -179,35 +177,25 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
 //MARK: setup
 
 - (void)photoGestureAction:(UIGestureRecognizer*)recognizer {
-
-    self.photoGestureTimestamp = [[NSDate date] timeIntervalSince1970];
     
     switch (recognizer.state) {
         case UIGestureRecognizerStateBegan:
         case UIGestureRecognizerStateChanged:
             self.navigationItem.rightBarButtonItem.enabled = NO;
+            [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(checkNextEnabled) object:nil];
             break;
         default: {
-            NSTimeInterval timestamp = self.photoGestureTimestamp;
-            
-            __weak __typeof(self) weakSelf = self;
-            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.65 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                __strong __typeof(weakSelf) strongSelf = weakSelf;
-                
-                if (strongSelf
-                    && strongSelf.photoGestureTimestamp == timestamp) {
-                strongSelf.navigationItem.rightBarButtonItem.enabled =
-                ((recognizer == strongSelf.photoView.pinchGestureRecognizer
-                  && (strongSelf.photoView.panGestureRecognizer.state == UIGestureRecognizerStateFailed
-                      || strongSelf.photoView.panGestureRecognizer.state == UIGestureRecognizerStatePossible))
-                 || (recognizer == strongSelf.photoView.panGestureRecognizer
-                     && (strongSelf.photoView.pinchGestureRecognizer.state == UIGestureRecognizerStateFailed
-                         || strongSelf.photoView.pinchGestureRecognizer.state == UIGestureRecognizerStatePossible)));
-                }
-            });
-            
+            [self performSelector:@selector(checkNextEnabled) withObject:nil afterDelay:0.5];
         } break;
     }
+}
+                           
+- (void)checkNextEnabled {
+        self.navigationItem.rightBarButtonItem.enabled =
+        ((self.photoView.panGestureRecognizer.state == UIGestureRecognizerStateFailed
+              || self.photoView.panGestureRecognizer.state == UIGestureRecognizerStatePossible)
+         && (self.photoView.pinchGestureRecognizer.state == UIGestureRecognizerStateFailed
+                 || self.photoView.pinchGestureRecognizer.state == UIGestureRecognizerStatePossible));
 }
 
 - (void)deviceOrientationChange {

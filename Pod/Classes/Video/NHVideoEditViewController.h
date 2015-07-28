@@ -12,6 +12,7 @@
 @class NHRecorderButton;
 @class NHVideoEditViewController;
 @class NHFilterCollectionView;
+@class NHVideoView;
 
 @protocol NHVideoEditViewControllerDelegate <NSObject>
 
@@ -33,7 +34,8 @@
 @property (nonatomic, strong) UIColor *barButtonTintColor;
 
 @property (nonatomic, readonly, strong) NHRecorderButton *backButton;
-@property (nonatomic, readonly, strong) GPUImageView *videoEditView;
+
+@property (nonatomic, readonly, strong) NHVideoView *videoView;
 
 @property (nonatomic, readonly, strong) UIView *selectorView;
 @property (nonatomic, readonly, strong) UIView *selectorSeparatorView;

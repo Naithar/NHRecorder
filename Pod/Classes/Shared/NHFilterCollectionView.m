@@ -158,7 +158,7 @@ table, \
     }
 }
 
-- (GPUImageFilter*)filterForType:(NHFilterType)type {
++ (GPUImageFilter*)filterForType:(NHFilterType)type {
     switch (type) {
         case NHFilterType1997:
             return [[GPUImageToneCurveFilter alloc] initWithACV:@"1977"];

@@ -38,5 +38,5 @@ typedef NS_ENUM(NSUInteger, NHFilterType) {
 
 - (void)setSelected:(NSInteger)index;
 
-- (GPUImageFilter*)filterForType:(NHFilterType)type;
++ (GPUImageFilter*)filterForType:(NHFilterType)type;
 @end

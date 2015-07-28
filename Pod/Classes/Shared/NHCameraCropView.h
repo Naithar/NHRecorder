@@ -26,5 +26,7 @@ typedef NS_ENUM(NSUInteger, NHPhotoCropType) {
 @property (nonatomic, assign) NHPhotoCropType cropType;
 @property (nonatomic, assign) BOOL showBorder;
 
+
+- (CGRect)cropRegionForView:(UIView*)view;
 - (void)resetCrop;
 @end

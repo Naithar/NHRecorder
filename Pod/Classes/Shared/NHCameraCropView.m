@@ -45,6 +45,42 @@ const CGFloat kNHRecorderLineWidth = 0.5;
     [self resetCrop];
 }
 
+- (CGRect)cropRegionForView:(UIView*)view {
+    switch (self.cropType) {
+        case NHPhotoCropTypeNone:
+            return CGRectMake(0, 0, 1, 1);
+        default: {
+            CGRect newRect = [self convertRect:self.cropRect toView:view];
+            
+            CGFloat resultWidth = floor(newRect.size.width - 0.5);
+            CGFloat resultHeight = floor(newRect.size.height - 0.5);
+            CGFloat resultXOffset = ceil(newRect.origin.x + 0.5);
+            CGFloat resultYOffset = ceil(newRect.origin.y + 0.5);
+            
+            CGRect resultRect = CGRectMake(
+                                           resultXOffset / ceil(view.bounds.size.width),
+                                           resultYOffset / ceil(view.bounds.size.height),
+                                           resultWidth / ceil(view.bounds.size.width),
+                                           resultHeight / ceil(view.bounds.size.height));
+            
+            
+            if (resultRect.origin.x >= 0
+                && resultRect.origin.y >= 0
+                && resultRect.size.width != 0
+                && resultRect.size.height != 0
+                && CGRectGetMaxY(resultRect) <= 1
+                && CGRectGetMaxX(resultRect) <= 1) {
+                
+                return resultRect;
+            }
+            else {
+                return CGRectMake(0, 0, 1, 1);
+            }
+            
+        }
+    }
+}
+
 - (void)resetCrop {
     CGPoint cropCenter = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height / 2);
     

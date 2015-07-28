@@ -331,7 +331,7 @@
         [self.assets enumerateObjectsUsingBlock:^(NHAssetContainer *assetContainer, NSUInteger idx, BOOL *stop) {
             AVAsset *asset = assetContainer.asset;
             
-            AVAssetTrack *videoAssetTrack = [[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
+            AVAssetTrack *videoAssetTrack = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
             CGFloat desiredAspectRatio = 1.0;
             CGSize naturalSize = CGSizeMake(videoAssetTrack.naturalSize.width, videoAssetTrack.naturalSize.height);
             CGSize adjustedSize = CGSizeApplyAffineTransform(naturalSize, videoAssetTrack.preferredTransform);
@@ -358,7 +358,7 @@
             AVAsset *asset = assetContainer.asset;
             
            // AVAsset *asset = [AVAsset assetWithURL:[NSURL fileURLWithPath:string]];//obj]];
-            AVAssetTrack *videoAssetTrack = [[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
+            AVAssetTrack *videoAssetTrack = [asset tracksWithMediaType:AVMediaTypeVideo].firstObject;
             
             [videoTrack insertTimeRange:CMTimeRangeMake(kCMTimeZero, asset.duration)
                            ofTrack:videoAssetTrack atTime:time error:nil];
@@ -506,7 +506,7 @@
     NSArray *tracks = [asset tracksWithMediaType:AVMediaTypeVideo];
     
     if([tracks count] > 0) {
-        AVAssetTrack *videoTrack = [tracks objectAtIndex:0];
+        AVAssetTrack *videoTrack = tracks.firstObject;
         CGAffineTransform t = videoTrack.preferredTransform;
         
         // Portrait

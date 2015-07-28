@@ -1,30 +1,36 @@
 //
-//  NHCameraImageCropView.m
+//  NHVideoView.m
 //  Pods
 //
-//  Created by Sergey Minakov on 11.06.15.
+//  Created by Sergey Minakov on 28.07.15.
 //
 //
 
-#import "NHPhotoView.h"
+#import "NHVideoView.h"
 
-#import <GPUImage/GPUImage.h>
+@interface NHVideoView ()<UIScrollViewDelegate>
 
-@interface NHPhotoView ()<UIScrollViewDelegate>
-
-@property (nonatomic, strong) UIImage *image;
+@property (nonatomic, strong) NSURL *videoURL;
 @property (nonatomic, strong) GPUImageView *contentView;
-@property (nonatomic, strong) GPUImagePicture *picture;
 
-@property (nonatomic, strong) GPUImageFilter *rotationFilter;
+@property (nonatomic, strong) AVURLAsset *videoAsset;
+
+@property (nonatomic, strong) GPUImageMovie *videoFile;
 @property (nonatomic, strong) GPUImageFilter *customFilter;
-@property (nonatomic, strong) GPUImageCropFilter *cropFilter;
 
 @property (nonatomic, strong) NHCameraCropView *cropView;
 
+@property (nonatomic, assign) NHFilterType filterType;
+
+//saving
+@property (nonatomic, strong) GPUImageMovie *saveFile;
+@property (nonatomic, strong) GPUImageFilter *saveFilter;
+@property (nonatomic, strong) GPUImageCropFilter *saveCrop;
+@property (nonatomic, strong) GPUImageMovieWriter *saveWriter;
+
 @end
 
-@implementation NHPhotoView
+@implementation NHVideoView
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
@@ -36,24 +42,17 @@
     return self;
 }
 
-- (instancetype)initWithImage:(UIImage*)image {
-    return [self initWithFrame:CGRectZero image:image];
-}
-
-- (instancetype)initWithFrame:(CGRect)frame {
-    return [self initWithFrame:frame image:nil];
-}
-
-- (instancetype)initWithFrame:(CGRect)frame image:(UIImage*)image {
-    self = [super initWithFrame:frame];
+- (instancetype)initWithURL:(NSURL*)url {
+    self = [super init];
     
     if (self) {
-        _image = image;
+        _videoURL = url;
         [self commonInit];
     }
     
     return self;
 }
+
 
 - (void)commonInit {
     self.scrollsToTop = NO;
@@ -62,58 +61,40 @@
     self.alwaysBounceVertical = NO;
     self.alwaysBounceHorizontal = NO;
     self.minimumZoomScale = 1;
-    self.maximumZoomScale = 5;
+    self.maximumZoomScale = 1;
     self.showsVerticalScrollIndicator = NO;
     self.showsHorizontalScrollIndicator = NO;
-    self.backgroundColor = [UIColor clearColor];
+    
+//    self.pinchGestureRecognizer.enabled = NO;
+    
+    self.backgroundColor = [UIColor redColor];
     
     self.contentView = [[GPUImageView alloc] init];
+    self.contentView.backgroundColor = [UIColor blueColor];
     [self addSubview:self.contentView];
     
-    self.picture = [[GPUImagePicture alloc] initWithImage:self.image smoothlyScaleOutput:NO];
-    self.rotationFilter = [[GPUImageFilter alloc] init];
+    
+    self.videoAsset = [AVURLAsset assetWithURL:self.videoURL];
+    self.videoFile = [[GPUImageMovie alloc] initWithURL:self.videoURL];
+    self.videoFile.playAtActualSpeed = YES;
+    self.videoFile.shouldRepeat = YES;
+    
     self.customFilter = [[GPUImageFilter alloc] init];
-    self.cropFilter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0, 0, 1, 1)];
+    self.saveFilter = [[GPUImageFilter alloc] init];
+    self.saveCrop = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0, 0, 1, 1)];
     
-    GPUImageRotationMode newRotation = kGPUImageNoRotation;
-    
-    switch (self.image.imageOrientation) {
-        case UIImageOrientationUp:
-        case UIImageOrientationUpMirrored:
-            break;
-        case UIImageOrientationLeft:
-        case UIImageOrientationLeftMirrored:
-            newRotation = kGPUImageRotateLeft;
-            break;
-        case UIImageOrientationRight:
-        case UIImageOrientationRightMirrored:
-            newRotation = kGPUImageRotateRight;
-            break;
-        case UIImageOrientationDown:
-        case UIImageOrientationDownMirrored:
-            newRotation = kGPUImageRotate180;
-            break;
-        default:
-            break;
-    }
-    [self.rotationFilter setInputRotation:newRotation atIndex:0];
-    
-    [self.picture addTarget:self.rotationFilter];
-    [self.rotationFilter addTarget:self.customFilter];
-    [self.customFilter addTarget:self.cropFilter];
-    
+    [self.videoFile addTarget:self.customFilter];
+
     [self.customFilter addTarget:self.contentView];
     
     [self sizeContent];
-    if (self.window) {
-        [self.picture processImage];
-    }
     
     self.cropView = [[NHCameraCropView alloc] init];
+    self.cropView.cropType = NHPhotoCropType4x3;
+    self.cropView.showBorder = NO;
     self.cropView.translatesAutoresizingMaskIntoConstraints = NO;
     self.cropView.userInteractionEnabled = NO;
     self.cropView.backgroundColor = [UIColor clearColor];
-    self.cropView.showBorder = YES;
     self.cropView.cropBackgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
 }
 
@@ -124,38 +105,38 @@
 }
 
 - (void)didMoveToSuperview {
-        [self.superview addSubview:self.cropView];
-        [self setupCropViewConstraints];
-
+    [self.superview addSubview:self.cropView];
+    [self setupCropViewConstraints];
+    
 }
 - (void)setupCropViewConstraints {
     [self.superview addConstraint:[NSLayoutConstraint constraintWithItem:self.cropView
-                                                     attribute:NSLayoutAttributeTop
-                                                     relatedBy:NSLayoutRelationEqual
-                                                        toItem:self
-                                                     attribute:NSLayoutAttributeTop
-                                                    multiplier:1.0 constant:0]];
+                                                               attribute:NSLayoutAttributeTop
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:self
+                                                               attribute:NSLayoutAttributeTop
+                                                              multiplier:1.0 constant:0]];
     
     [self.superview addConstraint:[NSLayoutConstraint constraintWithItem:self.cropView
-                                                     attribute:NSLayoutAttributeLeft
-                                                     relatedBy:NSLayoutRelationEqual
-                                                        toItem:self
-                                                     attribute:NSLayoutAttributeLeft
-                                                    multiplier:1.0 constant:0]];
+                                                               attribute:NSLayoutAttributeLeft
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:self
+                                                               attribute:NSLayoutAttributeLeft
+                                                              multiplier:1.0 constant:0]];
     
     [self.superview addConstraint:[NSLayoutConstraint constraintWithItem:self.cropView
-                                                     attribute:NSLayoutAttributeRight
-                                                     relatedBy:NSLayoutRelationEqual
-                                                        toItem:self
-                                                     attribute:NSLayoutAttributeRight
-                                                    multiplier:1.0 constant:0]];
+                                                               attribute:NSLayoutAttributeRight
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:self
+                                                               attribute:NSLayoutAttributeRight
+                                                              multiplier:1.0 constant:0]];
     
     [self.superview addConstraint:[NSLayoutConstraint constraintWithItem:self.cropView
-                                                     attribute:NSLayoutAttributeBottom
-                                                     relatedBy:NSLayoutRelationEqual
-                                                        toItem:self
-                                                     attribute:NSLayoutAttributeBottom
-                                                    multiplier:1.0 constant:0]];
+                                                               attribute:NSLayoutAttributeBottom
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:self
+                                                               attribute:NSLayoutAttributeBottom
+                                                              multiplier:1.0 constant:0]];
 }
 
 - (void)setCropType:(NHPhotoCropType)type {
@@ -165,35 +146,34 @@
     [self scrollViewDidZoom:self];
 }
 
-- (void)setFilter:(GPUImageFilter*)filter {
+- (void)setDisplayFilter:(GPUImageFilter*)filter {
+    
     [self.customFilter removeAllTargets];
+    [self.videoFile removeTarget:self.customFilter];
     [self.customFilter removeOutputFramebuffer];
     
-    [self.rotationFilter removeTarget:self.customFilter];
     self.customFilter = filter;
-    
-    [self.customFilter removeAllTargets];
-    [self.customFilter removeOutputFramebuffer];
-    
-    [self.rotationFilter addTarget:self.customFilter];
-    [self.customFilter addTarget:self.cropFilter];
-    
+
+    [self.videoFile addTarget:self.customFilter];
     [self.customFilter addTarget:self.contentView];
-    
-    if (self.window) {
-        [self.customFilter useNextFrameForImageCapture];
-        [self.picture processImage];
-    }
+}
+
+- (void)setSavingFilterType:(NHFilterType)filterType {
+    self.filterType = filterType;
 }
 
 - (void)sizeContent {
-    CGRect bounds = self.image ? (CGRect) { .size = self.image.size } : self.contentView.frame;
+    AVAssetTrack *videoAssetTrack = [self.videoAsset tracksWithMediaType:AVMediaTypeVideo].firstObject;
     
+    CGRect bounds = videoAssetTrack
+    ? (CGRect) { .size = videoAssetTrack.naturalSize }
+    : self.contentView.frame;
+
     if (bounds.size.height) {
         CGFloat ratio = bounds.size.width / bounds.size.height;
-        
+
         if (ratio) {
-            
+
             if (ratio > 1.05) {
                 if (self.frame.size.height > self.frame.size.width) {
                     bounds.size.width = MIN(self.bounds.size.width, self.bounds.size.height);
@@ -228,9 +208,9 @@
             }
         }
     }
-    
+
     if (!CGRectEqualToRect(self.contentView.bounds, bounds)) {
-        
+
         [self.customFilter removeTarget:self.contentView];
         self.contentView.frame = bounds;
         [self.customFilter addTarget:self.contentView];
@@ -242,19 +222,11 @@
         
         [self scrollViewDidZoom:self];
     }
-    
-    if (self.window) {
-        [self.picture processImage];
-    }
 }
 
 - (void)resetCropAnimated:(BOOL)animated {
-
-    self.cropView.maxCropSize = CGSizeMake(MIN(self.bounds.size.width, self.bounds.size.height) - 30,
-                                           self.bounds.size.height - 30);
-    
     [self.cropView resetCrop];
-
+    
     CGFloat newValue = 1;
     
     if (self.cropView.cropType != NHPhotoCropTypeNone) {
@@ -274,21 +246,85 @@
             }
         }
     }
-
+    
     self.minimumZoomScale = newValue;
+    self.maximumZoomScale = newValue;
     [self setZoomScale:newValue animated:animated];
     [self scrollViewDidZoom:self];
 }
 
-- (void)processImageWithBlock:(void(^)(UIImage *image))block {
-    self.cropFilter.cropRegion = [self.cropView cropRegionForView:self.contentView];
+- (void)processVideoToPath:(NSString*)path withBlock:(void(^)(NSURL *videoURL))block; {
+    
+    if (self.saveWriter) {
+        block(nil);
+    }
+    
+    CGRect cropRegion = [self.cropView cropRegionForView:self.contentView];
+    
+    AVAssetTrack *videoAssetTrack = [self.videoAsset tracksWithMediaType:AVMediaTypeVideo].firstObject;
+    NSString *pathToMovie = path;
+    unlink([pathToMovie UTF8String]);
+    NSURL *fileURL = [NSURL fileURLWithPath:pathToMovie];
 
-    [self.picture processImageUpToFilter:self.cropFilter
-                   withCompletionHandler:^(UIImage *processedImage) {
-                       if (block) {
-                           block(processedImage);
-                       }
-                   }];
+    [self.saveFile endProcessing];
+    [self.saveWriter finishRecording];
+    [self.saveCrop removeAllTargets];
+    [self.saveFilter removeAllTargets];
+    [self.saveFilter removeOutputFramebuffer];
+    [self.saveFile removeAllTargets];
+    self.saveFile = nil;
+    self.saveWriter = nil;
+    self.saveCrop = nil;
+    self.saveFilter = nil;
+    
+    self.saveFile = [[GPUImageMovie alloc] initWithURL:self.videoURL];
+    self.saveFile.playAtActualSpeed = YES;
+    
+    self.saveFilter = [NHFilterCollectionView filterForType:self.filterType];
+    
+    [self.saveFile addTarget:self.saveFilter];
+    
+    CGSize videoSize = videoAssetTrack.naturalSize;
+    videoSize.width = ((int)ceil( videoSize.width * cropRegion.size.width / 4.0)) * 4;
+    videoSize.height = ((int)ceil( videoSize.height * cropRegion.size.height / 4.0)) * 4;
+
+    self.saveWriter = [[GPUImageMovieWriter alloc]
+                                             initWithMovieURL:fileURL
+                                             size:videoSize];
+    
+    self.saveWriter.shouldPassthroughAudio = YES;
+    if ([self.videoAsset tracksWithMediaType:AVMediaTypeAudio].count) {
+        self.saveFile.audioEncodingTarget = self.saveWriter;
+    } else {//no audio
+        self.saveFile.audioEncodingTarget = nil;
+    }
+    
+
+    [self.saveFile enableSynchronizedEncodingUsingMovieWriter:self.saveWriter];
+    
+    self.saveCrop = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0, 0, 1, 1)];
+    self.saveCrop.cropRegion = cropRegion;
+    
+    [self.saveFilter addTarget:self.saveCrop];
+    [self.saveCrop addTarget:self.saveWriter];
+
+    __weak __typeof(self) weakSelf = self;
+    [self.saveWriter setCompletionBlock:^{
+        __strong __typeof(self) strongSelf = weakSelf;
+        [strongSelf.saveWriter finishRecordingWithCompletionHandler:^{
+            block(fileURL);
+        }];
+        
+        strongSelf.saveWriter = nil; 
+    }];
+    
+    [self.saveWriter startRecording];
+    [self.saveFile startProcessing];
+}
+
+- (void)startVideo {
+    [self.videoFile endProcessing];
+    [self.videoFile startProcessing];
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView {
@@ -313,7 +349,7 @@
     
     CGFloat cropVerticalOffset = 0;
     CGFloat cropHorizontalOffset = 0;
-
+    
     if (self.cropView.cropType != NHPhotoCropTypeNone
         && self.cropView.cropRect.size.width > 0
         && self.cropView.cropRect.size.height > 0) {
@@ -335,20 +371,26 @@
 }
 
 - (void)dealloc {
-    [self.cropFilter removeAllTargets];
     [self.customFilter removeAllTargets];
-    [self.rotationFilter removeAllTargets];
-    [self.picture removeAllTargets];
+    [self.videoFile endProcessing];
+    [self.videoFile removeAllTargets];
     
-    self.cropFilter = nil;
+    [self.saveFile endProcessing];
+    [self.saveWriter finishRecording];
+    [self.saveCrop removeAllTargets];
+    [self.saveFilter removeAllTargets];
+    [self.saveFile removeAllTargets];
+    self.saveFile = nil;
+    self.saveWriter = nil;
+    self.saveFilter = nil;
+    self.saveCrop = nil;
+    
     self.customFilter = nil;
-    self.rotationFilter = nil;
-    self.picture = nil;
-    self.image = nil;
+    self.videoFile = nil;
+    self.videoAsset = nil;
     self.delegate = nil;
     
     [[GPUImageContext sharedFramebufferCache] purgeAllUnassignedFramebuffers];
 }
 
 @end
-
