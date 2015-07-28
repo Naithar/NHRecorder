@@ -129,6 +129,7 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
     [self setupCameraGridViewConstraints];
     
     self.cropView = [[NHCameraCropView alloc] init];
+    self.cropView.cropType = NHPhotoCropTypeSquare;
     self.cropView.translatesAutoresizingMaskIntoConstraints = NO;
     self.cropView.userInteractionEnabled = NO;
     self.cropView.backgroundColor = [UIColor clearColor];
