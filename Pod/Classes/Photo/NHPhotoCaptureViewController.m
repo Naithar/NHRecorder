@@ -796,30 +796,12 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 }
 
 - (void)startCamera {
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     
-    [self.photoCamera stopCameraCapture];
-    [self.photoCamera removeAllTargets];
-    
-    AVCaptureDevicePosition cameraPosition = self.photoCamera.cameraPosition;
-    AVCaptureFlashMode flashMode = self.photoCamera.inputCamera.flashMode;
-    
-    self.photoCamera = [[GPUImageStillCamera alloc]
-                        initWithSessionPreset:AVCaptureSessionPresetPhoto
-                        cameraPosition:cameraPosition];
-    
-    self.photoCamera.outputImageOrientation = UIInterfaceOrientationPortrait;
-    self.photoCamera.horizontallyMirrorFrontFacingCamera = YES;
-    if ([self.photoCamera.inputCamera isFlashModeSupported:flashMode]) {
-        [self.photoCamera.inputCamera lockForConfiguration:nil];
-        [self.photoCamera.inputCamera setFlashMode:flashMode];
-        [self.photoCamera.inputCamera unlockForConfiguration];
-    }
-    
-    [self.photoCamera addTarget:self.photoCropFilter];
+    [self.photoCamera stopCameraCapture];    
+    [self.photoCamera.captureSession setSessionPreset:AVCaptureSessionPresetPhoto];
     [self resetFlash];
-    
-        [self.photoCamera startCameraCapture];
+
+    [self.photoCamera startCameraCapture];
 }
 
 - (void)stopCamera {
