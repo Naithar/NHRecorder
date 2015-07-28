@@ -16,6 +16,10 @@
 @class NHRecorderProgressView;
 @class NHCameraCropView;
 
+extern const NSTimeInterval kNHVideoTimerInterval;
+extern const NSTimeInterval kNHVideoMaxDuration;
+extern const NSTimeInterval kNHVideoMinDuration;
+
 @protocol NHVideoCaptureViewControllerDelegate <NSObject>
 
 @optional

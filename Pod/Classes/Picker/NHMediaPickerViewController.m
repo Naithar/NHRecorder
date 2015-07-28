@@ -13,6 +13,7 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "UIImage+Resize.h"
 #import "NHVideoEditViewController.h"
+#import "NHVideoCaptureViewController.h"
 
 #define image(name) \
 [UIImage imageWithContentsOfFile: \
@@ -229,7 +230,8 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
                                                    }
                                                    break;
                                                case NHMediaPickerTypeVideo:
-                                                   if ([type isEqualToString:ALAssetTypeVideo]) {
+                                                   if ([type isEqualToString:ALAssetTypeVideo]
+                                                       && [[result valueForProperty:ALAssetPropertyDuration] doubleValue] >= kNHVideoMinDuration) {
                                                        [newArray insertObject:result atIndex:0];
                                                    }
                                                    break;

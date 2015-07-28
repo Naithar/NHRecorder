@@ -67,10 +67,10 @@
     self.showsVerticalScrollIndicator = NO;
     self.showsHorizontalScrollIndicator = NO;
     
-    self.backgroundColor = [UIColor redColor];
+    self.backgroundColor = [UIColor blackColor];
     
     self.contentView = [[GPUImageView alloc] init];
-    self.contentView.backgroundColor = [UIColor blueColor];
+    self.contentView.backgroundColor = [UIColor blackColor];
     [self addSubview:self.contentView];
     
     
