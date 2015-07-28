@@ -199,7 +199,7 @@
     self.filterType = filterType;
 }
 
-- (void)sizeContent {
+- (CGSize)videoSize {
     AVAssetTrack *videoAssetTrack = [self.videoAsset tracksWithMediaType:AVMediaTypeVideo].firstObject;
     
     CGSize videoSize = videoAssetTrack.naturalSize;
@@ -215,7 +215,13 @@
             break;
     }
     
-    CGRect bounds = videoAssetTrack
+    return videoSize;
+}
+
+- (void)sizeContent {
+    
+    CGSize videoSize = [self videoSize];
+    CGRect bounds = !CGSizeEqualToSize(videoSize, CGSizeZero)
     ? (CGRect) { .size = videoSize }
     : self.contentView.frame;
 
@@ -311,7 +317,6 @@
     
     CGRect cropRegion = [self.cropView cropRegionForView:self.contentView];
     
-    AVAssetTrack *videoAssetTrack = [self.videoAsset tracksWithMediaType:AVMediaTypeVideo].firstObject;
     NSString *pathToMovie = path;
     unlink([pathToMovie UTF8String]);
     NSURL *fileURL = [NSURL fileURLWithPath:pathToMovie];
@@ -336,7 +341,7 @@
     
     
     
-    CGSize videoSize = videoAssetTrack.naturalSize;
+    CGSize videoSize = [self videoSize];
     videoSize.width = ((int)ceil( videoSize.width * cropRegion.size.width / 4.0)) * 4;
     videoSize.height = ((int)ceil( videoSize.height * cropRegion.size.height / 4.0)) * 4;
 
