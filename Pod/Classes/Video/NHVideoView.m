@@ -111,7 +111,6 @@
     [self sizeContent];
     
     self.cropView = [[NHCameraCropView alloc] init];
-    self.cropView.cropType = NHPhotoCropType4x3;
     self.cropView.showBorder = NO;
     self.cropView.translatesAutoresizingMaskIntoConstraints = NO;
     self.cropView.userInteractionEnabled = NO;

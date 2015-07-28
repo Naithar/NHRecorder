@@ -24,7 +24,7 @@ NSLocalizedStringFromTableInBundle(name, \
 table, \
 [NSBundle bundleForClass:[NHVideoEditViewController class]], nil)
 
-@interface NHVideoEditViewController ()<NHFilterCollectionViewDelegate>
+@interface NHVideoEditViewController ()<NHFilterCollectionViewDelegate, NHCropCollectionViewDelegate>
 
 @property (nonatomic, strong) NSURL *assetURL;
 
@@ -42,10 +42,11 @@ table, \
 @property (nonatomic, strong) UIView *selectionContainerView;
 @property (nonatomic, strong) UIView *videoSeparatorView;
 
-@property (nonatomic, strong) UIButton *filterButton;
-@property (nonatomic, strong) NHFilterCollectionView *filterCollectionView;
 
-//@property (nonatomic, strong)
+@property (nonatomic, strong) UIButton *filterButton;
+@property (nonatomic, strong) UIButton *cropButton;
+@property (nonatomic, strong) NHFilterCollectionView *filterCollectionView;
+@property (nonatomic, strong) NHCropCollectionView *cropCollectionView;
 
 @end
 
@@ -123,16 +124,43 @@ table, \
                                  imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
                        forState:UIControlStateSelected];
     [self.selectorView addSubview:self.filterButton];
+    [self.filterButton addTarget:self action:@selector(filterButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     self.filterButton.selected = YES;
     
-    [self setupFilterButtonConstraints];
+    
+    self.cropButton = [[UIButton alloc] init];
+    self.cropButton.backgroundColor = [UIColor clearColor];
+    self.cropButton.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.cropButton setTitle:nil forState:UIControlStateNormal];
+    [self.cropButton setImage:[image(@"NHRecorder.crop.button")
+                               imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
+                     forState:UIControlStateNormal];
+    [self.cropButton setImage:[image(@"NHRecorder.crop.button-active")
+                               imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal]
+                     forState:UIControlStateSelected];
+    [self.cropButton addTarget:self action:@selector(cropButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self setupSelectorButtons];
     
     self.filterCollectionView = [[NHFilterCollectionView alloc] initWithImage:[self generateThumbImage:self.assetURL]];
     self.filterCollectionView.backgroundColor = [UIColor clearColor];
     self.filterCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
     self.filterCollectionView.nhDelegate = self;
     [self.selectionContainerView addSubview:self.filterCollectionView];
+    
     [self setupFilterCollectionViewConstraints];
+    
+    self.cropCollectionView = [[NHCropCollectionView alloc] init];
+    self.cropCollectionView.backgroundColor = [UIColor clearColor];
+    self.cropCollectionView.translatesAutoresizingMaskIntoConstraints = NO;
+    self.cropCollectionView.nhDelegate = self;
+    [self.selectionContainerView addSubview:self.cropCollectionView];
+    [self setupCropCollectionViewConstraints];
+    
+    [self.filterCollectionView setSelected:0];
+    [self.cropCollectionView setSelected:0];
+    
+    [self showFiltersCollection];
     
     __weak __typeof(self) weakSelf = self;
     self.enterForegroundNotification = [[NSNotificationCenter defaultCenter]
@@ -236,6 +264,7 @@ table, \
                         options:UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
                          self.filterButton.imageView.transform = CGAffineTransformMakeRotation(angle);
+                         self.cropButton.imageView.transform = CGAffineTransformMakeRotation(angle);
                      }
                      completion:^(BOOL finished) {
                          
@@ -514,7 +543,12 @@ table, \
                                                                        multiplier:0 constant:0.5]];
 }
 
-- (void)setupFilterButtonConstraints {
+- (void)setupSelectorButtons {
+    [self.filterButton removeFromSuperview];
+    [self.cropButton removeFromSuperview];
+    
+    [self.selectorView addSubview:self.filterButton];
+    
     [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.filterButton
                                                                   attribute:NSLayoutAttributeTop
                                                                   relatedBy:NSLayoutRelationEqual
@@ -536,13 +570,83 @@ table, \
                                                                   attribute:NSLayoutAttributeBottom
                                                                  multiplier:1.0 constant:0]];
     
-    [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.filterButton
-                                                                  attribute:NSLayoutAttributeRight
-                                                                  relatedBy:NSLayoutRelationEqual
-                                                                     toItem:self.selectorView
-                                                                  attribute:NSLayoutAttributeRight
-                                                                 multiplier:1.0 constant:0]];
+    if (self.forcedCropType == NHPhotoCropTypeNone) {
+        [self.selectorView addSubview:self.cropButton];
+        [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.cropButton
+                                                                      attribute:NSLayoutAttributeTop
+                                                                      relatedBy:NSLayoutRelationEqual
+                                                                         toItem:self.selectorView
+                                                                      attribute:NSLayoutAttributeTop
+                                                                     multiplier:1.0 constant:0]];
+        
+        
+        [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.cropButton
+                                                                      attribute:NSLayoutAttributeRight
+                                                                      relatedBy:NSLayoutRelationEqual
+                                                                         toItem:self.selectorView
+                                                                      attribute:NSLayoutAttributeRight
+                                                                     multiplier:1.0 constant:0]];
+        
+        [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.cropButton
+                                                                      attribute:NSLayoutAttributeBottom
+                                                                      relatedBy:NSLayoutRelationEqual
+                                                                         toItem:self.selectorView
+                                                                      attribute:NSLayoutAttributeBottom
+                                                                     multiplier:1.0 constant:0]];
+        
+        [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.cropButton
+                                                                      attribute:NSLayoutAttributeLeft
+                                                                      relatedBy:NSLayoutRelationEqual
+                                                                         toItem:self.filterButton
+                                                                      attribute:NSLayoutAttributeRight
+                                                                     multiplier:1.0 constant:0]];
+        
+        [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.cropButton
+                                                                      attribute:NSLayoutAttributeWidth
+                                                                      relatedBy:NSLayoutRelationEqual
+                                                                         toItem:self.filterButton
+                                                                      attribute:NSLayoutAttributeWidth
+                                                                     multiplier:1.0 constant:0]];
+    }
+    else {
+        [self.selectorView addConstraint:[NSLayoutConstraint constraintWithItem:self.filterButton
+                                                                      attribute:NSLayoutAttributeRight
+                                                                      relatedBy:NSLayoutRelationEqual
+                                                                         toItem:self.selectorView
+                                                                      attribute:NSLayoutAttributeRight
+                                                                     multiplier:1.0 constant:0]];
+    }
     
+}
+
+- (void)setupCropCollectionViewConstraints {
+    [self.selectionContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.cropCollectionView
+                                                                            attribute:NSLayoutAttributeTop
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:self.selectionContainerView
+                                                                            attribute:NSLayoutAttributeTop
+                                                                           multiplier:1.0 constant:5]];
+    
+    [self.selectionContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.cropCollectionView
+                                                                            attribute:NSLayoutAttributeBottom
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:self.selectionContainerView
+                                                                            attribute:NSLayoutAttributeBottom
+                                                                           multiplier:1.0 constant:-5]];
+    
+    [self.selectionContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.cropCollectionView
+                                                                            attribute:NSLayoutAttributeLeft
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:self.selectionContainerView
+                                                                            attribute:NSLayoutAttributeLeft
+                                                                           multiplier:1.0 constant:15]];
+    
+    [self.selectionContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.cropCollectionView
+                                                                            attribute:NSLayoutAttributeRight
+                                                                            relatedBy:NSLayoutRelationEqual
+                                                                               toItem:self.selectionContainerView
+                                                                            attribute:NSLayoutAttributeRight
+                                                                           multiplier:1.0 constant:-15]];
 }
 
 - (void)setupFilterCollectionViewConstraints {
@@ -575,6 +679,45 @@ table, \
                                                                            multiplier:1.0 constant:-15]];
 }
 
+- (void)filterButtonTouch:(id)sender {
+    if (!self.filterButton.selected) {
+        [self showFiltersCollection];
+    }
+}
+
+- (void)cropButtonTouch:(id)sender {
+    if (!self.cropButton.selected) {
+        [self showCropCollection];
+    }
+}
+
+- (void)showFiltersCollection {
+    self.filterButton.selected = YES;
+    self.cropButton.selected = NO;
+    
+    self.filterCollectionView.hidden = NO;
+    self.cropCollectionView.hidden = YES;
+}
+
+- (void)showCropCollection {
+    self.filterButton.selected = NO;
+    self.cropButton.selected = YES;
+    
+    self.filterCollectionView.hidden = YES;
+    self.cropCollectionView.hidden = NO;
+}
+
+- (void)setForcedCropType:(NHPhotoCropType)forcedCropType {
+    [self willChangeValueForKey:@"forcedCropType"];
+    _forcedCropType = forcedCropType;
+    [self didChangeValueForKey:@"forcedCropType"];
+    [self.videoView setCropType:forcedCropType];
+    [self setupSelectorButtons];
+}
+
+- (void)cropView:(NHCropCollectionView *)cropView didSelectType:(NHPhotoCropType)type {
+    [self.videoView setCropType:type];
+}
 
 - (void)filterView:(NHFilterCollectionView *)filterView didSelectFilterType:(NHFilterType)filterType {
     [self.videoView setDisplayFilter:[NHFilterCollectionView filterForType:filterType]];

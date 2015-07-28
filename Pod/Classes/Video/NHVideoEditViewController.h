@@ -8,11 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import <GPUImage/GPUImage.h>
+#import "NHCameraCropView.h"
 
 @class NHRecorderButton;
 @class NHVideoEditViewController;
 @class NHFilterCollectionView;
 @class NHVideoView;
+@class NHCropCollectionView;
 
 @protocol NHVideoEditViewControllerDelegate <NSObject>
 
@@ -30,6 +32,8 @@
 
 @property (nonatomic, weak) id<NHVideoEditViewControllerDelegate> nhDelegate;
 
+@property (nonatomic, assign) NHPhotoCropType forcedCropType;
+
 @property (nonatomic, strong) UIColor *barTintColor;
 @property (nonatomic, strong) UIColor *barButtonTintColor;
 
@@ -43,7 +47,9 @@
 @property (nonatomic, readonly, strong) UIView *videoSeparatorView;
 
 @property (nonatomic, readonly, strong) UIButton *filterButton;
+@property (nonatomic, readonly, strong) UIButton *cropButton;
 @property (nonatomic, readonly, strong) NHFilterCollectionView *filterCollectionView;
+@property (nonatomic, readonly, strong) NHCropCollectionView *cropCollectionView;
 
 - (instancetype)initWithAssetURL:(NSURL*)url;
 
