@@ -35,14 +35,6 @@ table, \
 
 @property (nonatomic, strong) NHRecorderButton *backButton;
 
-//@property (nonatomic, strong) GPUImageMovie *videoFile;
-//@property (nonatomic, strong) GPUImageMovieWriter *videoMovieWriter;
-//@property (nonatomic, strong) GPUImageView *videoEditView;
-//@property (nonatomic, strong) GPUImageFilter *videoFilter;
-//
-//@property (nonatomic, strong) GPUImageMovie *videoFileForSaving;
-//@property (nonatomic, strong) GPUImageFilter *videoFilterForSaving;
-
 @property (nonatomic, strong) NHVideoView *videoView;
 
 @property (nonatomic, strong) UIView *selectorView;
@@ -52,6 +44,8 @@ table, \
 
 @property (nonatomic, strong) UIButton *filterButton;
 @property (nonatomic, strong) NHFilterCollectionView *filterCollectionView;
+
+//@property (nonatomic, strong)
 
 @end
 
@@ -342,101 +336,6 @@ table, \
             }
         }
     }];
-//    AVURLAsset *asset = [AVURLAsset URLAssetWithURL:self.assetURL options:nil];
-//    AVAssetTrack *videoAssetTrack = [[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
-//    NSString *pathToMovie = [self filteredVideoPath];
-//    unlink([pathToMovie UTF8String]);
-//    NSURL *fileURL = [NSURL fileURLWithPath:pathToMovie];
-//
-//    [self.videoFileForSaving endProcessing];
-//    [self.videoMovieWriter finishRecording];
-//    [self.videoFilterForSaving removeAllTargets];
-//    [self.videoFileForSaving removeAllTargets];
-//    self.videoFileForSaving = nil;
-//    self.videoMovieWriter = nil;
-//
-//    self.videoFileForSaving = [[GPUImageMovie alloc] initWithURL:self.assetURL];
-//    self.videoFileForSaving.playAtActualSpeed = YES;
-//    [self.videoFileForSaving addTarget:self.videoFilterForSaving];
-//    
-//    self.videoMovieWriter = [[GPUImageMovieWriter alloc] initWithMovieURL:fileURL size:CGSizeMake(videoAssetTrack.naturalSize.width, videoAssetTrack.naturalSize.height)];
-//    self.videoMovieWriter.shouldPassthroughAudio = YES;
-//    if ([asset tracksWithMediaType:AVMediaTypeAudio].count) {
-//        self.videoFileForSaving.audioEncodingTarget = self.videoMovieWriter;
-//    } else {//no audio
-//        self.videoFileForSaving.audioEncodingTarget = nil;
-//    }
-//    
-//    [self.videoFileForSaving enableSynchronizedEncodingUsingMovieWriter:self.videoMovieWriter];
-//    [self.videoFilterForSaving addTarget:self.videoMovieWriter];
-//    
-//    [self.videoMovieWriter startRecording];
-//    [self.videoFileForSaving startProcessing];
-//    
-//    
-//    [self.videoMovieWriter setCompletionBlock:^{
-//        [weakSelf.videoMovieWriter finishRecordingWithCompletionHandler:^{
-//            weakSelf.navigationController.view.userInteractionEnabled = YES;
-//            
-//            
-//            BOOL shouldSave = YES;
-//            NSURL *outputURL = [NSURL fileURLWithPath:[weakSelf filteredVideoPath]];
-//            
-//            if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:shouldSaveFilteredVideoAtURL:)]) {
-//                shouldSave = [weakSelf.nhDelegate nhVideoEditor:weakSelf shouldSaveFilteredVideoAtURL:outputURL];
-//            }
-//            
-//            if (shouldSave) {
-//                ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-//                if ([library videoAtPathIsCompatibleWithSavedPhotosAlbum:outputURL]) {
-//                    [library writeVideoAtPathToSavedPhotosAlbum:outputURL completionBlock:^(NSURL *assetURL, NSError *error){
-//                        if (!error
-//                            && assetURL) {
-//#ifdef DEBUG
-//                            NSLog(@"saved");
-//#endif
-//                            if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didSaveAtURL:)]) {
-//                                [weakSelf.nhDelegate nhVideoEditor:weakSelf didSaveAtURL:assetURL];
-//                            }
-//                            
-//                            if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didFinishExportingAtURL:)]) {
-//                                [weakSelf.nhDelegate nhVideoEditor:weakSelf didFinishExportingAtURL:assetURL];
-//                            }
-//                        }
-//                        else {
-//#ifdef DEBUG
-//                            NSLog(@"error = %@", error);
-//#endif
-//                            
-//                            if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didFailWithError:)]) {
-//                                [weakSelf.nhDelegate nhVideoEditor:weakSelf didFailWithError:error];
-//                            }
-//                            
-//                            BOOL shouldContinue = YES;
-//                            
-//                            if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditorShouldContinueAfterSaveFail:)]) {
-//                                shouldContinue = [weakSelf.nhDelegate nhVideoEditorShouldContinueAfterSaveFail:weakSelf];
-//                            }
-//                            
-//                            if (shouldContinue) {
-//                                if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didFinishExportingAtURL:)]) {
-//                                    [weakSelf.nhDelegate nhVideoEditor:weakSelf
-//                                               didFinishExportingAtURL:outputURL];
-//                                }
-//                            }
-//                        }
-//                    }];
-//                }
-//                
-//            }
-//            else {
-//                
-//                if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didFinishExportingAtURL:)]) {
-//                    [weakSelf.nhDelegate nhVideoEditor:weakSelf didFinishExportingAtURL:outputURL];
-//                }
-//            }
-//        }];
-//    }];
 }
 
 - (void)nextButtonTouch:(id)sender {

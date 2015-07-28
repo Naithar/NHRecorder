@@ -322,13 +322,32 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
                 cell.durationLabel.text = nil;
             }
             else if ([type isEqualToString:ALAssetTypeVideo]) {
-                cell.durationLabel.text = @"12:34";
+                cell.durationLabel.text = [self formatTime:[[asset valueForProperty:ALAssetPropertyDuration] doubleValue]];
             }
         }
         
     }
     
     return cell;
+}
+
+//http://stackoverflow.com/questions/22652624/getting-video-duration-from-alasset
+- (NSString *)formatTime:(double)totalSeconds
+
+{
+    NSTimeInterval timeInterval = totalSeconds;
+    long seconds = lroundf(timeInterval); // Modulo (%) operator below needs int or long
+    int hour = 0;
+    int minute = seconds/60.0f;
+    int second = seconds % 60;
+    if (minute > 59) {
+        hour = minute/60;
+        minute = minute%60;
+        return [NSString stringWithFormat:@"%02d:%02d:%02d", hour, minute, second];
+    }
+    else{
+        return [NSString stringWithFormat:@"%02d:%02d", minute, second];
+    }
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {

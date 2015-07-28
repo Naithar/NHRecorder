@@ -16,6 +16,7 @@
 @property (nonatomic, strong) AVURLAsset *videoAsset;
 
 @property (nonatomic, strong) GPUImageMovie *videoFile;
+@property (nonatomic, strong) GPUImageFilter *rotationFilter;
 @property (nonatomic, strong) GPUImageFilter *customFilter;
 
 @property (nonatomic, strong) NHCameraCropView *cropView;
@@ -27,7 +28,8 @@
 @property (nonatomic, strong) GPUImageFilter *saveFilter;
 @property (nonatomic, strong) GPUImageCropFilter *saveCrop;
 @property (nonatomic, strong) GPUImageMovieWriter *saveWriter;
-
+@property (nonatomic, assign) GPUImageRotationMode rotation;
+@property (nonatomic, strong) GPUImageFilter *saveRotation;
 @end
 
 @implementation NHVideoView
@@ -65,8 +67,6 @@
     self.showsVerticalScrollIndicator = NO;
     self.showsHorizontalScrollIndicator = NO;
     
-//    self.pinchGestureRecognizer.enabled = NO;
-    
     self.backgroundColor = [UIColor redColor];
     
     self.contentView = [[GPUImageView alloc] init];
@@ -80,11 +80,32 @@
     self.videoFile.shouldRepeat = YES;
     
     self.customFilter = [[GPUImageFilter alloc] init];
-    self.saveFilter = [[GPUImageFilter alloc] init];
-    self.saveCrop = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0, 0, 1, 1)];
+    self.rotationFilter = [[GPUImageFilter alloc] init];
     
-    [self.videoFile addTarget:self.customFilter];
-
+    GPUImageRotationMode newRotation = kGPUImageNoRotation;
+    
+    
+    switch ([self orientationForTrack:self.videoAsset]) {
+        case UIInterfaceOrientationLandscapeLeft:
+            break;
+        case UIInterfaceOrientationLandscapeRight:
+            newRotation = kGPUImageRotate180;
+            break;
+        case UIInterfaceOrientationPortrait:
+            newRotation = kGPUImageRotateRight;
+            break;
+        case UIInterfaceOrientationPortraitUpsideDown:
+            newRotation = kGPUImageRotateLeft;
+            break;
+        default:
+            break;
+    }
+    
+    self.rotation = newRotation;
+    [self.rotationFilter setInputRotation:newRotation atIndex:0];
+    
+    [self.videoFile addTarget:self.rotationFilter];
+    [self.rotationFilter addTarget:self.customFilter];
     [self.customFilter addTarget:self.contentView];
     
     [self sizeContent];
@@ -96,6 +117,23 @@
     self.cropView.userInteractionEnabled = NO;
     self.cropView.backgroundColor = [UIColor clearColor];
     self.cropView.cropBackgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
+}
+
+//http://stackoverflow.com/questions/4627940/how-to-detect-iphone-sdk-if-a-video-file-was-recorded-in-portrait-orientation
+- (UIInterfaceOrientation)orientationForTrack:(AVAsset *)asset
+{
+    AVAssetTrack *videoTrack = [[asset tracksWithMediaType:AVMediaTypeVideo] objectAtIndex:0];
+    CGSize size = [videoTrack naturalSize];
+    CGAffineTransform txf = [videoTrack preferredTransform];
+    
+    if (size.width == txf.tx && size.height == txf.ty)
+        return UIInterfaceOrientationLandscapeRight;
+    else if (txf.tx == 0 && txf.ty == 0)
+        return UIInterfaceOrientationLandscapeLeft;
+    else if (txf.tx == 0 && txf.ty == size.width)
+        return UIInterfaceOrientationPortraitUpsideDown;
+    else
+        return UIInterfaceOrientationPortrait;
 }
 
 //MARK: setup
@@ -147,14 +185,13 @@
 }
 
 - (void)setDisplayFilter:(GPUImageFilter*)filter {
-    
     [self.customFilter removeAllTargets];
-    [self.videoFile removeTarget:self.customFilter];
+    [self.rotationFilter removeAllTargets];
     [self.customFilter removeOutputFramebuffer];
     
     self.customFilter = filter;
 
-    [self.videoFile addTarget:self.customFilter];
+    [self.rotationFilter addTarget:self.customFilter];
     [self.customFilter addTarget:self.contentView];
 }
 
@@ -165,8 +202,21 @@
 - (void)sizeContent {
     AVAssetTrack *videoAssetTrack = [self.videoAsset tracksWithMediaType:AVMediaTypeVideo].firstObject;
     
+    CGSize videoSize = videoAssetTrack.naturalSize;
+    
+    switch (self.rotation) {
+        case kGPUImageRotateLeft:
+        case kGPUImageRotateRight: {
+            CGFloat width = videoSize.width;
+            videoSize.width = videoSize.height;
+            videoSize.height = width;
+        } break;
+        default:
+            break;
+    }
+    
     CGRect bounds = videoAssetTrack
-    ? (CGRect) { .size = videoAssetTrack.naturalSize }
+    ? (CGRect) { .size = videoSize }
     : self.contentView.frame;
 
     if (bounds.size.height) {
@@ -270,19 +320,21 @@
     [self.saveWriter finishRecording];
     [self.saveCrop removeAllTargets];
     [self.saveFilter removeAllTargets];
+    [self.saveRotation removeAllTargets];
     [self.saveFilter removeOutputFramebuffer];
     [self.saveFile removeAllTargets];
     self.saveFile = nil;
     self.saveWriter = nil;
     self.saveCrop = nil;
     self.saveFilter = nil;
+    self.saveRotation = nil;
     
     self.saveFile = [[GPUImageMovie alloc] initWithURL:self.videoURL];
     self.saveFile.playAtActualSpeed = YES;
     
     self.saveFilter = [NHFilterCollectionView filterForType:self.filterType];
     
-    [self.saveFile addTarget:self.saveFilter];
+    
     
     CGSize videoSize = videoAssetTrack.naturalSize;
     videoSize.width = ((int)ceil( videoSize.width * cropRegion.size.width / 4.0)) * 4;
@@ -302,9 +354,14 @@
 
     [self.saveFile enableSynchronizedEncodingUsingMovieWriter:self.saveWriter];
     
+    self.saveRotation = [[GPUImageFilter alloc] init];
+    [self.saveRotation setInputRotation:self.rotation atIndex:0];
+    
     self.saveCrop = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0, 0, 1, 1)];
     self.saveCrop.cropRegion = cropRegion;
     
+    [self.saveFile addTarget:self.saveRotation];
+    [self.saveRotation addTarget:self.saveFilter];
     [self.saveFilter addTarget:self.saveCrop];
     [self.saveCrop addTarget:self.saveWriter];
 
@@ -372,6 +429,7 @@
 
 - (void)dealloc {
     [self.customFilter removeAllTargets];
+    [self.rotationFilter removeAllTargets];
     [self.videoFile endProcessing];
     [self.videoFile removeAllTargets];
     
@@ -379,12 +437,15 @@
     [self.saveWriter finishRecording];
     [self.saveCrop removeAllTargets];
     [self.saveFilter removeAllTargets];
+    [self.saveRotation removeAllTargets];
     [self.saveFile removeAllTargets];
     self.saveFile = nil;
     self.saveWriter = nil;
     self.saveFilter = nil;
     self.saveCrop = nil;
+    self.saveRotation = nil;
     
+    self.rotationFilter = nil;
     self.customFilter = nil;
     self.videoFile = nil;
     self.videoAsset = nil;
