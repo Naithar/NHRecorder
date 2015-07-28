@@ -14,6 +14,7 @@
 @class NHCameraGridView;
 @class NHVideoCaptureViewController;
 @class NHRecorderProgressView;
+@class NHCameraCropView;
 
 @protocol NHVideoCaptureViewControllerDelegate <NSObject>
 
@@ -59,5 +60,7 @@
 @property (nonatomic, readonly, strong) NHRecorderButton *switchButton;
 
 @property (nonatomic, readonly, strong) NHRecorderProgressView *durationProgressView;
+
+@property (nonatomic, readonly, strong) NHCameraCropView *cropView;
 
 @end

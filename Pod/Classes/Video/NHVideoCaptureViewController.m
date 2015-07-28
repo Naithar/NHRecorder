@@ -11,7 +11,7 @@
 #import "NHRecorderButton.h"
 #import "NHCameraGridView.h"
 #import "NHPhotoCaptureViewController.h"
-#import "NHVideoCropView.h"
+#import "NHCameraCropView.h"
 #import "NHVideoFocusView.h"
 #import "AVCamRecorder.h"
 #import "NHVideoEditViewController.h"
@@ -60,7 +60,7 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 
 @property (nonatomic, assign) NSTimeInterval currentDuration;
 
-@property (nonatomic, strong) NHVideoCropView *cropView;
+@property (nonatomic, strong) NHCameraCropView *cropView;
 
 @property (nonatomic, strong) NHVideoFocusView *cameraFocusView;
 
@@ -128,7 +128,7 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 
     [self setupCameraGridViewConstraints];
     
-    self.cropView = [[NHVideoCropView alloc] init];
+    self.cropView = [[NHCameraCropView alloc] init];
     self.cropView.translatesAutoresizingMaskIntoConstraints = NO;
     self.cropView.userInteractionEnabled = NO;
     self.cropView.backgroundColor = [UIColor clearColor];

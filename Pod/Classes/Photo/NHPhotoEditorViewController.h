@@ -7,7 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
-#import "NHPhotoCropView.h"
+#import "NHCameraCropView.h"
 #import "NHPhotoView.h"
 #import "NHCropCollectionView.h"
 #import "NHFilterCollectionView.h"

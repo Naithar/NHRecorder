@@ -20,7 +20,7 @@
 @property (nonatomic, strong) GPUImageFilter *customFilter;
 @property (nonatomic, strong) GPUImageCropFilter *cropFilter;
 
-@property (nonatomic, strong) NHPhotoCropView *cropView;
+@property (nonatomic, strong) NHCameraCropView *cropView;
 
 @end
 
@@ -109,10 +109,11 @@
         [self.picture processImage];
     }
     
-    self.cropView = [[NHPhotoCropView alloc] init];
+    self.cropView = [[NHCameraCropView alloc] init];
     self.cropView.translatesAutoresizingMaskIntoConstraints = NO;
     self.cropView.userInteractionEnabled = NO;
     self.cropView.backgroundColor = [UIColor clearColor];
+    self.cropView.showBorder = YES;
     self.cropView.cropBackgroundColor = [[UIColor blackColor] colorWithAlphaComponent:0.5];
 }
 

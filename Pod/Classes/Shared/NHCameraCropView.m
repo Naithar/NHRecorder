@@ -1,22 +1,22 @@
 //
-//  NHPhotoCropView.m
+//  NHCameraCropView.m
 //  Pods
 //
-//  Created by Sergey Minakov on 15.06.15.
+//  Created by Sergey Minakov on 28.07.15.
 //
 //
 
-#import "NHPhotoCropView.h"
+#import "NHCameraCropView.h"
 
 const CGFloat kNHRecorderCornerOffset = 25;
 const CGFloat kNHRecorderCornerWidth = 4;
 const CGFloat kNHRecorderBorderWidth = 3;
 const CGFloat kNHRecorderLineWidth = 0.5;
 
-@interface NHPhotoCropView ()
+@interface NHCameraCropView ()
 @end
 
-@implementation NHPhotoCropView
+@implementation NHCameraCropView
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
@@ -40,7 +40,7 @@ const CGFloat kNHRecorderLineWidth = 0.5;
 
 - (void)commonInit {
     _cropType = NHPhotoCropTypeNone;
-    _maxCropSize = CGSizeMake(200, 200);
+    _maxCropSize = CGSizeZero;
     
     [self resetCrop];
 }
@@ -48,42 +48,56 @@ const CGFloat kNHRecorderLineWidth = 0.5;
 - (void)resetCrop {
     CGPoint cropCenter = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height / 2);
     
-    switch (self.cropType) {
-        case NHPhotoCropTypeNone:
-            self.hidden = YES;
-            self.cropRect = CGRectZero;
-            return;
-        case NHPhotoCropTypeSquare: {
-            self.hidden = NO;
-            CGFloat value = MAX(MIN(self.maxCropSize.width, self.maxCropSize.height), 0);
-            self.cropRect = CGRectMake(cropCenter.x - value / 2, cropCenter.y - value / 2, value, value);
-        } break;
-        case NHPhotoCropTypeCircle: {
-            self.hidden = NO;
-            CGFloat value = MAX(MIN(self.maxCropSize.width, self.maxCropSize.height), 0);
-            self.cropRect = CGRectMake(cropCenter.x - value / 2, cropCenter.y - value / 2, value, value);
-        } break;
-        case NHPhotoCropType4x3: {
-            self.hidden = NO;
-            CGFloat width = MAX(MIN(self.maxCropSize.width, self.maxCropSize.height), 0);
-            CGFloat height = round(width * 3 / 4);
-            self.cropRect = CGRectMake(cropCenter.x - width / 2, cropCenter.y - height / 2, width, height);
-        } break;
-        case NHPhotoCropType16x9: {
-            self.hidden = NO;
-            CGFloat width = MAX(MIN(self.maxCropSize.width, self.maxCropSize.height), 0);
-            CGFloat height = round(width * 9 / 16);
-            self.cropRect = CGRectMake(cropCenter.x - width / 2, cropCenter.y - height / 2, width, height);
-        } break;
-        case NHPhotoCropType3x4: {
-            self.hidden = NO;
-            CGFloat height = MAX(MAX(self.maxCropSize.width, self.maxCropSize.height), 0);
-            CGFloat width = round(height * 3 / 4);
-            self.cropRect = CGRectMake(cropCenter.x - width / 2, cropCenter.y - height / 2, width, height);
-        } break;
-        default:
-            break;
-    }
+        switch (self.cropType) {
+            case NHPhotoCropTypeNone:
+                self.hidden = YES;
+                self.cropRect = CGRectZero;
+                return;
+            case NHPhotoCropTypeSquare:
+            case NHPhotoCropTypeCircle: {
+                self.hidden = NO;
+                CGFloat value = MAX(MIN(self.maxCropSize.width, self.maxCropSize.height), 0);
+                
+                if (!value) {
+                    value = MAX(MIN(self.bounds.size.width, self.bounds.size.height), 0);
+                }
+                self.cropRect = CGRectMake(cropCenter.x - value / 2, cropCenter.y - value / 2, value, value);
+            } break;
+            case NHPhotoCropType4x3: {
+                self.hidden = NO;
+                CGFloat width = MAX(MIN(self.maxCropSize.width, self.maxCropSize.height), 0);
+                
+                if (!width) {
+                    width = MAX(MIN(self.bounds.size.width, self.bounds.size.height), 0);
+                }
+                
+                CGFloat height = round(width * 3 / 4);
+                self.cropRect = CGRectMake(cropCenter.x - width / 2, cropCenter.y - height / 2, width, height);
+            } break;
+            case NHPhotoCropType16x9: {
+                self.hidden = NO;
+                CGFloat width = MAX(MIN(self.maxCropSize.width, self.maxCropSize.height), 0);
+                
+                if (!width) {
+                    width = MAX(MIN(self.bounds.size.width, self.bounds.size.height), 0);
+                }
+                
+                CGFloat height = round(width * 9 / 16);
+                self.cropRect = CGRectMake(cropCenter.x - width / 2, cropCenter.y - height / 2, width, height);
+            } break;
+            case NHPhotoCropType3x4: {
+                self.hidden = NO;
+                CGFloat height = MAX(MAX(self.maxCropSize.width, self.maxCropSize.height), 0);
+                
+                if (!height) {
+                    height = MAX(MIN(self.bounds.size.width, self.bounds.size.height), 0);
+                }
+                CGFloat width = round(height * 3 / 4);
+                self.cropRect = CGRectMake(cropCenter.x - width / 2, cropCenter.y - height / 2, width, height);
+            } break;
+            default:
+                break;
+        }
     
     [self setNeedsDisplay];
 }
@@ -121,7 +135,8 @@ const CGFloat kNHRecorderLineWidth = 0.5;
                 [self.cropBackgroundColor ?: [[UIColor blackColor] colorWithAlphaComponent:0.5] setFill];
                 CGContextEOFillPath(context);
                 
-                if (cropStrokePath) {
+                if (cropStrokePath
+                    && self.showBorder) {
                     [[UIColor whiteColor] setStroke];
                     CGContextSetLineWidth(context, kNHRecorderCornerWidth);
                     
@@ -166,7 +181,7 @@ const CGFloat kNHRecorderLineWidth = 0.5;
                                              maxX + kNHRecorderCornerWidth / 2 - kNHRecorderBorderWidth / 2,
                                              maxY - kNHRecorderCornerOffset);
                         CGContextAddLineToPoint(context,
-                                               maxX + kNHRecorderCornerWidth / 2 - kNHRecorderBorderWidth / 2,
+                                                maxX + kNHRecorderCornerWidth / 2 - kNHRecorderBorderWidth / 2,
                                                 maxY + kNHRecorderCornerWidth / 2 - kNHRecorderBorderWidth / 2);
                         CGContextAddLineToPoint(context,
                                                 maxX - kNHRecorderCornerOffset,
@@ -179,7 +194,7 @@ const CGFloat kNHRecorderLineWidth = 0.5;
                     [[UIColor whiteColor] setStroke];
                     CGContextAddPath(context, cropStrokePath.CGPath);
                     CGContextEOClip(context);
-
+                    
                     CGContextSetLineWidth(context, kNHRecorderBorderWidth);
                     CGContextAddPath(context, cropStrokePath.CGPath);
                     CGContextDrawPath(context, kCGPathStroke);
@@ -211,10 +226,25 @@ const CGFloat kNHRecorderLineWidth = 0.5;
 
 - (void)layoutSubviews {
     [super layoutSubviews];
+    
+    [self resetCrop];
 }
 
 - (void)setBounds:(CGRect)bounds {
     [super setBounds:bounds];
+    
+    [self resetCrop];
+}
+
+- (void)setMaxCropSize:(CGSize)maxCropSize {
+    [self willChangeValueForKey:@"maxCropSize"];
+    
+    if (!CGSizeEqualToSize(_maxCropSize, maxCropSize)) {
+        _maxCropSize = maxCropSize;
+        [self resetCrop];
+    }
+    
+    [self didChangeValueForKey:@"maxCropSize"];
 }
 
 - (void)setCropType:(NHPhotoCropType)cropType {
@@ -223,4 +253,5 @@ const CGFloat kNHRecorderLineWidth = 0.5;
     [self didChangeValueForKey:@"cropType"];
     [self resetCrop];
 }
+
 @end

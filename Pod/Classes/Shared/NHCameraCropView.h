@@ -1,8 +1,8 @@
 //
-//  NHPhotoCropView.h
+//  NHCameraCropView.h
 //  Pods
 //
-//  Created by Sergey Minakov on 15.06.15.
+//  Created by Sergey Minakov on 28.07.15.
 //
 //
 
@@ -17,13 +17,14 @@ typedef NS_ENUM(NSUInteger, NHPhotoCropType) {
     NHPhotoCropType3x4
 };
 
-@interface NHPhotoCropView : UIView
+@interface NHCameraCropView : UIView
 
 @property (nonatomic, strong) UIColor *cropBackgroundColor;
 @property (nonatomic, assign) CGSize maxCropSize;
 @property (nonatomic, assign) CGRect cropRect;
 
 @property (nonatomic, assign) NHPhotoCropType cropType;
+@property (nonatomic, assign) BOOL showBorder;
 
 - (void)resetCrop;
 @end

@@ -72,8 +72,8 @@ pathForResource:name ofType:@"png"]]
      self.navigationBar.barTintColor = [UIColor blackColor];
      self.navigationBar.tintColor = [UIColor whiteColor];
     
-    self.navigationBar.backIndicatorImage = image(@"NHRecorder.back");//[UIImage imageNamed:@"NHRecorder.back.png"];
-    self.navigationBar.backIndicatorTransitionMaskImage = image(@"NHRecorder.back");//[UIImage imageNamed:@"NHRecorder.back.png"];
+    self.navigationBar.backIndicatorImage = image(@"NHRecorder.back");
+    self.navigationBar.backIndicatorTransitionMaskImage = image(@"NHRecorder.back");
     
              if (viewController) {
     [self setViewControllers:@[viewController]];

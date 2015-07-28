@@ -8,13 +8,13 @@
 
 #import <UIKit/UIKit.h>
 #import <GPUImage/GPUImage.h>
-#import "NHPhotoCropView.h"
+#import "NHCameraCropView.h"
 
 @interface NHPhotoView : UIScrollView
 
 
 @property (nonatomic, readonly, strong) GPUImageView *contentView;
-@property (nonatomic, readonly, strong) NHPhotoCropView *cropView;
+@property (nonatomic, readonly, strong) NHCameraCropView *cropView;
 
 - (instancetype)initWithImage:(UIImage*)image;
 - (instancetype)initWithFrame:(CGRect)frame image:(UIImage*)image;
