@@ -13,10 +13,11 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 
 - [x] Photo capture
 - [x] Photo cropping
+- [x] Photo zooming
 - [x] Photo filtering
 - [x] Video capture
 - [x] Video filtering
-- [ ] Video cropping
+- [x] Video cropping
 - [ ] Subsclassing
 - [ ] Fix delegates
 - [ ] Custom Views
