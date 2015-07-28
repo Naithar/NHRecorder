@@ -364,9 +364,15 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     }
     else {
         if (itemNumber < self.mediaItems.count) {
+            
+            __weak __typeof(self) weakSelf = self;
             ALAsset *asset = self.mediaItems[itemNumber];
             NSString *type = [asset valueForProperty:ALAssetPropertyType];
             ALAssetRepresentation *representation = [asset defaultRepresentation];
+            
+            if ([weakSelf.nhDelegate respondsToSelector:@selector(mediaPickerDidStartExporting:)]) {
+                [weakSelf.nhDelegate mediaPickerDidStartExporting:weakSelf];
+            }
             
             if ([type isEqualToString:ALAssetTypePhoto]) {
                 CGFloat scale = [representation scale];
@@ -382,7 +388,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
                     UIImage *resultImage;
                     CGSize imageSizeToFit = CGSizeZero;
                     
-                    __weak __typeof(self) weakSelf = self;
+                    
                     if ([weakSelf.nhDelegate respondsToSelector:@selector(imageSizeToFitForMediaPicker:)]) {
                         imageSizeToFit = [weakSelf.nhDelegate imageSizeToFitForMediaPicker:weakSelf];
                     }
@@ -405,6 +411,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
                         if (shouldEdit) {
                             NHPhotoEditorViewController *viewController = [[NHPhotoEditorViewController alloc] initWithUIImage:resultImage];
                             [self.navigationController pushViewController:viewController animated:YES];
+                            
                         }
                     }
                 }
@@ -412,10 +419,17 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
             else if ([type isEqualToString:ALAssetTypeVideo]) {
                 NSURL *assetURL = [representation url];
                 if (assetURL) {
+                    
+                    
                     NHVideoEditViewController *viewController = [[NHVideoEditViewController alloc] initWithAssetURL:assetURL];
                     [self.navigationController pushViewController:viewController animated:YES];
                 }
             } //if type is Video
+            
+            
+            if ([weakSelf.nhDelegate respondsToSelector:@selector(mediaPickerDidFinishExporting:)]) {
+                [weakSelf.nhDelegate mediaPickerDidFinishExporting:weakSelf];
+            }
         }
     }
     
