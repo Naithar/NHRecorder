@@ -574,8 +574,8 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
         self.navigationController.view.userInteractionEnabled = NO;
         __weak __typeof(self) weakSelf = self;
         
-        if ([weakSelf.nhDelegate respondsToSelector:@selector(photoEditorDidStartExporting:)]) {
-            [weakSelf.nhDelegate photoEditorDidStartExporting:weakSelf];
+        if ([weakSelf.nhDelegate respondsToSelector:@selector(nhPhotoEditorDidStartExporting:)]) {
+            [weakSelf.nhDelegate nhPhotoEditorDidStartExporting:weakSelf];
         }
         
         [self.photoView processImageWithBlock:^(UIImage *image) {
@@ -587,8 +587,8 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
                 
                 CGSize imageSizeToFit = CGSizeZero;
                 
-                if ([weakSelf.nhDelegate respondsToSelector:@selector(imageSizeToFitForPhotoEditor:)]) {
-                    imageSizeToFit = [weakSelf.nhDelegate imageSizeToFitForPhotoEditor:weakSelf];
+                if ([weakSelf.nhDelegate respondsToSelector:@selector(imageSizeToFitForNHPhotoEditor:)]) {
+                    imageSizeToFit = [weakSelf.nhDelegate imageSizeToFitForNHPhotoEditor:weakSelf];
                 }
                 
                 if (CGSizeEqualToSize(imageSizeToFit, CGSizeZero)) {
@@ -598,16 +598,16 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
                     resultImage = [image nhr_rescaleToFit:imageSizeToFit];
                 }
                 
-                if ([weakSelf.nhDelegate respondsToSelector:@selector(photoEditorDidFinishExporting:)]) {
-                    [weakSelf.nhDelegate photoEditorDidFinishExporting:weakSelf];
+                if ([weakSelf.nhDelegate respondsToSelector:@selector(nhPhotoEditorDidFinishExporting:)]) {
+                    [weakSelf.nhDelegate nhPhotoEditorDidFinishExporting:weakSelf];
                 }
                 
                 if (resultImage) {
                     BOOL shouldSave = YES;
                     
                     __weak __typeof(self) weakSelf = self;
-                    if ([weakSelf.nhDelegate respondsToSelector:@selector(photoEditor:shouldSaveImage:)]) {
-                        shouldSave = [weakSelf.nhDelegate photoEditor:weakSelf shouldSaveImage:resultImage];
+                    if ([weakSelf.nhDelegate respondsToSelector:@selector(nhPhotoEditor:shouldSaveImage:)]) {
+                        shouldSave = [weakSelf.nhDelegate nhPhotoEditor:weakSelf shouldSaveImage:resultImage];
                     }
                     
                     if (shouldSave) {
@@ -623,18 +623,18 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
     BOOL shouldContinue = YES;
     __weak __typeof(self) weakSelf = self;
     if (error) {
-        if ([weakSelf.nhDelegate respondsToSelector:@selector(photoEditor:receivedErrorOnSave:)]) {
-            [weakSelf.nhDelegate photoEditor:weakSelf receivedErrorOnSave:error];
+        if ([weakSelf.nhDelegate respondsToSelector:@selector(nhPhotoEditor:receivedErrorOnSave:)]) {
+            [weakSelf.nhDelegate nhPhotoEditor:weakSelf receivedErrorOnSave:error];
         }
         
-        if ([weakSelf.nhDelegate respondsToSelector:@selector(photoEditorShouldContinueAfterSaveFail:)]) {
-            shouldContinue = [weakSelf.nhDelegate photoEditorShouldContinueAfterSaveFail:weakSelf];
+        if ([weakSelf.nhDelegate respondsToSelector:@selector(nhPhotoEditorShouldContinueAfterSaveFail:)]) {
+            shouldContinue = [weakSelf.nhDelegate nhPhotoEditorShouldContinueAfterSaveFail:weakSelf];
         }
     }
     
     if (shouldContinue
-        && [weakSelf.nhDelegate respondsToSelector:@selector(photoEditor:savedImage:)]) {
-        [weakSelf.nhDelegate photoEditor:weakSelf savedImage:image];
+        && [weakSelf.nhDelegate respondsToSelector:@selector(nhPhotoEditor:savedImage:)]) {
+        [weakSelf.nhDelegate nhPhotoEditor:weakSelf savedImage:image];
     }
 }
 

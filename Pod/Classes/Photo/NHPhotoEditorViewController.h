@@ -21,20 +21,20 @@ extern const CGFloat kNHRecorderSelectionContainerViewHeight;
 @protocol NHPhotoEditorViewControllerDelegate <NSObject>
 
 @optional
-- (void)photoEditorDidStartExporting:(NHPhotoEditorViewController*)controller;
-- (void)photoEditorDidFinishExporting:(NHPhotoEditorViewController*)controller;
+- (void)nhPhotoEditorDidStartExporting:(NHPhotoEditorViewController*)photoEditor;
+- (void)nhPhotoEditorDidFinishExporting:(NHPhotoEditorViewController*)photoEditor;
 
 
-- (CGSize)imageSizeToFitForPhotoEditor:(NHPhotoEditorViewController*)controller;
-- (BOOL)photoEditor:(NHPhotoEditorViewController*)editor
+- (CGSize)imageSizeToFitForNHPhotoEditor:(NHPhotoEditorViewController*)photoEditor;
+- (BOOL)nhPhotoEditor:(NHPhotoEditorViewController*)photoEditor
     shouldSaveImage:(UIImage*)image;
 
-- (void)photoEditor:(NHPhotoEditorViewController*)editor
+- (void)nhPhotoEditor:(NHPhotoEditorViewController*)photoEditor
          savedImage:(UIImage*)image;
-- (void)photoEditor:(NHPhotoEditorViewController*)editor
+- (void)nhPhotoEditor:(NHPhotoEditorViewController*)photoEditor
          receivedErrorOnSave:(NSError*)error;
 
-- (BOOL)photoEditorShouldContinueAfterSaveFail:(NHPhotoEditorViewController*)editor;
+- (BOOL)nhPhotoEditorShouldContinueAfterSaveFail:(NHPhotoEditorViewController*)photoEditor;
 @end
 
 @interface NHPhotoEditorViewController : UIViewController

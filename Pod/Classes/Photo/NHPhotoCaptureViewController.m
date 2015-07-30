@@ -612,9 +612,9 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     __weak __typeof(self) weakSelf = self;
     
     if (cameraStatus != AVAuthorizationStatusAuthorized) {
-        if ([weakSelf.nhDelegate respondsToSelector:@selector(photoCapture:cameraAvailability:)]) {
+        if ([weakSelf.nhDelegate respondsToSelector:@selector(nhPhotoCapture:cameraAvailability:)]) {
             [weakSelf.nhDelegate
-             photoCapture:weakSelf
+             nhPhotoCapture:weakSelf
              cameraAvailability:cameraStatus];
         }
         return;
@@ -622,8 +622,8 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     
     self.navigationController.view.userInteractionEnabled = NO;
     
-    if ([weakSelf.nhDelegate respondsToSelector:@selector(photoCaptureDidStartExporting:)]) {
-        [weakSelf.nhDelegate photoCaptureDidStartExporting:weakSelf];
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(nhPhotoCaptureDidStartExporting:)]) {
+        [weakSelf.nhDelegate nhPhotoCaptureDidStartExporting:weakSelf];
     }
     
     [self.photoCamera capturePhotoAsImageProcessedUpToFilter:self.photoCropFilter
@@ -642,8 +642,8 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                                                
                                                CGSize imageSizeToFit = CGSizeZero;
                                                
-                                               if ([weakSelf.nhDelegate respondsToSelector:@selector(imageSizeToFitForPhotoCapture:)]) {
-                                                   imageSizeToFit = [weakSelf.nhDelegate imageSizeToFitForPhotoCapture:weakSelf];
+                                               if ([weakSelf.nhDelegate respondsToSelector:@selector(imageSizeToFitForNHPhotoCapture:)]) {
+                                                   imageSizeToFit = [weakSelf.nhDelegate imageSizeToFitForNHPhotoCapture:weakSelf];
                                                }
                                                
                                                if (CGSizeEqualToSize(imageSizeToFit, CGSizeZero)) {
@@ -661,8 +661,8 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                                                    BOOL shouldEdit = YES;
                                                    
                                                    __weak __typeof(self) weakSelf = self;
-                                                   if ([weakSelf.nhDelegate respondsToSelector:@selector(photoCapture:shouldEditImage:)]) {
-                                                       shouldEdit = [weakSelf.nhDelegate photoCapture:weakSelf shouldEditImage:resultImage];
+                                                   if ([weakSelf.nhDelegate respondsToSelector:@selector(nhPhotoCapture:shouldEditImage:)]) {
+                                                       shouldEdit = [weakSelf.nhDelegate nhPhotoCapture:weakSelf shouldEditImage:resultImage];
                                                    }
                                                    
                                                    if (shouldEdit) {
