@@ -20,7 +20,6 @@
 [[NSBundle bundleForClass:[NHMediaPickerViewController class]]\
 pathForResource:name ofType:@"png"]]
 
-
 const CGFloat kNHRecorderCollectionViewSpace = 1;
 
 @interface NHMediaPickerViewController ()<UICollectionViewDelegateFlowLayout, UICollectionViewDataSource>
@@ -35,6 +34,10 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
 @end
 
 @implementation NHMediaPickerViewController
+
++ (Class)nhMediaPickerCellClass {
+    return [NHMediaPickerCollectionDefaultViewCell class];
+}
 
 - (instancetype)initWithMediaType:(NHMediaPickerType)type {
     
@@ -97,6 +100,13 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     self.mediaCollectionView.delegate = self;
     self.mediaCollectionView.dataSource = self;
     [self.mediaCollectionView registerClass:[NHMediaPickerCollectionDefaultViewCell class] forCellWithReuseIdentifier:@"defaultCell"];
+    
+    if ([[[self class] nhMediaPickerCellClass] isSubclassOfClass:[NHMediaPickerCollectionViewCell class]]) {
+        [self.mediaCollectionView registerClass:[[self class] nhMediaPickerCellClass] forCellWithReuseIdentifier:@"cell"];
+    }
+    else {
+        [self.mediaCollectionView registerClass:[NHMediaPickerCollectionDefaultViewCell class] forCellWithReuseIdentifier:@"cell"];
+    }
     
     self.mediaCollectionView.scrollsToTop = YES;
     self.mediaCollectionView.bounces = YES;
@@ -309,13 +319,17 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
         itemNumber--;
     }
     
-    NHMediaPickerCollectionDefaultViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"defaultCell" forIndexPath:indexPath];
+    NHMediaPickerCollectionViewCell *cell;
     
     if (itemNumber < 0) {
-        cell.imageView.contentMode = UIViewContentModeCenter;
-        cell.imageView.image = image(@"NHRecorder.photo");
+        cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"defaultCell" forIndexPath:indexPath];
+        
+        ((NHMediaPickerCollectionDefaultViewCell*)cell).imageView.contentMode = UIViewContentModeCenter;
+        ((NHMediaPickerCollectionDefaultViewCell*)cell).imageView.image = image(@"NHRecorder.photo");
     }
     else {
+        cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
+        
         if (itemNumber < self.mediaItems.count) {
             ALAsset *asset = self.mediaItems[itemNumber];
             [cell reloadWithAsset:asset];

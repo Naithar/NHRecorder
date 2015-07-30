@@ -47,4 +47,6 @@ typedef NS_ENUM(NSUInteger, NHMediaPickerType) {
 
 - (instancetype)initWithMediaType:(NHMediaPickerType)type;
 
++ (Class)nhMediaPickerCellClass;
+
 @end
