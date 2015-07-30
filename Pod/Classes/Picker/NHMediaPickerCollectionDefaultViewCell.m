@@ -6,15 +6,18 @@
 //
 //
 
-#import "NHMediaPickerCollectionViewCell.h"
+#import "NHMediaPickerCollectionDefaultViewCell.h"
 
-@interface NHMediaPickerCollectionViewCell ()
+@interface NHMediaPickerCollectionDefaultViewCell ()
 
+
+@property (nonatomic, strong) UIImageView *imageView;
+@property (nonatomic, strong) UILabel *durationLabel;
 @property (nonatomic, strong) id orientationChange;
 
 @end
 
-@implementation NHMediaPickerCollectionViewCell
+@implementation NHMediaPickerCollectionDefaultViewCell
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
@@ -165,6 +168,37 @@
                          
                      }];
     
+}
+
+- (void)reloadWithAsset:(ALAsset*)asset {
+    NSString *type = [asset valueForProperty:ALAssetPropertyType];
+    
+    self.imageView.image = [UIImage imageWithCGImage:[asset thumbnail]];
+    
+    if ([type isEqualToString:ALAssetTypePhoto]) {
+        self.durationLabel.text = nil;
+    }
+    else if ([type isEqualToString:ALAssetTypeVideo]) {
+        self.durationLabel.text = [self formatTime:[[asset valueForProperty:ALAssetPropertyDuration] longValue]];
+    }
+}
+
+- (NSString *)formatTime:(long)totalSeconds {
+    NSInteger hours = (totalSeconds / 60) / 60;
+    NSInteger minutes = (totalSeconds / 60) % 60;
+    NSInteger seconds = totalSeconds % 60;
+    
+    NSString *durationString = @"";
+    
+    if (hours > 0) {
+        durationString = [durationString
+                          stringByAppendingString:[NSString stringWithFormat:@"%02ld:", (long)hours]];
+    }
+    
+    durationString = [durationString
+                      stringByAppendingString:[NSString stringWithFormat:@"%02ld:%02ld", (long)minutes, (long)seconds]];
+    
+    return durationString;
 }
 
 - (void)dealloc {

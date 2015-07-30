@@ -7,7 +7,7 @@
 //
 
 #import "NHMediaPickerViewController.h"
-#import "NHMediaPickerCollectionViewCell.h"
+#import "NHMediaPickerCollectionDefaultViewCell.h"
 #import "NHPhotoCaptureViewController.h"
 #import "NHPhotoEditorViewController.h"
 #import <AssetsLibrary/AssetsLibrary.h>
@@ -96,7 +96,8 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     self.mediaCollectionView.backgroundColor = [UIColor whiteColor];
     self.mediaCollectionView.delegate = self;
     self.mediaCollectionView.dataSource = self;
-    [self.mediaCollectionView registerClass:[NHMediaPickerCollectionViewCell class] forCellWithReuseIdentifier:@"cell"];
+    [self.mediaCollectionView registerClass:[NHMediaPickerCollectionDefaultViewCell class] forCellWithReuseIdentifier:@"defaultCell"];
+    
     self.mediaCollectionView.scrollsToTop = YES;
     self.mediaCollectionView.bounces = YES;
     self.mediaCollectionView.alwaysBounceVertical = YES;
@@ -301,13 +302,14 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
 }
 
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    NHMediaPickerCollectionViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"cell" forIndexPath:indexPath];
     
     NSInteger itemNumber = indexPath.row;
     
     if (self.linksToCamera) {
         itemNumber--;
     }
+    
+    NHMediaPickerCollectionDefaultViewCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:@"defaultCell" forIndexPath:indexPath];
     
     if (itemNumber < 0) {
         cell.imageView.contentMode = UIViewContentModeCenter;
@@ -316,40 +318,12 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     else {
         if (itemNumber < self.mediaItems.count) {
             ALAsset *asset = self.mediaItems[itemNumber];
-            NSString *type = [asset valueForProperty:ALAssetPropertyType];
-        
-            cell.imageView.image = [UIImage imageWithCGImage:[asset thumbnail]];
-            
-            if ([type isEqualToString:ALAssetTypePhoto]) {
-                cell.durationLabel.text = nil;
-            }
-            else if ([type isEqualToString:ALAssetTypeVideo]) {
-                cell.durationLabel.text = [self formatTime:[[asset valueForProperty:ALAssetPropertyDuration] doubleValue]];
-            }
+            [cell reloadWithAsset:asset];
         }
         
     }
     
     return cell;
-}
-
-//http://stackoverflow.com/questions/22652624/getting-video-duration-from-alasset
-- (NSString *)formatTime:(double)totalSeconds
-
-{
-    NSTimeInterval timeInterval = totalSeconds;
-    long seconds = lroundf(timeInterval); // Modulo (%) operator below needs int or long
-    int hour = 0;
-    int minute = seconds/60.0f;
-    int second = seconds % 60;
-    if (minute > 59) {
-        hour = minute/60;
-        minute = minute%60;
-        return [NSString stringWithFormat:@"%02d:%02d:%02d", hour, minute, second];
-    }
-    else{
-        return [NSString stringWithFormat:@"%02d:%02d", minute, second];
-    }
 }
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath {
