@@ -14,7 +14,7 @@
 #import "NHCameraCropView.h"
 #import "NHVideoFocusView.h"
 #import "AVCamRecorder.h"
-#import "NHVideoEditViewController.h"
+#import "NHVideoEditorViewController.h"
 #import "NHRecorderProgressView.h"
 #import "NHMediaPickerViewController.h"
 
@@ -52,7 +52,7 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 
 @property (nonatomic, strong) NHRecorderButton *libraryButton;
 
-@property (nonatomic, strong) NHRecorderButton *backButton;
+@property (nonatomic, strong) NHRecorderButton *closeButton;
 @property (nonatomic, strong) NHRecorderButton *gridButton;
 @property (nonatomic, strong) NHRecorderButton *switchButton;
 
@@ -201,12 +201,12 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
         self.cameraFocusView.captureManager = self.captureManager;
     }
     
-    self.backButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
-    self.backButton.frame = CGRectMake(0, 0, 44, 44);
-    self.backButton.tintColor = [UIColor whiteColor];
-    [self.backButton setImage:image(@"NHRecorder.back") forState:UIControlStateNormal];
-    self.backButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
-    [self.backButton addTarget:self action:@selector(backButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
+    self.closeButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
+    self.closeButton.frame = CGRectMake(0, 0, 44, 44);
+    self.closeButton.tintColor = [UIColor whiteColor];
+    [self.closeButton setImage:(self.firstController ? image(@"NHRecorder.close") : image(@"NHRecorder.back")) forState:UIControlStateNormal];
+    self.closeButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
+    [self.closeButton addTarget:self action:@selector(closeButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
 
     self.switchButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
     self.switchButton.frame = CGRectMake(0, 0, 44, 44);
@@ -227,7 +227,7 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
     self.gridButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
     [self.gridButton addTarget:self action:@selector(gridButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     
-    UIBarButtonItem *backBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.backButton];
+    UIBarButtonItem *backBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.closeButton];
     UIBarButtonItem *gridBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.gridButton];
     UIBarButtonItem *switchBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.switchButton];
     
@@ -749,8 +749,13 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
                      }];
 }
 
-- (void)backButtonTouch:(id)sender {
-    [self.navigationController popViewControllerAnimated:YES];
+- (void)closeButtonTouch:(id)sender {
+    if (self.firstController) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
+    else {
+        [self.navigationController popViewControllerAnimated:YES];
+    }
 }
 
 - (void)gridButtonTouch:(id)sender {
@@ -787,7 +792,7 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
             }
             
             if (shouldEdit) {
-                NHVideoEditViewController *editViewController = [[NHVideoEditViewController alloc] initWithAssetURL:assetURL];
+                NHVideoEditorViewController *editViewController = [[NHVideoEditorViewController alloc] initWithAssetURL:assetURL];
                 [self.navigationController pushViewController:editViewController animated:YES];
             }
         }
@@ -993,6 +998,14 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
         [self stopCapture];
     }
     [self didChangeValueForKey:@"currentDuration"];
+}
+
+- (void)setFirstController:(BOOL)firstController {
+    [self willChangeValueForKey:@"firstController"];
+    _firstController = firstController;
+    
+    [self.closeButton setImage:(firstController ? image(@"NHRecorder.close") : image(@"NHRecorder.back")) forState:UIControlStateNormal];
+    [self didChangeValueForKey:@"firstController"];
 }
 
 - (BOOL)nextButtonEnabled {

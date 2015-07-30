@@ -9,10 +9,14 @@
 #import <UIKit/UIKit.h>
 #import "NHPhotoCaptureViewController.h"
 #import "NHPhotoEditorViewController.h"
+#import "NHVideoCaptureViewController.h"
+#import "NHVideoEditorViewController.h"
 #import "NHMediaPickerViewController.h"
+
 
 typedef NS_ENUM(NSUInteger, NHCaptureType) {
     NHCaptureTypePhotoCamera,
+    NHCaptureTypeVideoCamera,
     NHCaptureTypeMediaPicker,
 };
 

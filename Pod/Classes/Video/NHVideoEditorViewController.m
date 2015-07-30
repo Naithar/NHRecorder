@@ -1,12 +1,12 @@
 //
-//  NHVideoEditViewController.m
+//  NHVideoEditorViewController.m
 //  Pods
 //
 //  Created by Sergey Minakov on 24.07.15.
 //
 //
 
-#import "NHVideoEditViewController.h"
+#import "NHVideoEditorViewController.h"
 #import "NHRecorderButton.h"
 #import "NHFilterCollectionView.h"
 #import "NHPhotoEditorViewController.h"
@@ -16,15 +16,15 @@
 
 #define image(name) \
 [UIImage imageWithContentsOfFile: \
-[[NSBundle bundleForClass:[NHVideoEditViewController class]]\
+[[NSBundle bundleForClass:[NHVideoEditorViewController class]]\
 pathForResource:name ofType:@"png"]]
 
 #define localization(name, table) \
 NSLocalizedStringFromTableInBundle(name, \
 table, \
-[NSBundle bundleForClass:[NHVideoEditViewController class]], nil)
+[NSBundle bundleForClass:[NHVideoEditorViewController class]], nil)
 
-@interface NHVideoEditViewController ()<NHFilterCollectionViewDelegate, NHCropCollectionViewDelegate>
+@interface NHVideoEditorViewController ()<NHFilterCollectionViewDelegate, NHCropCollectionViewDelegate>
 
 @property (nonatomic, strong) NSURL *assetURL;
 
@@ -50,7 +50,7 @@ table, \
 
 @end
 
-@implementation NHVideoEditViewController
+@implementation NHVideoEditorViewController
 
 - (instancetype)initWithAssetURL:(NSURL*)url {
     self = [super init];

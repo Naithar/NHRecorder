@@ -53,10 +53,14 @@ pathForResource:name ofType:@"png"]]
     UIViewController *viewController;
     
     switch (type) {
-        case NHCaptureTypePhotoCamera: {
+        case NHCaptureTypePhotoCamera:
             viewController = [[NHPhotoCaptureViewController alloc] init];
             ((NHPhotoCaptureViewController*)viewController).firstController = YES;
-        } break;
+            break;
+        case NHCaptureTypeVideoCamera:
+            viewController = [[NHVideoCaptureViewController alloc] init];
+            ((NHVideoCaptureViewController*)viewController).firstController = YES;
+            break;
         case NHCaptureTypeMediaPicker:
             viewController = [[NHMediaPickerViewController alloc] init];
             ((NHMediaPickerViewController*)viewController).firstController = YES;
@@ -68,16 +72,16 @@ pathForResource:name ofType:@"png"]]
     
     self.delegate = self;
     
-     self.navigationBar.translucent = NO;
-     self.navigationBar.barTintColor = [UIColor blackColor];
-     self.navigationBar.tintColor = [UIColor whiteColor];
+    self.navigationBar.translucent = NO;
+    self.navigationBar.barTintColor = [UIColor blackColor];
+    self.navigationBar.tintColor = [UIColor whiteColor];
     
     self.navigationBar.backIndicatorImage = image(@"NHRecorder.back");
     self.navigationBar.backIndicatorTransitionMaskImage = image(@"NHRecorder.back");
     
-             if (viewController) {
-    [self setViewControllers:@[viewController]];
-             }
+    if (viewController) {
+        [self setViewControllers:@[viewController]];
+    }
 }
 
 - (void)viewDidLoad {

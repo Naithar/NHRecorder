@@ -12,7 +12,7 @@
 #import "NHPhotoEditorViewController.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 #import "UIImage+Resize.h"
-#import "NHVideoEditViewController.h"
+#import "NHVideoEditorViewController.h"
 #import "NHVideoCaptureViewController.h"
 
 #define image(name) \
@@ -423,7 +423,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
                 if (assetURL) {
                     
                     
-                    NHVideoEditViewController *viewController = [[NHVideoEditViewController alloc] initWithAssetURL:assetURL];
+                    NHVideoEditorViewController *viewController = [[NHVideoEditorViewController alloc] initWithAssetURL:assetURL];
                     [self.navigationController pushViewController:viewController animated:YES];
                 }
             } //if type is Video

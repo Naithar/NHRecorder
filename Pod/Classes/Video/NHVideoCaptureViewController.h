@@ -59,12 +59,14 @@ extern const NSTimeInterval kNHVideoMinDuration;
 
 @property (nonatomic, readonly, strong) NHRecorderButton *libraryButton;
 
-@property (nonatomic, readonly, strong) NHRecorderButton *backButton;
+@property (nonatomic, readonly, strong) NHRecorderButton *closeButton;
 @property (nonatomic, readonly, strong) NHRecorderButton *gridButton;
 @property (nonatomic, readonly, strong) NHRecorderButton *switchButton;
 
 @property (nonatomic, readonly, strong) NHRecorderProgressView *durationProgressView;
 
 @property (nonatomic, readonly, strong) NHCameraCropView *cropView;
+
+@property (nonatomic, assign) BOOL firstController;
 
 @end

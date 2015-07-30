@@ -133,7 +133,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     self.closeButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
     self.closeButton.frame = CGRectMake(0, 0, 44, 44);
     self.closeButton.tintColor = [UIColor whiteColor];
-    [self.closeButton setImage:image(@"NHRecorder.close") forState:UIControlStateNormal];
+    [self.closeButton setImage:(self.firstController ? image(@"NHRecorder.close") : image(@"NHRecorder.back")) forState:UIControlStateNormal];
     self.closeButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
     [self.closeButton addTarget:self action:@selector(closeButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -684,6 +684,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 
 - (void)videoCaptureButtonTouch:(id)sender {
     NHVideoCaptureViewController *viewController = [[NHVideoCaptureViewController alloc] init];
+    viewController.firstController = NO;
     [self.navigationController pushViewController:viewController animated:YES];
 }
 

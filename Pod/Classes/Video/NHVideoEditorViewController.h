@@ -1,5 +1,5 @@
 //
-//  NHVideoEditViewController.h
+//  NHVideoEditorViewController.h
 //  Pods
 //
 //  Created by Sergey Minakov on 24.07.15.
@@ -11,26 +11,26 @@
 #import "NHCameraCropView.h"
 
 @class NHRecorderButton;
-@class NHVideoEditViewController;
+@class NHVideoEditorViewController;
 @class NHFilterCollectionView;
 @class NHVideoView;
 @class NHCropCollectionView;
 
-@protocol NHVideoEditViewControllerDelegate <NSObject>
+@protocol NHVideoEditorViewControllerDelegate <NSObject>
 
 @optional
 
-- (void)nhVideoEditorDidStartExporting:(NHVideoEditViewController*)controller;
-- (void)nhVideoEditor:(NHVideoEditViewController*)controller didFailWithError:(NSError*)error;
-- (void)nhVideoEditor:(NHVideoEditViewController*)controller didSaveAtURL:(NSURL*)url;
-- (void)nhVideoEditor:(NHVideoEditViewController*)controller didFinishExportingAtURL:(NSURL*)url;
-- (BOOL)nhVideoEditor:(NHVideoEditViewController*)controller shouldSaveFilteredVideoAtURL:(NSURL*)url;
-- (BOOL)nhVideoEditorShouldContinueAfterSaveFail:(NHVideoEditViewController*)controller;
+- (void)nhVideoEditorDidStartExporting:(NHVideoEditorViewController*)controller;
+- (void)nhVideoEditor:(NHVideoEditorViewController*)controller didFailWithError:(NSError*)error;
+- (void)nhVideoEditor:(NHVideoEditorViewController*)controller didSaveAtURL:(NSURL*)url;
+- (void)nhVideoEditor:(NHVideoEditorViewController*)controller didFinishExportingAtURL:(NSURL*)url;
+- (BOOL)nhVideoEditor:(NHVideoEditorViewController*)controller shouldSaveFilteredVideoAtURL:(NSURL*)url;
+- (BOOL)nhVideoEditorShouldContinueAfterSaveFail:(NHVideoEditorViewController*)controller;
 @end
 
-@interface NHVideoEditViewController : UIViewController
+@interface NHVideoEditorViewController : UIViewController
 
-@property (nonatomic, weak) id<NHVideoEditViewControllerDelegate> nhDelegate;
+@property (nonatomic, weak) id<NHVideoEditorViewControllerDelegate> nhDelegate;
 
 @property (nonatomic, assign) NHPhotoCropType forcedCropType;
 
