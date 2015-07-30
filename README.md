@@ -19,7 +19,6 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 - [x] Video filtering
 - [x] Video cropping
 - [ ] Subsclassing
-- [ ] Fix delegates
 - [ ] Custom Views
 
 ## Installation

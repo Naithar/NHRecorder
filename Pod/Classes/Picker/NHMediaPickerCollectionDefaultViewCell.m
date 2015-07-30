@@ -10,7 +10,6 @@
 
 @interface NHMediaPickerCollectionDefaultViewCell ()
 
-
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) UILabel *durationLabel;
 @property (nonatomic, strong) id orientationChange;
@@ -179,26 +178,8 @@
         self.durationLabel.text = nil;
     }
     else if ([type isEqualToString:ALAssetTypeVideo]) {
-        self.durationLabel.text = [self formatTime:[[asset valueForProperty:ALAssetPropertyDuration] longValue]];
+        self.durationLabel.text = [[self class] formatTime:[[asset valueForProperty:ALAssetPropertyDuration] longValue]];
     }
-}
-
-- (NSString *)formatTime:(long)totalSeconds {
-    NSInteger hours = (totalSeconds / 60) / 60;
-    NSInteger minutes = (totalSeconds / 60) % 60;
-    NSInteger seconds = totalSeconds % 60;
-    
-    NSString *durationString = @"";
-    
-    if (hours > 0) {
-        durationString = [durationString
-                          stringByAppendingString:[NSString stringWithFormat:@"%02ld:", (long)hours]];
-    }
-    
-    durationString = [durationString
-                      stringByAppendingString:[NSString stringWithFormat:@"%02ld:%02ld", (long)minutes, (long)seconds]];
-    
-    return durationString;
 }
 
 - (void)dealloc {

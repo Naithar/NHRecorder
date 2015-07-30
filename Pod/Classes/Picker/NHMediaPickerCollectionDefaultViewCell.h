@@ -6,14 +6,11 @@
 //
 //
 
-#import <UIKit/UIKit.h>
-@import AssetsLibrary;
+#import "NHMediaPickerCollectionViewCell.h"
 
-@interface NHMediaPickerCollectionDefaultViewCell : UICollectionViewCell
+@interface NHMediaPickerCollectionDefaultViewCell : NHMediaPickerCollectionViewCell
 
 @property (nonatomic, readonly, strong) UIImageView *imageView;
 @property (nonatomic, readonly, strong) UILabel *durationLabel;
-
-- (void)reloadWithAsset:(ALAsset*)asset;
 
 @end
