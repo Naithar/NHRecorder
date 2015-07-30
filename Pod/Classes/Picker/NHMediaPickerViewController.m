@@ -372,8 +372,8 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
             NSString *type = [asset valueForProperty:ALAssetPropertyType];
             ALAssetRepresentation *representation = [asset defaultRepresentation];
             
-            if ([weakSelf.nhDelegate respondsToSelector:@selector(mediaPickerDidStartExporting:)]) {
-                [weakSelf.nhDelegate mediaPickerDidStartExporting:weakSelf];
+            if ([weakSelf.nhDelegate respondsToSelector:@selector(nhMediaPickerDidStartExporting:)]) {
+                [weakSelf.nhDelegate nhMediaPickerDidStartExporting:weakSelf];
             }
             
             if ([type isEqualToString:ALAssetTypePhoto]) {
@@ -391,8 +391,8 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
                     CGSize imageSizeToFit = CGSizeZero;
                     
                     
-                    if ([weakSelf.nhDelegate respondsToSelector:@selector(imageSizeToFitForMediaPicker:)]) {
-                        imageSizeToFit = [weakSelf.nhDelegate imageSizeToFitForMediaPicker:weakSelf];
+                    if ([weakSelf.nhDelegate respondsToSelector:@selector(imageSizeToFitForNHMediaPicker:)]) {
+                        imageSizeToFit = [weakSelf.nhDelegate imageSizeToFitForNHMediaPicker:weakSelf];
                     }
                     
                     if (CGSizeEqualToSize(imageSizeToFit, CGSizeZero)) {
@@ -406,8 +406,8 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
                         BOOL shouldEdit = YES;
                         
                         __weak __typeof(self) weakSelf = self;
-                        if ([weakSelf.nhDelegate respondsToSelector:@selector(mediaPicker:shouldEditImage:)]) {
-                            shouldEdit = [weakSelf.nhDelegate mediaPicker:weakSelf shouldEditImage:resultImage];
+                        if ([weakSelf.nhDelegate respondsToSelector:@selector(nhMediaPicker:shouldEditImage:)]) {
+                            shouldEdit = [weakSelf.nhDelegate nhMediaPicker:weakSelf shouldEditImage:resultImage];
                         }
                         
                         if (shouldEdit) {
@@ -429,8 +429,8 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
             } //if type is Video
             
             
-            if ([weakSelf.nhDelegate respondsToSelector:@selector(mediaPickerDidFinishExporting:)]) {
-                [weakSelf.nhDelegate mediaPickerDidFinishExporting:weakSelf];
+            if ([weakSelf.nhDelegate respondsToSelector:@selector(nhMediaPickerDidFinishExporting:)]) {
+                [weakSelf.nhDelegate nhMediaPickerDidFinishExporting:weakSelf];
             }
         }
     }

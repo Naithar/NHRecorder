@@ -19,12 +19,12 @@ typedef NS_ENUM(NSUInteger, NHMediaPickerType) {
 @protocol NHMediaPickerViewControllerDelegate <NSObject>
 
 @optional
-- (BOOL)mediaPicker:(NHMediaPickerViewController*)controller
+- (BOOL)nhMediaPicker:(NHMediaPickerViewController*)mediaPicker
      shouldEditImage:(UIImage*)image;
-- (CGSize)imageSizeToFitForMediaPicker:(NHMediaPickerViewController*)controller;
+- (CGSize)imageSizeToFitForNHMediaPicker:(NHMediaPickerViewController*)mediaPicker;
 
-- (void)mediaPickerDidStartExporting:(NHMediaPickerViewController*)controller;
-- (void)mediaPickerDidFinishExporting:(NHMediaPickerViewController*)controller;
+- (void)nhMediaPickerDidStartExporting:(NHMediaPickerViewController*)mediaPicker;
+- (void)nhMediaPickerDidFinishExporting:(NHMediaPickerViewController*)mediaPicker;
 @end
 
 @interface NHMediaPickerViewController : UIViewController

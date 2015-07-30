@@ -20,12 +20,12 @@
 
 @optional
 
-- (void)nhVideoEditorDidStartExporting:(NHVideoEditorViewController*)controller;
-- (void)nhVideoEditor:(NHVideoEditorViewController*)controller didFailWithError:(NSError*)error;
-- (void)nhVideoEditor:(NHVideoEditorViewController*)controller didSaveAtURL:(NSURL*)url;
-- (void)nhVideoEditor:(NHVideoEditorViewController*)controller didFinishExportingAtURL:(NSURL*)url;
-- (BOOL)nhVideoEditor:(NHVideoEditorViewController*)controller shouldSaveFilteredVideoAtURL:(NSURL*)url;
-- (BOOL)nhVideoEditorShouldContinueAfterSaveFail:(NHVideoEditorViewController*)controller;
+- (void)nhVideoEditorDidStartExporting:(NHVideoEditorViewController*)videoEdit;
+- (void)nhVideoEditor:(NHVideoEditorViewController*)videoEdit didFailWithError:(NSError*)error;
+- (void)nhVideoEditor:(NHVideoEditorViewController*)videoEdit didFinishExportingAtURL:(NSURL*)url;
+- (void)nhVideoEditor:(NHVideoEditorViewController*)videoEdit didSaveAtURL:(NSURL*)url;
+- (BOOL)nhVideoEditor:(NHVideoEditorViewController*)videoEdit shouldSaveFilteredVideoAtURL:(NSURL*)url;
+- (BOOL)nhVideoEditorShouldContinueAfterSaveFail:(NHVideoEditorViewController*)videoEdit;
 @end
 
 @interface NHVideoEditorViewController : UIViewController

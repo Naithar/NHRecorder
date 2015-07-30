@@ -23,22 +23,22 @@ extern const NSTimeInterval kNHVideoMinDuration;
 @protocol NHVideoCaptureViewControllerDelegate <NSObject>
 
 @optional
-- (void)nhVideoCaptureDidStart:(NHVideoCaptureViewController*)controller;
-- (void)nhVideoCaptureDidFinish:(NHVideoCaptureViewController*)controller;
+- (void)nhVideoCaptureDidStart:(NHVideoCaptureViewController*)videoCapture;
+- (void)nhVideoCaptureDidFinish:(NHVideoCaptureViewController*)videoCapture;
 
-- (void)nhVideoCapture:(NHVideoCaptureViewController*)controller exportProgressChanged:(float)progress;
-- (void)nhVideoCaptureDidStartExporting:(NHVideoCaptureViewController*)controller;
-- (void)nhVideoCaptureDidStartSaving:(NHVideoCaptureViewController*)controller;
-- (void)nhVideoCapture:(NHVideoCaptureViewController *)controller didFinishExportingWithSuccess:(BOOL)success;
+- (void)nhVideoCapture:(NHVideoCaptureViewController*)videoCapture exportProgressChanged:(float)progress;
+- (void)nhVideoCaptureDidStartExporting:(NHVideoCaptureViewController*)videoCapture;
+- (void)nhVideoCaptureDidStartSaving:(NHVideoCaptureViewController*)videoCapture;
+- (void)nhVideoCapture:(NHVideoCaptureViewController *)videoCapture didFinishExportingWithSuccess:(BOOL)success;
 
-- (void)nhVideoCapture:(NHVideoCaptureViewController *)controller didFailWithError:(NSError*)error;
+- (void)nhVideoCapture:(NHVideoCaptureViewController *)videoCapture didFailWithError:(NSError*)error;
 
-- (BOOL)nhVideoCapture:(NHVideoCaptureViewController*)controller shouldEditVideoAtURL:(NSURL *)videoURL;
-- (BOOL)nhVideoCapture:(NHVideoCaptureViewController*)controller cameraAvailability:(AVAuthorizationStatus)status;
+- (BOOL)nhVideoCapture:(NHVideoCaptureViewController*)videoCapture shouldEditVideoAtURL:(NSURL *)videoURL;
+- (BOOL)nhVideoCapture:(NHVideoCaptureViewController*)videoCapture cameraAvailability:(AVAuthorizationStatus)status;
 
-- (void)nhVideoCaptureDidReset:(NHVideoCaptureViewController*)controller;
+- (void)nhVideoCaptureDidReset:(NHVideoCaptureViewController*)videoCapture;
 
-- (BOOL)nhVideoCaptureShouldSaveNonFilteredVideo:(NHVideoCaptureViewController*)controller;
+- (BOOL)nhVideoCaptureShouldSaveNonFilteredVideo:(NHVideoCaptureViewController*)videoCapture;
 
 @end
 
