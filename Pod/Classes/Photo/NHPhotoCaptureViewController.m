@@ -663,10 +663,6 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                                                    resultImage = [processedImage nhr_rescaleToFit:imageSizeToFit];
                                                }
                                                
-                                               if ([weakSelf.nhDelegate respondsToSelector:@selector(photoCaptureDidFinishExporting:)]) {
-                                                   [weakSelf.nhDelegate photoCaptureDidFinishExporting:weakSelf];
-                                               }
-                                               
                                                if (resultImage) {
                                                    BOOL shouldEdit = YES;
                                                    
@@ -686,6 +682,10 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                                                                                                       initWithUIImage:resultImage];
                                                        [self.navigationController pushViewController:viewController animated:YES];
                                                    }
+                                               }
+                                               
+                                               if ([weakSelf.nhDelegate respondsToSelector:@selector(photoCaptureDidFinishExporting:)]) {
+                                                   [weakSelf.nhDelegate photoCaptureDidFinishExporting:weakSelf];
                                                }
                                            }
                                        }];

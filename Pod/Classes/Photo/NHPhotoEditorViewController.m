@@ -598,10 +598,6 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
                     resultImage = [image nhr_rescaleToFit:imageSizeToFit];
                 }
                 
-                if ([weakSelf.nhDelegate respondsToSelector:@selector(nhPhotoEditorDidFinishExporting:)]) {
-                    [weakSelf.nhDelegate nhPhotoEditorDidFinishExporting:weakSelf];
-                }
-                
                 if (resultImage) {
                     BOOL shouldSave = YES;
                     
@@ -613,6 +609,10 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
                     if (shouldSave) {
                         UIImageWriteToSavedPhotosAlbum(resultImage, self, @selector(savedCapturedImage:error:context:), nil);
                     }
+                }
+                
+                if ([weakSelf.nhDelegate respondsToSelector:@selector(nhPhotoEditorDidFinishExporting:)]) {
+                    [weakSelf.nhDelegate nhPhotoEditorDidFinishExporting:weakSelf];
                 }
             }
         }];

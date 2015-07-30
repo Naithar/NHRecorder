@@ -71,6 +71,14 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 
 @implementation NHVideoCaptureViewController
 
++ (Class)nhVideoEditorClass {
+    return [NHVideoEditorViewController class];
+}
+
+
++ (Class)nhMediaPickerClass {
+    return [NHMediaPickerViewController class];
+}
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
@@ -792,7 +800,13 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
             }
             
             if (shouldEdit) {
-                NHVideoEditorViewController *editViewController = [[NHVideoEditorViewController alloc] initWithAssetURL:assetURL];
+                Class viewControllerClass = [[self class] nhVideoEditorClass];
+                
+                if (![viewControllerClass isSubclassOfClass:[NHVideoEditorViewController class]]) {
+                    viewControllerClass = [NHVideoEditorViewController class];
+                }
+                
+                NHVideoEditorViewController *editViewController = [[viewControllerClass alloc] initWithAssetURL:assetURL];
                 [self.navigationController pushViewController:editViewController animated:YES];
             }
         }
@@ -805,7 +819,6 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
     
     if (isExporting) {
         self.navigationController.view.userInteractionEnabled = NO;
-        self.navigationItem.rightBarButtonItem.enabled = [self nextButtonEnabled];
         
         __weak __typeof(self) weakSelf = self;
         
@@ -815,7 +828,6 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
     }
     else {
         self.navigationController.view.userInteractionEnabled = YES;
-        self.navigationItem.rightBarButtonItem.enabled = [self nextButtonEnabled];
     }
 }
 
@@ -837,7 +849,13 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 }
 
 - (void)libraryButtonTouch:(id)sender {
-    NHMediaPickerViewController *viewController = [[NHMediaPickerViewController alloc]
+    Class viewControllerClass = [[self class] nhVideoEditorClass];
+    
+    if (![viewControllerClass isSubclassOfClass:[NHMediaPickerViewController class]]) {
+        viewControllerClass = [NHMediaPickerViewController class];
+    }
+    
+    NHMediaPickerViewController *viewController = [[viewControllerClass alloc]
                                                    initWithMediaType:NHMediaPickerTypeVideo];
     viewController.firstController = NO;
     viewController.linksToCamera = NO;

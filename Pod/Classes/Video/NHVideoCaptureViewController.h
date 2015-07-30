@@ -69,4 +69,6 @@ extern const NSTimeInterval kNHVideoMinDuration;
 
 @property (nonatomic, assign) BOOL firstController;
 
++ (Class)nhVideoEditorClass;
++ (Class)nhMediaPickerClass;
 @end
