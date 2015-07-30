@@ -20,6 +20,16 @@ pathForResource:name ofType:@"png"]]
 
 @implementation NHCaptureNavigationController
 
++ (Class)nhPhotoCaptureClass {
+    return [NHPhotoCaptureViewController class];
+}
++ (Class)nhVideoCaptureClass {
+    return [NHVideoCaptureViewController class];
+}
++ (Class)nhMediaPickerClass {
+    return [NHMediaPickerViewController class];
+}
+
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
     
@@ -53,19 +63,37 @@ pathForResource:name ofType:@"png"]]
     UIViewController *viewController;
     
     switch (type) {
-        case NHCaptureTypePhotoCamera:
-            viewController = [[NHPhotoCaptureViewController alloc] init];
+        case NHCaptureTypePhotoCamera: {
+            Class viewControllerClass = [[self class] nhPhotoCaptureClass];
+            
+            if (![viewControllerClass isSubclassOfClass:[NHPhotoCaptureViewController class]]) {
+                viewControllerClass = [NHPhotoCaptureViewController class];
+            }
+            
+            viewController = [[viewControllerClass alloc] init];
             ((NHPhotoCaptureViewController*)viewController).firstController = YES;
-            break;
-        case NHCaptureTypeVideoCamera:
-            viewController = [[NHVideoCaptureViewController alloc] init];
+        } break;
+        case NHCaptureTypeVideoCamera: {
+            Class viewControllerClass = [[self class] nhVideoCaptureClass];
+            
+            if (![viewControllerClass isSubclassOfClass:[NHVideoCaptureViewController class]]) {
+                viewControllerClass = [NHVideoCaptureViewController class];
+            }
+            
+            viewController = [[viewControllerClass alloc] init];
             ((NHVideoCaptureViewController*)viewController).firstController = YES;
-            break;
-        case NHCaptureTypeMediaPicker:
-            viewController = [[NHMediaPickerViewController alloc] init];
+        } break;
+        case NHCaptureTypeMediaPicker: {
+            Class viewControllerClass = [[self class] nhMediaPickerClass];
+            
+            if (![viewControllerClass isSubclassOfClass:[NHMediaPickerViewController class]]) {
+                viewControllerClass = [NHMediaPickerViewController class];
+            }
+            
+            viewController = [[viewControllerClass alloc] init];
             ((NHMediaPickerViewController*)viewController).firstController = YES;
             ((NHMediaPickerViewController*)viewController).linksToCamera = YES;
-            break;
+        } break;
         default:
             break;
     }

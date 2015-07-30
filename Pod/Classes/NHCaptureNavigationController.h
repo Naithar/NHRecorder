@@ -24,4 +24,8 @@ typedef NS_ENUM(NSUInteger, NHCaptureType) {
 
 - (instancetype)initWithType:(NHCaptureType)type;
 
++ (Class)nhPhotoCaptureClass;
++ (Class)nhVideoCaptureClass;
++ (Class)nhMediaPickerClass;
+
 @end

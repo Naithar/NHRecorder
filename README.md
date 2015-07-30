@@ -20,6 +20,7 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 - [x] Video cropping
 - [x] Media picker
 - [ ] Subsclassing
+  * [*] Navigation 
   * [ ] Photo capture
   * [ ] Photo editor
   * [*] Media picker
