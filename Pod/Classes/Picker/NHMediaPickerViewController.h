@@ -44,9 +44,12 @@ typedef NS_ENUM(NSUInteger, NHMediaPickerType) {
 @property (nonatomic, readonly, strong) UICollectionView *mediaCollectionView;
 @property (nonatomic, readonly, strong) NHRecorderButton *closeButton;
 
-
 - (instancetype)initWithMediaType:(NHMediaPickerType)type;
 
 + (Class)nhMediaPickerCellClass;
++ (Class)nhPhotoCaptureClass;
++ (Class)nhPhotoEditorClass;
++ (Class)nhVideoCaptureClass;
++ (Class)nhVideoEditorClass;
 
 @end

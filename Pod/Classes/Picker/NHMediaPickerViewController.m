@@ -39,6 +39,20 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     return [NHMediaPickerCollectionDefaultViewCell class];
 }
 
++ (Class)nhPhotoCaptureClass {
+    return [NHPhotoCaptureViewController class];
+}
++ (Class)nhPhotoEditorClass {
+    return [NHPhotoEditorViewController class];
+}
+
++ (Class)nhVideoCaptureClass {
+    return [NHVideoCaptureViewController class];
+}
++ (Class)nhVideoEditorClass {
+    return [NHVideoEditorViewController class];
+}
+
 - (instancetype)initWithMediaType:(NHMediaPickerType)type {
     
     _mediaType = type;
@@ -348,9 +362,31 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     }
     
     if (itemNumber < 0) {
-        NHPhotoCaptureViewController *viewController = [[NHPhotoCaptureViewController alloc] init];
-        viewController.firstController = NO;
-        [self.navigationController pushViewController:viewController animated:YES];
+        UIViewController *viewController;
+        if (self.mediaType == NHMediaPickerTypeVideo) {
+            Class viewControllerClass = [[self class] nhVideoCaptureClass];
+            
+            if (![viewControllerClass isSubclassOfClass:[NHVideoCaptureViewController class]]) {
+                viewControllerClass = [NHVideoCaptureViewController class];
+            }
+            
+            viewController = [[viewControllerClass alloc] init];
+            ((NHVideoCaptureViewController*)viewController).firstController = NO;
+        }
+        else {
+            Class viewControllerClass = [[self class] nhPhotoCaptureClass];
+            
+            if (![viewControllerClass isSubclassOfClass:[NHPhotoCaptureViewController class]]) {
+                viewControllerClass = [NHPhotoCaptureViewController class];
+            }
+            
+            viewController = [[viewControllerClass alloc] init];
+            ((NHPhotoCaptureViewController*)viewController).firstController = NO;
+        }
+        
+        if (viewController) {
+            [self.navigationController pushViewController:viewController animated:YES];
+        }
     }
     else {
         if (itemNumber < self.mediaItems.count) {
@@ -399,7 +435,14 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
                         }
                         
                         if (shouldEdit) {
-                            NHPhotoEditorViewController *viewController = [[NHPhotoEditorViewController alloc] initWithUIImage:resultImage];
+                            
+                            Class viewControllerClass = [[self class] nhPhotoEditorClass];
+                            
+                            if (![viewControllerClass isSubclassOfClass:[NHPhotoEditorViewController class]]) {
+                                viewControllerClass = [NHPhotoEditorViewController class];
+                            }
+                            
+                            NHPhotoEditorViewController *viewController = [[viewControllerClass alloc] initWithUIImage:resultImage];
                             [self.navigationController pushViewController:viewController animated:YES];
                             
                         }
@@ -409,9 +452,13 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
             else if ([type isEqualToString:ALAssetTypeVideo]) {
                 NSURL *assetURL = [representation url];
                 if (assetURL) {
+                    Class viewControllerClass = [[self class] nhVideoEditorClass];
                     
+                    if (![viewControllerClass isSubclassOfClass:[NHVideoEditorViewController class]]) {
+                        viewControllerClass = [NHVideoEditorViewController class];
+                    }
                     
-                    NHVideoEditorViewController *viewController = [[NHVideoEditorViewController alloc] initWithAssetURL:assetURL];
+                    NHVideoEditorViewController *viewController = [[viewControllerClass alloc] initWithAssetURL:assetURL];
                     [self.navigationController pushViewController:viewController animated:YES];
                 }
             } //if type is Video
