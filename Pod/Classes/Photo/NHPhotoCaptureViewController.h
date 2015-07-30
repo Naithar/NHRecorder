@@ -56,4 +56,8 @@ extern const CGFloat kNHRecorderCaptureButtonBorderOffset;
 
 @property (nonatomic, weak) id<NHPhotoCaptureViewControllerDelegate> nhDelegate;
 
++ (Class)nhVideoCaptureClass;
++ (Class)nhPhotoEditorClass;
++ (Class)nhMediaPickerClass;
+
 @end

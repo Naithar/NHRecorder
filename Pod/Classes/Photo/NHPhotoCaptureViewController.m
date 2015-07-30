@@ -56,6 +56,16 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 
 @implementation NHPhotoCaptureViewController
 
++ (Class)nhVideoCaptureClass {
+    return [NHVideoCaptureViewController class];
+}
++ (Class)nhPhotoEditorClass {
+    return [NHPhotoEditorViewController class];
+}
++ (Class)nhMediaPickerClass {
+    return [NHMediaPickerViewController class];
+}
+
 - (id)initWithCoder:(NSCoder *)aDecoder {
     self = [super initWithCoder:aDecoder];
     
@@ -666,7 +676,14 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                                                    }
                                                    
                                                    if (shouldEdit) {
-                                                       NHPhotoEditorViewController *viewController = [[NHPhotoEditorViewController alloc] initWithUIImage:resultImage];
+                                                       Class viewControllerClass = [[self class] nhPhotoEditorClass];
+                                                       
+                                                       if (![viewControllerClass isSubclassOfClass:[NHPhotoEditorViewController class]]) {
+                                                           viewControllerClass = [NHPhotoEditorViewController class];
+                                                       }
+                                                       
+                                                       NHPhotoEditorViewController *viewController = [[viewControllerClass alloc]
+                                                                                                      initWithUIImage:resultImage];
                                                        [self.navigationController pushViewController:viewController animated:YES];
                                                    }
                                                }
@@ -675,7 +692,13 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 }
 
 - (void)libraryButtonTouch:(id)sender {
-    NHMediaPickerViewController *viewController = [[NHMediaPickerViewController alloc]
+    Class viewControllerClass = [[self class] nhMediaPickerClass];
+    
+    if (![viewControllerClass isSubclassOfClass:[NHMediaPickerViewController class]]) {
+        viewControllerClass = [NHMediaPickerViewController class];
+    }
+    
+    NHMediaPickerViewController *viewController = [[viewControllerClass alloc]
                                                    initWithMediaType:NHMediaPickerTypePhoto];
     viewController.firstController = NO;
     viewController.linksToCamera = NO;
@@ -683,7 +706,13 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 }
 
 - (void)videoCaptureButtonTouch:(id)sender {
-    NHVideoCaptureViewController *viewController = [[NHVideoCaptureViewController alloc] init];
+    Class viewControllerClass = [[self class] nhVideoCaptureClass];
+    
+    if (![viewControllerClass isSubclassOfClass:[NHVideoCaptureViewController class]]) {
+        viewControllerClass = [NHVideoCaptureViewController class];
+    }
+    
+    NHVideoCaptureViewController *viewController = [[viewControllerClass alloc] init];
     viewController.firstController = NO;
     [self.navigationController pushViewController:viewController animated:YES];
 }

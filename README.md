@@ -20,11 +20,11 @@ To run the example project, clone the repo, and run `pod install` from the Examp
 - [x] Video cropping
 - [x] Media picker
 - [ ] Subsclassing
-  * [*] Navigation 
-  * [ ] Photo capture
+  * [x] Navigation 
+  * [x] Photo capture
   * [ ] Photo editor
-  * [*] Media picker
-  * [*] Media picker cell
+  * [x] Media picker
+  * [x] Media picker cell
   * [ ] Video capture
   * [ ] Video editor
 - [ ] Custom Views
