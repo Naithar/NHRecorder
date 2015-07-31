@@ -14,7 +14,7 @@
     self = [super init];
     
     if (self) {
-        
+        _viewController = photoCapture;
     }
     
     return self;
