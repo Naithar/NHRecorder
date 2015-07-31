@@ -574,27 +574,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
         return;
     }
     
-    AVCaptureFlashMode newFlashMode = AVCaptureFlashModeAuto;
-    
-    switch (self.photoCamera.inputCamera.flashMode) {
-        case AVCaptureFlashModeAuto:
-            newFlashMode = AVCaptureFlashModeOff;
-            break;
-        case AVCaptureFlashModeOff:
-            newFlashMode = AVCaptureFlashModeOn;
-            break;
-        case AVCaptureFlashModeOn:
-            newFlashMode = AVCaptureFlashModeAuto;
-            break;
-        default:
-            break;
-    }
-    
-    if ([self.photoCamera.inputCamera isFlashModeSupported:newFlashMode]) {
-        [self.photoCamera.inputCamera lockForConfiguration:nil];
-        [self.photoCamera.inputCamera setFlashMode:newFlashMode];
-        [self.photoCamera.inputCamera unlockForConfiguration];
-    }
+    [self switchFlashMode];
     
     [self resetFlash];
 }
@@ -618,77 +598,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 
 - (void)captureButtonTouch:(id)sender {
     
-    AVAuthorizationStatus cameraStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
-    __weak __typeof(self) weakSelf = self;
-    
-    if (cameraStatus != AVAuthorizationStatusAuthorized) {
-        if ([weakSelf.nhDelegate respondsToSelector:@selector(nhPhotoCapture:cameraAvailability:)]) {
-            [weakSelf.nhDelegate
-             nhPhotoCapture:weakSelf
-             cameraAvailability:cameraStatus];
-        }
-        return;
-    }
-    
-    self.navigationController.view.userInteractionEnabled = NO;
-    
-    if ([weakSelf.nhDelegate respondsToSelector:@selector(nhPhotoCaptureDidStartExporting:)]) {
-        [weakSelf.nhDelegate nhPhotoCaptureDidStartExporting:weakSelf];
-    }
-    
-    [self.photoCamera capturePhotoAsImageProcessedUpToFilter:self.photoCropFilter
-                                       withCompletionHandler:^(UIImage *processedImage, NSError *error) {
-                                           @autoreleasepool {
-                                               
-                                               weakSelf.navigationController.view.userInteractionEnabled = YES;
-                                               
-                                               if (error
-                                                   || !processedImage) {
-                                                   NSLog(@"error - %@", error);
-                                                   return;
-                                               }
-                                               
-                                               UIImage *resultImage;
-                                               
-                                               CGSize imageSizeToFit = CGSizeZero;
-                                               
-                                               if ([weakSelf.nhDelegate respondsToSelector:@selector(imageSizeToFitForNHPhotoCapture:)]) {
-                                                   imageSizeToFit = [weakSelf.nhDelegate imageSizeToFitForNHPhotoCapture:weakSelf];
-                                               }
-                                               
-                                               if (CGSizeEqualToSize(imageSizeToFit, CGSizeZero)) {
-                                                   resultImage = processedImage;
-                                               }
-                                               else {
-                                                   resultImage = [processedImage nhr_rescaleToFit:imageSizeToFit];
-                                               }
-                                               
-                                               if (resultImage) {
-                                                   BOOL shouldEdit = YES;
-                                                   
-                                                   __weak __typeof(self) weakSelf = self;
-                                                   if ([weakSelf.nhDelegate respondsToSelector:@selector(nhPhotoCapture:shouldEditImage:)]) {
-                                                       shouldEdit = [weakSelf.nhDelegate nhPhotoCapture:weakSelf shouldEditImage:resultImage];
-                                                   }
-                                                   
-                                                   if (shouldEdit) {
-                                                       Class viewControllerClass = [[self class] nhPhotoEditorClass];
-                                                       
-                                                       if (![viewControllerClass isSubclassOfClass:[NHPhotoEditorViewController class]]) {
-                                                           viewControllerClass = [NHPhotoEditorViewController class];
-                                                       }
-                                                       
-                                                       NHPhotoEditorViewController *viewController = [[viewControllerClass alloc]
-                                                                                                      initWithUIImage:resultImage];
-                                                       [self.navigationController pushViewController:viewController animated:YES];
-                                                   }
-                                               }
-                                               
-                                               if ([weakSelf.nhDelegate respondsToSelector:@selector(photoCaptureDidFinishExporting:)]) {
-                                                   [weakSelf.nhDelegate photoCaptureDidFinishExporting:weakSelf];
-                                               }
-                                           }
-                                       }];
+    [self capturePhoto];
 }
 
 - (void)libraryButtonTouch:(id)sender {
@@ -879,6 +789,118 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 
 - (BOOL)shouldAutorotate {
     return NO;
+}
+
+- (void)capturePhoto {
+    AVAuthorizationStatus cameraStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    __weak __typeof(self) weakSelf = self;
+    
+    if (cameraStatus != AVAuthorizationStatusAuthorized) {
+        if ([weakSelf.nhDelegate respondsToSelector:@selector(nhPhotoCapture:cameraAvailability:)]) {
+            [weakSelf.nhDelegate
+             nhPhotoCapture:weakSelf
+             cameraAvailability:cameraStatus];
+        }
+        return;
+    }
+    
+    self.navigationController.view.userInteractionEnabled = NO;
+    
+    if ([weakSelf.nhDelegate respondsToSelector:@selector(nhPhotoCaptureDidStartExporting:)]) {
+        [weakSelf.nhDelegate nhPhotoCaptureDidStartExporting:weakSelf];
+    }
+    
+    [self.photoCamera capturePhotoAsImageProcessedUpToFilter:self.photoCropFilter
+                                       withCompletionHandler:^(UIImage *processedImage, NSError *error) {
+                                           @autoreleasepool {
+                                               
+                                               weakSelf.navigationController.view.userInteractionEnabled = YES;
+                                               
+                                               if (error
+                                                   || !processedImage) {
+                                                   NSLog(@"error - %@", error);
+                                                   return;
+                                               }
+                                               
+                                               UIImage *resultImage;
+                                               
+                                               CGSize imageSizeToFit = CGSizeZero;
+                                               
+                                               if ([weakSelf.nhDelegate respondsToSelector:@selector(imageSizeToFitForNHPhotoCapture:)]) {
+                                                   imageSizeToFit = [weakSelf.nhDelegate imageSizeToFitForNHPhotoCapture:weakSelf];
+                                               }
+                                               
+                                               if (CGSizeEqualToSize(imageSizeToFit, CGSizeZero)) {
+                                                   resultImage = processedImage;
+                                               }
+                                               else {
+                                                   resultImage = [processedImage nhr_rescaleToFit:imageSizeToFit];
+                                               }
+                                               
+                                               if (resultImage) {
+                                                   BOOL shouldEdit = YES;
+                                                   
+                                                   __weak __typeof(self) weakSelf = self;
+                                                   if ([weakSelf.nhDelegate respondsToSelector:@selector(nhPhotoCapture:shouldEditImage:)]) {
+                                                       shouldEdit = [weakSelf.nhDelegate nhPhotoCapture:weakSelf shouldEditImage:resultImage];
+                                                   }
+                                                   
+                                                   if (shouldEdit) {
+                                                       Class viewControllerClass = [[self class] nhPhotoEditorClass];
+                                                       
+                                                       if (![viewControllerClass isSubclassOfClass:[NHPhotoEditorViewController class]]) {
+                                                           viewControllerClass = [NHPhotoEditorViewController class];
+                                                       }
+                                                       
+                                                       NHPhotoEditorViewController *viewController = [[viewControllerClass alloc]
+                                                                                                      initWithUIImage:resultImage];
+                                                       [self.navigationController pushViewController:viewController animated:YES];
+                                                   }
+                                               }
+                                               
+                                               if ([weakSelf.nhDelegate respondsToSelector:@selector(photoCaptureDidFinishExporting:)]) {
+                                                   [weakSelf.nhDelegate photoCaptureDidFinishExporting:weakSelf];
+                                               }
+                                           }
+                                       }];
+}
+- (void)switchCameraPosition {
+    [self.photoCamera rotateCamera];
+}
+- (AVCaptureDevicePosition)cameraPosition {
+    return self.photoCamera.cameraPosition;
+}
+
+- (void)switchFlashMode {
+    AVCaptureFlashMode newFlashMode = AVCaptureFlashModeAuto;
+    
+    switch (self.photoCamera.inputCamera.flashMode) {
+        case AVCaptureFlashModeAuto:
+            newFlashMode = AVCaptureFlashModeOff;
+            break;
+        case AVCaptureFlashModeOff:
+            newFlashMode = AVCaptureFlashModeOn;
+            break;
+        case AVCaptureFlashModeOn:
+            newFlashMode = AVCaptureFlashModeAuto;
+            break;
+        default:
+            break;
+    }
+    
+    if ([self.photoCamera.inputCamera isFlashModeSupported:newFlashMode]) {
+        [self.photoCamera.inputCamera lockForConfiguration:nil];
+        [self.photoCamera.inputCamera setFlashMode:newFlashMode];
+        [self.photoCamera.inputCamera unlockForConfiguration];
+    }
+}
+
+- (AVCaptureFlashMode)flashMode {
+    return self.photoCamera.inputCamera.flashMode;
+}
+
+- (BOOL)flashEnabled {
+    return YES;
 }
 
 - (void)dealloc {

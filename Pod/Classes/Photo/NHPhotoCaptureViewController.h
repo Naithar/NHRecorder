@@ -60,4 +60,12 @@ extern const CGFloat kNHRecorderCaptureButtonBorderOffset;
 + (Class)nhPhotoEditorClass;
 + (Class)nhMediaPickerClass;
 
+- (void)capturePhoto;
+- (void)switchCameraPosition;
+- (AVCaptureDevicePosition)cameraPosition;
+- (void)switchFlashMode;
+- (AVCaptureFlashMode)flashMode;
+- (BOOL)flashEnabled;
+
+//+ (Class)nhPhotoCaptureViewClass;
 @end
