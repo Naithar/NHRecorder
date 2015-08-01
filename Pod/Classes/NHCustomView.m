@@ -13,7 +13,7 @@
 - (void)setupView {
 }
 
-- (void)displayView {
+- (void)showView {
     
 }
 
@@ -21,7 +21,7 @@
     
 }
 
-- (void)orientationChangedTo:(UIDeviceOrientation)orientation {
+- (void)changeOrientationTo:(UIDeviceOrientation)orientation {
     
 }
 

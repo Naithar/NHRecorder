@@ -329,9 +329,10 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 }
 
 - (void)startCamera {
+    [self.captureManager.session setSessionPreset:AVCaptureSessionPresetHigh];
 //    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    
         [self.captureManager.session startRunning];
-//    });
 }
 
 - (void)stopCamera {

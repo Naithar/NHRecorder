@@ -12,8 +12,8 @@
 
 
 - (void)setupView;
-- (void)displayView;
+- (void)showView;
 - (void)hideView;
-- (void)orientationChangedTo:(UIDeviceOrientation)orientation;
+- (void)changeOrientationTo:(UIDeviceOrientation)orientation;
 
 @end
