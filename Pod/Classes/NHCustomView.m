@@ -25,4 +25,17 @@
     
 }
 
+- (BOOL)statusBarHidden {
+    return NO;
+}
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations {
+    return UIInterfaceOrientationMaskAll;
+}
+- (UIInterfaceOrientation)interfaceOrientation {
+    return UIInterfaceOrientationPortrait;
+}
+- (BOOL)shouldAutorotate {
+    return YES;
+}
+
 @end

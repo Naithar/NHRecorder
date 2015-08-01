@@ -15,5 +15,9 @@
 - (void)showView;
 - (void)hideView;
 - (void)changeOrientationTo:(UIDeviceOrientation)orientation;
+- (BOOL)statusBarHidden;
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations;
+- (UIInterfaceOrientation)interfaceOrientation;
+- (BOOL)shouldAutorotate;
 
 @end
