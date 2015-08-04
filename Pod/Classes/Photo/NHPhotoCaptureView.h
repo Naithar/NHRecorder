@@ -19,4 +19,7 @@
 
 - (instancetype)initWithCaptureViewController:(NHPhotoCaptureViewController*)photoCapture;
 
+
+- (GPUImageFilter*)lastFilter;
+
 @end

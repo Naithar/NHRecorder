@@ -20,4 +20,8 @@
     return self;
 }
 
+- (GPUImageFilter*)lastFilter {
+    return nil;
+}
+
 @end

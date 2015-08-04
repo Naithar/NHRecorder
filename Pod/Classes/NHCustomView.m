@@ -13,6 +13,14 @@
 - (void)setupView {
 }
 
+- (void)willShowView {
+    
+}
+
+- (void)willHideView {
+    
+}
+
 - (void)showView {
     
 }

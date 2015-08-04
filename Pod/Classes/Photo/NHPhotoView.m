@@ -70,7 +70,7 @@
     self.contentView = [[GPUImageView alloc] init];
     [self addSubview:self.contentView];
     
-    self.picture = [[GPUImagePicture alloc] initWithImage:self.image smoothlyScaleOutput:NO];
+    self.picture = [[GPUImagePicture alloc] initWithImage:self.image smoothlyScaleOutput:YES];
     self.rotationFilter = [[GPUImageFilter alloc] init];
     self.customFilter = [[GPUImageFilter alloc] init];
     self.cropFilter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0, 0, 1, 1)];

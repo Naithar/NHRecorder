@@ -10,6 +10,7 @@
 #import <GPUImage/GPUImage.h>
 #import "NHRecorderButton.h"
 
+
 extern const CGFloat kNHRecorderBottomViewHeight;
 extern const CGFloat kNHRecorderCaptureButtonHeight;
 extern const CGFloat kNHRecorderSideButtonHeight;
@@ -18,6 +19,7 @@ extern const CGFloat kNHRecorderCaptureButtonBorderOffset;
 @class NHCameraGridView;
 @class NHPhotoFocusView;
 @class NHPhotoCaptureViewController;
+@class NHPhotoCaptureView;
 
 @protocol NHPhotoCaptureViewControllerDelegate <NSObject>
 
@@ -33,26 +35,13 @@ extern const CGFloat kNHRecorderCaptureButtonBorderOffset;
 
 @interface NHPhotoCaptureViewController : UIViewController
 
-@property (nonatomic, assign) BOOL videoCaptureEnabled;
 @property (nonatomic, assign) BOOL firstController;
 
 @property (nonatomic, strong) UIColor *barTintColor;
 @property (nonatomic, strong) UIColor *barButtonTintColor;
 
-
-@property (nonatomic, readonly, strong) GPUImageView *photoCameraView;
-@property (nonatomic, readonly, strong) NHCameraGridView *cameraGridView;
-@property (nonatomic, readonly, strong) NHPhotoFocusView *cameraFocusView;
-@property (nonatomic, readonly, strong) UIView *bottomContainerView;
-
-@property (nonatomic, readonly, strong) NHRecorderButton *closeButton;
-@property (nonatomic, readonly, strong) NHRecorderButton *flashButton;
-@property (nonatomic, readonly, strong) NHRecorderButton *gridButton;
-@property (nonatomic, readonly, strong) NHRecorderButton *switchButton;
-
-@property (nonatomic, readonly, strong) UIButton *captureButton;
-@property (nonatomic, readonly, strong) NHRecorderButton *libraryButton;
-@property (nonatomic, readonly, strong) NHRecorderButton *videoCaptureButton;
+@property (nonatomic, readonly, strong) GPUImageStillCamera *photoCamera;
+@property (nonatomic, readonly, strong) NHPhotoCaptureView *captureView;
 
 @property (nonatomic, weak) id<NHPhotoCaptureViewControllerDelegate> nhDelegate;
 
@@ -66,6 +55,8 @@ extern const CGFloat kNHRecorderCaptureButtonBorderOffset;
 - (void)switchFlashMode;
 - (AVCaptureFlashMode)flashMode;
 - (BOOL)flashEnabled;
+- (void)openPhotoPicker;
+- (void)openVideoCapture;
 
 + (Class)nhPhotoCaptureViewClass;
 @end

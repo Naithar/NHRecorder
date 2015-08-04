@@ -8,10 +8,13 @@
 
 #import <UIKit/UIKit.h>
 
-@interface NHCustomView : UIView
+@interface NHCustomView : NSObject
 
+@property (nonatomic, assign) BOOL isFirstController;
 
 - (void)setupView;
+- (void)willShowView;
+- (void)willHideView;
 - (void)showView;
 - (void)hideView;
 - (void)changeOrientationTo:(UIDeviceOrientation)orientation;
