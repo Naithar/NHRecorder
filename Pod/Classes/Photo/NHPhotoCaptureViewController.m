@@ -77,8 +77,6 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 }
 
 - (void)commonInit {
-    self.view.backgroundColor = [UIColor blackColor];
-    
     self.photoCamera = [[GPUImageStillCamera alloc]
                         initWithSessionPreset:AVCaptureSessionPresetPhoto
                         cameraPosition:AVCaptureDevicePositionBack];
@@ -98,8 +96,6 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     }
     
     self.captureView = [[viewClass alloc] initWithCaptureViewController:self];
-    
-    [self.captureView setupView];    
     
     __weak __typeof(self) weakSelf = self;
     self.enterForegroundNotification = [[NSNotificationCenter defaultCenter]
@@ -138,7 +134,6 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     }];
 }
 
-
 - (void)deviceOrientationChange {
     UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
     [UIView animateWithDuration:0.3
@@ -166,7 +161,6 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     
     NHMediaPickerViewController *viewController = [[viewControllerClass alloc]
                                                    initWithMediaType:NHMediaPickerTypePhoto];
-    viewController.firstController = NO;
     viewController.linksToCamera = NO;
     [self.navigationController pushViewController:viewController animated:YES];
 }
@@ -179,32 +173,16 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     }
     
     NHVideoCaptureViewController *viewController = [[viewControllerClass alloc] init];
-    viewController.firstController = NO;
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
-//MARK: Setters
-
-- (void)setBarTintColor:(UIColor *)barTintColor {
-    [self willChangeValueForKey:@"barTintColor"];
-    _barTintColor = barTintColor;
-    self.navigationController.navigationBar.barTintColor = barTintColor ?: [UIColor blackColor];
-    [self didChangeValueForKey:@"barTintColor"];
-}
-
-- (void)setBarButtonTintColor:(UIColor *)barButtonTintColor {
-    [self willChangeValueForKey:@"barTintColor"];
-    _barButtonTintColor = barButtonTintColor;
-    self.navigationController.navigationBar.tintColor = barButtonTintColor ?: [UIColor whiteColor];
-    [self didChangeValueForKey:@"barTintColor"];
-}
-
-- (void)setFirstController:(BOOL)firstController {
-    [self willChangeValueForKey:@"firstController"];
-    _firstController = firstController;
-    
-    self.captureView.isFirstController = firstController;
-    [self didChangeValueForKey:@"firstController"];
+- (void)closeController {
+    if ([self.navigationController.viewControllers count] == 1) {
+        [self dismissViewControllerAnimated:YES completion:nil];
+    }
+    else {
+        [self.navigationController popViewControllerAnimated:YES];
+    }
 }
 
 //MARK: View overrides
@@ -212,6 +190,13 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.view.backgroundColor = [UIColor blackColor];
+    
+    [self.captureView setupView];
+    
+    [self.view setNeedsLayout];
+    [self.view layoutIfNeeded];
 }
 
 - (void)viewDidAppear:(BOOL)animated {

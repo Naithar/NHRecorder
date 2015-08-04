@@ -10,8 +10,6 @@
 
 @interface NHCustomView : NSObject
 
-@property (nonatomic, assign) BOOL isFirstController;
-
 - (void)setupView;
 - (void)willShowView;
 - (void)willHideView;

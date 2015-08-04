@@ -381,7 +381,6 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
             }
             
             viewController = [[viewControllerClass alloc] init];
-            ((NHPhotoCaptureViewController*)viewController).firstController = NO;
         }
         
         if (viewController) {

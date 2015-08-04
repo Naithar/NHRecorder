@@ -43,7 +43,9 @@ pathForResource:name ofType:@"png"]]
     self.closeButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
     self.closeButton.frame = CGRectMake(0, 0, 44, 44);
     self.closeButton.tintColor = [UIColor whiteColor];
-    [self.closeButton setImage:(self.isFirstController ? image(@"NHRecorder.close") : image(@"NHRecorder.back")) forState:UIControlStateNormal];
+    [self.closeButton setImage:([self.viewController.navigationController.viewControllers count] == 1
+                                ? image(@"NHRecorder.close")
+                                : image(@"NHRecorder.back")) forState:UIControlStateNormal];
     self.closeButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
     [self.closeButton addTarget:self action:@selector(closeButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -183,12 +185,7 @@ pathForResource:name ofType:@"png"]]
 }
 
 - (void)closeButtonTouch:(id)sender {
-    if (self.isFirstController) {
-        [self.viewController dismissViewControllerAnimated:YES completion:nil];
-    }
-    else {
-        [self.viewController.navigationController popViewControllerAnimated:YES];
-    }
+    [self.viewController closeController];
 }
 
 - (void)flashButtonTouch:(id)sender {
@@ -473,6 +470,20 @@ pathForResource:name ofType:@"png"]]
                                                                        multiplier:1.0 constant:0]];
 }
 
+- (void)setBarTintColor:(UIColor *)barTintColor {
+    [self willChangeValueForKey:@"barTintColor"];
+    _barTintColor = barTintColor;
+    self.viewController.navigationController.navigationBar.barTintColor = barTintColor ?: [UIColor blackColor];
+    [self didChangeValueForKey:@"barTintColor"];
+}
+
+- (void)setBarButtonTintColor:(UIColor *)barButtonTintColor {
+    [self willChangeValueForKey:@"barTintColor"];
+    _barButtonTintColor = barButtonTintColor;
+    self.viewController.navigationController.navigationBar.tintColor = barButtonTintColor ?: [UIColor whiteColor];
+    [self didChangeValueForKey:@"barTintColor"];
+}
+
 
 - (void)resetFlash {
     NSString *imageName;
@@ -539,6 +550,14 @@ pathForResource:name ofType:@"png"]]
     [self resetLibrary];
 }
 
+- (void)willShowView {
+    self.viewController.navigationController.navigationBar.barTintColor = self.barTintColor ?: [UIColor blackColor];
+    self.viewController.navigationController.navigationBar.tintColor = self.barButtonTintColor ?: [UIColor whiteColor];
+    
+    [self.viewController.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+    [self.viewController.navigationController.navigationBar setShadowImage:[UIImage new]];
+}
+
 - (GPUImageView *)photoCaptureView {
     return self.photoView;
 }
@@ -568,11 +587,6 @@ pathForResource:name ofType:@"png"]]
     self.switchButton.imageView.transform = CGAffineTransformMakeRotation(angle);
     self.libraryButton.transform = CGAffineTransformMakeRotation(angle);
     self.videoCaptureButton.transform = CGAffineTransformMakeRotation(angle);
-}
-
-- (void)setIsFirstController:(BOOL)isFirstController {
-    [super setIsFirstController:isFirstController];
-    [self.closeButton setImage:(isFirstController ? image(@"NHRecorder.close") : image(@"NHRecorder.back")) forState:UIControlStateNormal];
 }
 
 - (GPUImageFilter *)lastFilter {

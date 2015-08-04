@@ -18,8 +18,6 @@
 @property (nonatomic, readonly, strong) GPUImageView *photoCaptureView;
 
 - (instancetype)initWithCaptureViewController:(NHPhotoCaptureViewController*)photoCapture;
-
-
 - (GPUImageFilter*)lastFilter;
 
 @end

@@ -13,6 +13,9 @@
 
 @interface NHPhotoDefaultCaptureView : NHPhotoCaptureView
 
+@property (nonatomic, strong) UIColor *barTintColor;
+@property (nonatomic, strong) UIColor *barButtonTintColor;
+
 @property (nonatomic, readonly, strong) NHCameraGridView *cameraGridView;
 @property (nonatomic, readonly, strong) NHPhotoFocusView *cameraFocusView;
 @property (nonatomic, readonly, strong) UIView *bottomContainerView;

@@ -35,10 +35,7 @@ extern const CGFloat kNHRecorderCaptureButtonBorderOffset;
 
 @interface NHPhotoCaptureViewController : UIViewController
 
-@property (nonatomic, assign) BOOL firstController;
 
-@property (nonatomic, strong) UIColor *barTintColor;
-@property (nonatomic, strong) UIColor *barButtonTintColor;
 
 @property (nonatomic, readonly, strong) GPUImageStillCamera *photoCamera;
 @property (nonatomic, readonly, strong) NHPhotoCaptureView *captureView;
@@ -57,6 +54,7 @@ extern const CGFloat kNHRecorderCaptureButtonBorderOffset;
 - (BOOL)flashEnabled;
 - (void)openPhotoPicker;
 - (void)openVideoCapture;
+- (void)closeController;
 
 + (Class)nhPhotoCaptureViewClass;
 @end

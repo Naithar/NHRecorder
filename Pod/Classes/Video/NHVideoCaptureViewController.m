@@ -71,6 +71,10 @@ const NSTimeInterval kNHVideoMinDuration = 2.0;
 
 @implementation NHVideoCaptureViewController
 
++ (Class)nhPhotoCaptureClass {
+    return [NHPhotoCaptureViewController class];
+}
+
 + (Class)nhVideoEditorClass {
     return [NHVideoEditorViewController class];
 }

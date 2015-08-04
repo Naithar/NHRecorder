@@ -71,7 +71,6 @@ pathForResource:name ofType:@"png"]]
             }
             
             viewController = [[viewControllerClass alloc] init];
-            ((NHPhotoCaptureViewController*)viewController).firstController = YES;
         } break;
         case NHCaptureTypeVideoCamera: {
             Class viewControllerClass = [[self class] nhVideoCaptureClass];
