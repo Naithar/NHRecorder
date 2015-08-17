@@ -13,7 +13,7 @@
 @interface NHPhotoView : UIScrollView
 
 
-@property (nonatomic, readonly, strong) GPUImageView *contentView;
+@property (nonatomic, readonly, strong) UIImageView *contentView;
 @property (nonatomic, readonly, strong) NHCameraCropView *cropView;
 
 - (instancetype)initWithImage:(UIImage*)image;

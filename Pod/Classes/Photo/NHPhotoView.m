@@ -7,18 +7,18 @@
 //
 
 #import "NHPhotoView.h"
-
+#import "UIImage+Resize.h"
 #import <GPUImage/GPUImage.h>
 
 @interface NHPhotoView ()<UIScrollViewDelegate>
 
 @property (nonatomic, strong) UIImage *image;
-@property (nonatomic, strong) GPUImageView *contentView;
-@property (nonatomic, strong) GPUImagePicture *picture;
+@property (nonatomic, strong) UIImageView *contentView;
+//@property (nonatomic, strong) GPUImagePicture *picture;
 
-@property (nonatomic, strong) GPUImageFilter *rotationFilter;
+//@property (nonatomic, strong) GPUImageFilter *rotationFilter;
 @property (nonatomic, strong) GPUImageFilter *customFilter;
-@property (nonatomic, strong) GPUImageCropFilter *cropFilter;
+//@property (nonatomic, strong) GPUImageCropFilter *cropFilter;
 
 @property (nonatomic, strong) NHCameraCropView *cropView;
 
@@ -67,46 +67,51 @@
     self.showsHorizontalScrollIndicator = NO;
     self.backgroundColor = [UIColor clearColor];
     
-    self.contentView = [[GPUImageView alloc] init];
+    self.contentView = [[UIImageView alloc] init];
     [self addSubview:self.contentView];
     
-    self.picture = [[GPUImagePicture alloc] initWithImage:self.image smoothlyScaleOutput:YES];
-    self.rotationFilter = [[GPUImageFilter alloc] init];
+    
+    self.contentView.contentMode = UIViewContentModeScaleAspectFit;
+    self.contentView.image = self.image;
+//    self.picture = [[GPUImagePicture alloc] initWithImage:self.image smoothlyScaleOutput:YES];
+//    self.rotationFilter = [[GPUImageFilter alloc] init];
     self.customFilter = [[GPUImageFilter alloc] init];
-    self.cropFilter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0, 0, 1, 1)];
+//    self.cropFilter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0, 0, 1, 1)];
     
-    GPUImageRotationMode newRotation = kGPUImageNoRotation;
+//    GPUImageRotationMode newRotation = kGPUImageNoRotation;
     
-    switch (self.image.imageOrientation) {
-        case UIImageOrientationUp:
-        case UIImageOrientationUpMirrored:
-            break;
-        case UIImageOrientationLeft:
-        case UIImageOrientationLeftMirrored:
-            newRotation = kGPUImageRotateLeft;
-            break;
-        case UIImageOrientationRight:
-        case UIImageOrientationRightMirrored:
-            newRotation = kGPUImageRotateRight;
-            break;
-        case UIImageOrientationDown:
-        case UIImageOrientationDownMirrored:
-            newRotation = kGPUImageRotate180;
-            break;
-        default:
-            break;
-    }
-    [self.rotationFilter setInputRotation:newRotation atIndex:0];
+//    switch (self.image.imageOrientation) {
+//        case UIImageOrientationUp:
+//        case UIImageOrientationUpMirrored:
+//            break;
+//        case UIImageOrientationLeft:
+//        case UIImageOrientationLeftMirrored:
+//            newRotation = kGPUImageRotateLeft;
+//            break;
+//        case UIImageOrientationRight:
+//        case UIImageOrientationRightMirrored:
+//            newRotation = kGPUImageRotateRight;
+//            break;
+//        case UIImageOrientationDown:
+//        case UIImageOrientationDownMirrored:
+//            newRotation = kGPUImageRotate180;
+//            break;
+//        default:
+//            break;
+//    }
+//    [self.rotationFilter setInputRotation:newRotation atIndex:0];
     
-    [self.picture addTarget:self.rotationFilter];
-    [self.rotationFilter addTarget:self.customFilter];
-    [self.customFilter addTarget:self.cropFilter];
+//    [self.picture addTarget:self.rotationFilter];
+//    [self.rotationFilter addTarget:self.customFilter];
+//    [self.customFilter addTarget:self.cropFilter];
     
-    [self.customFilter addTarget:self.contentView];
+//    [self.customFilter addTarget:self.contentView];
     
     [self sizeContent];
     if (self.window) {
-        [self.picture processImage];
+        
+        self.contentView.image = [self.customFilter imageByFilteringImage:self.image];
+//        [self.picture processImage];
     }
     
     self.cropView = [[NHCameraCropView alloc] init];
@@ -169,20 +174,21 @@
     [self.customFilter removeAllTargets];
     [self.customFilter removeOutputFramebuffer];
     
-    [self.rotationFilter removeTarget:self.customFilter];
+//    [self.rotationFilter removeTarget:self.customFilter];
     self.customFilter = filter;
     
     [self.customFilter removeAllTargets];
     [self.customFilter removeOutputFramebuffer];
     
-    [self.rotationFilter addTarget:self.customFilter];
-    [self.customFilter addTarget:self.cropFilter];
+//    [self.rotationFilter addTarget:self.customFilter];
+//    [self.customFilter addTarget:self.cropFilter];
     
-    [self.customFilter addTarget:self.contentView];
+//    [self.customFilter addTarget:self.contentView];
     
     if (self.window) {
-        [self.customFilter useNextFrameForImageCapture];
-        [self.picture processImage];
+//        [self.customFilter useNextFrameForImageCapture];
+        self.contentView.image = [self.customFilter imageByFilteringImage:self.image];
+//        [self.picture processImage];
     }
 }
 
@@ -231,9 +237,9 @@
     
     if (!CGRectEqualToRect(self.contentView.bounds, bounds)) {
         
-        [self.customFilter removeTarget:self.contentView];
+//        [self.customFilter removeTarget:self.contentView];
         self.contentView.frame = bounds;
-        [self.customFilter addTarget:self.contentView];
+//        [self.customFilter addTarget:self.contentView];
         
         self.contentView.center = CGPointMake(self.bounds.size.width / 2, self.bounds.size.height / 2);
         self.contentSize = CGSizeZero;
@@ -244,7 +250,8 @@
     }
     
     if (self.window) {
-        [self.picture processImage];
+//        [self.picture processImage];
+        self.contentView.image = [self.customFilter imageByFilteringImage:self.image];
     }
 }
 
@@ -281,14 +288,27 @@
 }
 
 - (void)processImageWithBlock:(void(^)(UIImage *image))block {
-    self.cropFilter.cropRegion = [self.cropView cropRegionForView:self.contentView];
+    GPUImageCropFilter *crop = [[GPUImageCropFilter alloc]
+                                initWithCropRegion:[self.cropView cropRegionForView:self.contentView]];
+    
+    __weak __typeof(self) weakSelf = self;
+    
+    dispatch_async(dispatch_queue_create("photo.processor", DISPATCH_QUEUE_PRIORITY_DEFAULT), ^{
+        __strong __typeof(weakSelf) strongSelf = weakSelf;
+        
+        UIImage *processedImage = [crop
+                                   imageByFilteringImage:[strongSelf.customFilter
+                                                          imageByFilteringImage:self.image]];
+        if (block) {
+            block(processedImage);
+        }
 
-    [self.picture processImageUpToFilter:self.cropFilter
-                   withCompletionHandler:^(UIImage *processedImage) {
-                       if (block) {
-                           block(processedImage);
-                       }
-                   }];
+    });
+    
+    
+//    [self.picture processImageUpToFilter:self.cropFilter
+//                   withCompletionHandler:^(UIImage *processedImage) {
+//                   }];
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView {
@@ -335,15 +355,15 @@
 }
 
 - (void)dealloc {
-    [self.cropFilter removeAllTargets];
+//    [self.cropFilter removeAllTargets];
     [self.customFilter removeAllTargets];
-    [self.rotationFilter removeAllTargets];
-    [self.picture removeAllTargets];
+//    [self.rotationFilter removeAllTargets];
+//    [self.picture removeAllTargets];
     
-    self.cropFilter = nil;
+//    self.cropFilter = nil;
     self.customFilter = nil;
-    self.rotationFilter = nil;
-    self.picture = nil;
+//    self.rotationFilter = nil;
+//    self.picture = nil;
     self.image = nil;
     self.delegate = nil;
     
