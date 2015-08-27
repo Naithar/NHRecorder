@@ -63,4 +63,6 @@ extern const CGFloat kNHRecorderSelectionContainerViewHeight;
 
 - (instancetype)initWithUIImage:(UIImage*)image;
 
++ (Class)nhPhotoEditorViewClass;
+
 @end
