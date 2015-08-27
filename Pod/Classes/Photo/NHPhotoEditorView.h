@@ -13,7 +13,10 @@
 
 @property (nonatomic, readonly, weak) NHPhotoEditorViewController *viewController;
 @property (nonatomic, readonly, strong) NHPhotoView *photoEditorView;
+@property (nonatomic, readonly, strong) UIImage *image;
 
-- (instancetype)initWithEditorViewController:(NHPhotoEditorViewController*)photoEditor;
+- (instancetype)initWithEditorViewController:(NHPhotoEditorViewController*)photoEditor andImage:(UIImage*)image;
+
+- (BOOL)canProcessPhoto;
 
 @end

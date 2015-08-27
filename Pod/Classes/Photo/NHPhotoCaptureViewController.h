@@ -35,8 +35,6 @@ extern const CGFloat kNHRecorderCaptureButtonBorderOffset;
 
 @interface NHPhotoCaptureViewController : UIViewController
 
-
-
 @property (nonatomic, readonly, strong) GPUImageStillCamera *photoCamera;
 @property (nonatomic, readonly, strong) NHPhotoCaptureView *captureView;
 

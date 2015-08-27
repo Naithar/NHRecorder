@@ -13,10 +13,12 @@
 #import "NHFilterCollectionView.h"
 #import "NHRecorderButton.h"
 
+
 extern const CGFloat kNHRecorderSelectorViewHeight;
 extern const CGFloat kNHRecorderSelectionContainerViewHeight;
 
 @class NHPhotoEditorViewController;
+@class NHPhotoEditorView;
 
 @protocol NHPhotoEditorViewControllerDelegate <NSObject>
 
@@ -41,27 +43,10 @@ extern const CGFloat kNHRecorderSelectionContainerViewHeight;
 
 @property (nonatomic, weak) id<NHPhotoEditorViewControllerDelegate> nhDelegate;
 
-@property (nonatomic, assign) NHPhotoCropType forcedCropType;
-
-@property (nonatomic, strong) UIColor *barTintColor;
-@property (nonatomic, strong) UIColor *barButtonTintColor;
-
-@property (nonatomic, readonly, strong) NHPhotoView *photoView;
-
-@property (nonatomic, readonly, strong) UIView *selectorView;
-@property (nonatomic, readonly, strong) UIView *selectorSeparatorView;
-@property (nonatomic, readonly, strong) UIView *selectionContainerView;
-@property (nonatomic, readonly, strong) UIView *photoSeparatorView;
-
-@property (nonatomic, readonly, strong) UIButton *filterButton;
-@property (nonatomic, readonly, strong) UIButton *cropButton;
-
-@property (nonatomic, readonly, strong) NHRecorderButton *backButton;
-
-@property (nonatomic, readonly, strong) NHCropCollectionView *cropCollectionView;
-@property (nonatomic, readonly, strong) NHFilterCollectionView *filterCollectionView;
+@property (nonatomic, readonly, strong) NHPhotoEditorView *editorView;
 
 - (instancetype)initWithUIImage:(UIImage*)image;
+- (void)processPhoto;
 
 + (Class)nhPhotoEditorViewClass;
 

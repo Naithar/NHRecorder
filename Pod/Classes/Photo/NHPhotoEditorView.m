@@ -10,14 +10,19 @@
 
 @implementation NHPhotoEditorView
 
-- (instancetype)initWithEditorViewController:(NHPhotoEditorViewController*)photoEditor {
+- (instancetype)initWithEditorViewController:(NHPhotoEditorViewController*)photoEditor andImage:(UIImage *)image {
     self = [super init];
     
     if (self) {
         _viewController = photoEditor;
+        _image = image;
     }
     
     return self;
+}
+
+- (BOOL)canProcessPhoto {
+    return YES;
 }
 
 @end

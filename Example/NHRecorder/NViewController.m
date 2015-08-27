@@ -27,6 +27,28 @@
 
 @implementation CustomNHPhotoCaptureView
 
+- (instancetype)initWithCaptureViewController:(NHPhotoCaptureViewController *)photoCapture {
+    self = [super initWithCaptureViewController:photoCapture];
+    
+    if (self) {
+        self.photoView = [[GPUImageView alloc] initWithFrame:CGRectMake(0, 0, 300, 300)];
+        self.photoView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
+        self.filter = [[GPUImageFilter alloc] init];
+        [self.viewController.view addSubview:self.photoView];
+        
+        [self.viewController.photoCamera addTarget:self.filter];
+        [self.filter addTarget:self.photoView];
+        
+        self.photoButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        self.photoButton.backgroundColor = [UIColor whiteColor];
+        self.photoButton.frame = CGRectMake(0, 300, 300, 50);
+        
+        [self.viewController.view addSubview:self.photoButton];
+        
+        [self.photoButton addTarget:self action:@selector(buttonTouch:) forControlEvents:UIControlEventTouchUpInside];
+    }
+    return self;
+}
 - (void)buttonTouch:(id)s {
     [self.viewController capturePhoto];
 }
@@ -36,21 +58,7 @@
 }
 
 - (void)setupView {
-    self.photoView = [[GPUImageView alloc] initWithFrame:CGRectMake(0, 0, 300, 300)];
-    self.photoView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
-    self.filter = [[GPUImageFilter alloc] init];
-    [self.viewController.view addSubview:self.photoView];
-
-    [self.viewController.photoCamera addTarget:self.filter];
-        [self.filter addTarget:self.photoView];
     
-    self.photoButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    self.photoButton.backgroundColor = [UIColor whiteColor];
-    self.photoButton.frame = CGRectMake(0, 300, 300, 50);
-    
-    [self.viewController.view addSubview:self.photoButton];
-    
-    [self.photoButton addTarget:self action:@selector(buttonTouch:) forControlEvents:UIControlEventTouchUpInside];
 }
 
 - (GPUImageView *)photoCaptureView {
