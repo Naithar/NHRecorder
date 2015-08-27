@@ -8,6 +8,10 @@
 
 #import "NHPhotoDefaultEditorView.h"
 
+@interface NHPhotoDefaultEditorView ()
+
+@end
+
 @implementation NHPhotoDefaultEditorView
 
 @end

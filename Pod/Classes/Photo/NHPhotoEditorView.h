@@ -7,7 +7,13 @@
 //
 
 #import "NHCustomView.h"
+#import "NHPhotoEditorViewController.h"
 
 @interface NHPhotoEditorView : NHCustomView
+
+@property (nonatomic, readonly, weak) NHPhotoEditorViewController *viewController;
+@property (nonatomic, readonly, strong) NHPhotoView *photoEditorView;
+
+- (instancetype)initWithEditorViewController:(NHPhotoEditorViewController*)photoEditor;
 
 @end

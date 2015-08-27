@@ -10,4 +10,14 @@
 
 @implementation NHPhotoEditorView
 
+- (instancetype)initWithEditorViewController:(NHPhotoEditorViewController*)photoEditor {
+    self = [super init];
+    
+    if (self) {
+        _viewController = photoEditor;
+    }
+    
+    return self;
+}
+
 @end

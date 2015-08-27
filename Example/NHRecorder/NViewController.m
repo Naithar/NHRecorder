@@ -37,7 +37,7 @@
 
 - (void)setupView {
     self.photoView = [[GPUImageView alloc] initWithFrame:CGRectMake(0, 0, 300, 300)];
-    
+    self.photoView.fillMode = kGPUImageFillModePreserveAspectRatioAndFill;
     self.filter = [[GPUImageFilter alloc] init];
     [self.viewController.view addSubview:self.photoView];
 
