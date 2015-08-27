@@ -27,20 +27,6 @@
 
 @implementation CustomNHPhotoCaptureView
 
-- (instancetype)initWithCaptureViewController:(NHPhotoCaptureViewController *)photoCapture {
-    self = [super initWithCaptureViewController:photoCapture];
-    
-    if (self) {
-        [self skCommonInit];
-    }
-    
-    return self;
-}
-
-- (void)skCommonInit {
-    
-}
-
 - (void)buttonTouch:(id)s {
     [self.viewController capturePhoto];
 }
