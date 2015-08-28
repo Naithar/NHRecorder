@@ -234,53 +234,53 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     
     __weak __typeof(self) weakSelf = self;
     [self.mediaLibrary enumerateGroupsWithTypes:ALAssetsGroupSavedPhotos
-                           usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
-                               if (group
-                                   && group.numberOfAssets > 0) {
-                                   __strong __typeof(weakSelf) strongSelf = weakSelf;
-                                   
-                                   NSLog(@"group %@", group);
-                                   
-                                   NSString *newTitle = [group valueForProperty:ALAssetsGroupPropertyName];
-                                   NSMutableArray *newArray = [[NSMutableArray alloc] init];
-                                   
-                                   [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
-                                       
-                                       if (result) {
-                                           NSString *type = [result valueForProperty:ALAssetPropertyType];
-                                           
-                                           switch (strongSelf.mediaType) {
-                                               case NHMediaPickerTypeAll:
-                                                   [newArray insertObject:result atIndex:0];
-                                                   break;
-                                               case NHMediaPickerTypePhoto:
-                                                   if ([type isEqualToString:ALAssetTypePhoto]) {
-                                                       [newArray insertObject:result atIndex:0];
-                                                   }
-                                                   break;
-                                               case NHMediaPickerTypeVideo:
-                                                   if ([type isEqualToString:ALAssetTypeVideo]
-                                                       && [[result valueForProperty:ALAssetPropertyDuration] doubleValue] >= [[self class] miniumVideoDuration]) {
-                                                       [newArray insertObject:result atIndex:0];
-                                                   }
-                                                   break;
-                                               default:
-                                                   break;
-                                           }
-                                       }
-                                   }];
-                                   
-                                   dispatch_async(dispatch_get_main_queue(), ^{
-                                       strongSelf.navigationItem.title = newTitle;
-                                       strongSelf.mediaItems = newArray;
-                                       [strongSelf.mediaCollectionView reloadData];
-                                   });
-                                   
-                                   *stop = YES;
-                               }
-                           } failureBlock:^(NSError *error) {
-                               NSLog(@"library error = %@", error);
-                           }];
+                                     usingBlock:^(ALAssetsGroup *group, BOOL *stop) {
+                                         if (group
+                                             && group.numberOfAssets > 0) {
+                                             __strong __typeof(weakSelf) strongSelf = weakSelf;
+                                             
+                                             NSLog(@"group %@", group);
+                                             
+                                             NSString *newTitle = [group valueForProperty:ALAssetsGroupPropertyName];
+                                             NSMutableArray *newArray = [[NSMutableArray alloc] init];
+                                             
+                                             [group enumerateAssetsUsingBlock:^(ALAsset *result, NSUInteger index, BOOL *stop) {
+                                                 
+                                                 if (result) {
+                                                     NSString *type = [result valueForProperty:ALAssetPropertyType];
+                                                     
+                                                     switch (strongSelf.mediaType) {
+                                                         case NHMediaPickerTypeAll:
+                                                             [newArray insertObject:result atIndex:0];
+                                                             break;
+                                                         case NHMediaPickerTypePhoto:
+                                                             if ([type isEqualToString:ALAssetTypePhoto]) {
+                                                                 [newArray insertObject:result atIndex:0];
+                                                             }
+                                                             break;
+                                                         case NHMediaPickerTypeVideo:
+                                                             if ([type isEqualToString:ALAssetTypeVideo]
+                                                                 && [[result valueForProperty:ALAssetPropertyDuration] doubleValue] >= [[self class] miniumVideoDuration]) {
+                                                                 [newArray insertObject:result atIndex:0];
+                                                             }
+                                                             break;
+                                                         default:
+                                                             break;
+                                                     }
+                                                 }
+                                             }];
+                                             
+                                             dispatch_async(dispatch_get_main_queue(), ^{
+                                                 strongSelf.navigationItem.title = newTitle;
+                                                 strongSelf.mediaItems = newArray;
+                                                 [strongSelf.mediaCollectionView reloadData];
+                                             });
+                                             
+                                             *stop = YES;
+                                         }
+                                     } failureBlock:^(NSError *error) {
+                                         NSLog(@"library error = %@", error);
+                                     }];
 }
 
 
@@ -375,7 +375,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
             }
             
             viewController = [[viewControllerClass alloc] init];
-//            ((NHVideoCaptureViewController*)viewController).firstController = NO;
+            //            ((NHVideoCaptureViewController*)viewController).firstController = NO;
         }
         else {
             Class viewControllerClass = [[self class] nhPhotoCaptureClass];
@@ -501,7 +501,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
 //- (void)setFirstController:(BOOL)firstController {
 //    [self willChangeValueForKey:@"firstController"];
 //    _firstController = firstController;
-//    
+//
 //    [self.closeButton setImage:(firstController ? image(@"NHRecorder.close") : image(@"NHRecorder.back")) forState:UIControlStateNormal];
 //    [self didChangeValueForKey:@"firstController"];
 //}

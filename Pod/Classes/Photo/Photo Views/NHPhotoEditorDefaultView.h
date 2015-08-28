@@ -33,4 +33,6 @@ extern const CGFloat kNHRecorderSelectionContainerViewHeight;
 
 - (void)setForcedCrop:(NHPhotoCropType)cropType;
 
++ (Class)nhFilterCollectionViewClass;
++ (Class)nhCropCollectionViewClass;
 @end

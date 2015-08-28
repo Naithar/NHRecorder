@@ -210,14 +210,14 @@ table, \
         case NHPhotoCropTypeNone:
             text = localization(@"NHRecorder.crop.none", @"NHRecorder");
             image = (selected
-            ? image(@"NHRecorder.crop.none-active")
-            : image(@"NHRecorder.crop.none"));
+                     ? image(@"NHRecorder.crop.none-active")
+                     : image(@"NHRecorder.crop.none"));
             break;
         case NHPhotoCropTypeSquare:
             text = localization(@"NHRecorder.crop.square", @"NHRecorder");
             image = (selected
-            ? image(@"NHRecorder.crop.square-active")
-            : image(@"NHRecorder.crop.square"));
+                     ? image(@"NHRecorder.crop.square-active")
+                     : image(@"NHRecorder.crop.square"));
             break;
         case NHPhotoCropType4x3:
             text = localization(@"NHRecorder.crop.4x3", @"NHRecorder");

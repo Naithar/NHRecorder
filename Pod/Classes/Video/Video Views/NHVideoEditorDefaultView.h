@@ -35,4 +35,7 @@
 
 - (void)setForcedCrop:(NHPhotoCropType)cropType;
 
++ (Class)nhFilterCollectionViewClass;
++ (Class)nhCropCollectionViewClass;
+
 @end

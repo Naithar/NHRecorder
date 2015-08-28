@@ -59,7 +59,7 @@
                                       [strongSelf deviceOrientationChange];
                                   }
                               }];
-
+    
     
 }
 
@@ -76,7 +76,7 @@
                      animations:^{
                          [self.editorView changeOrientationTo:deviceOrientation];
                      }
-     completion:nil];
+                     completion:nil];
 }
 
 - (void)processPhoto {
@@ -127,7 +127,7 @@
                 }
             }
         }];
-
+        
     }
 }
 
@@ -154,7 +154,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-
+    
     [self.editorView setupView];
     
     [self.view setNeedsLayout];

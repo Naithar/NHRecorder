@@ -115,7 +115,7 @@ pathForResource:name ofType:@"png"]]
                                              && strongSelf.view.window) {
                                          }
                                      }];
-
+    
     self.orientationChange = [[NSNotificationCenter defaultCenter]
                               addObserverForName:UIDeviceOrientationDidChangeNotification
                               object:nil
@@ -126,7 +126,7 @@ pathForResource:name ofType:@"png"]]
                                       && strongSelf.view.window) {
                                       [strongSelf deviceOrientationChange];
                                   }
-    }];
+                              }];
 }
 
 - (void)deviceOrientationChange {
@@ -137,7 +137,7 @@ pathForResource:name ofType:@"png"]]
                      animations:^{
                          [self.captureView changeOrientationTo:deviceOrientation];
                      } completion:nil];
-
+    
 }
 //
 //
@@ -202,7 +202,7 @@ pathForResource:name ofType:@"png"]]
 
 - (void)startCamera {
     
-    [self.photoCamera stopCameraCapture];    
+    [self.photoCamera stopCameraCapture];
     [self.photoCamera.captureSession setSessionPreset:AVCaptureSessionPresetPhoto];
     [self.photoCamera startCameraCapture];
 }
@@ -278,59 +278,60 @@ pathForResource:name ofType:@"png"]]
         [weakSelf.nhDelegate nhPhotoCaptureDidStartExporting:weakSelf];
     }
     
-    [self.photoCamera capturePhotoAsImageProcessedUpToFilter:[self.captureView lastFilter]
-                                       withCompletionHandler:^(UIImage *processedImage, NSError *error) {
-                                           @autoreleasepool {
-                                               
-                                               weakSelf.navigationController.view.userInteractionEnabled = YES;
-                                               
-                                               if (error
-                                                   || !processedImage) {
-                                                   NSLog(@"error - %@", error);
-                                                   return;
-                                               }
-                                               
-                                               UIImage *resultImage;
-                                               
-                                               CGSize imageSizeToFit = CGSizeZero;
-                                               
-                                               if ([weakSelf.nhDelegate respondsToSelector:@selector(imageSizeToFitForNHPhotoCapture:)]) {
-                                                   imageSizeToFit = [weakSelf.nhDelegate imageSizeToFitForNHPhotoCapture:weakSelf];
-                                               }
-                                               
-                                               if (CGSizeEqualToSize(imageSizeToFit, CGSizeZero)) {
-                                                   resultImage = processedImage;
-                                               }
-                                               else {
-                                                   resultImage = [processedImage nhr_rescaleToFit:imageSizeToFit];
-                                               }
-                                               
-                                               if (resultImage) {
-                                                   BOOL shouldEdit = YES;
-                                                   
-                                                   __weak __typeof(self) weakSelf = self;
-                                                   if ([weakSelf.nhDelegate respondsToSelector:@selector(nhPhotoCapture:shouldEditImage:)]) {
-                                                       shouldEdit = [weakSelf.nhDelegate nhPhotoCapture:weakSelf shouldEditImage:resultImage];
-                                                   }
-                                                   
-                                                   if (shouldEdit) {
-                                                       Class viewControllerClass = [[self class] nhPhotoEditorClass];
-                                                       
-                                                       if (![viewControllerClass isSubclassOfClass:[NHPhotoEditorViewController class]]) {
-                                                           viewControllerClass = [NHPhotoEditorViewController class];
-                                                       }
-                                                       
-                                                       NHPhotoEditorViewController *viewController = [[viewControllerClass alloc]
-                                                                                                      initWithUIImage:resultImage];
-                                                       [self.navigationController pushViewController:viewController animated:YES];
-                                                   }
-                                               }
-                                               
-                                               if ([weakSelf.nhDelegate respondsToSelector:@selector(photoCaptureDidFinishExporting:)]) {
-                                                   [weakSelf.nhDelegate photoCaptureDidFinishExporting:weakSelf];
-                                               }
-                                           }
-                                       }];
+    [self.photoCamera
+     capturePhotoAsImageProcessedUpToFilter:[self.captureView lastFilter]
+     withCompletionHandler:^(UIImage *processedImage, NSError *error) {
+         @autoreleasepool {
+             
+             weakSelf.navigationController.view.userInteractionEnabled = YES;
+             
+             if (error
+                 || !processedImage) {
+                 NSLog(@"error - %@", error);
+                 return;
+             }
+             
+             UIImage *resultImage;
+             
+             CGSize imageSizeToFit = CGSizeZero;
+             
+             if ([weakSelf.nhDelegate respondsToSelector:@selector(imageSizeToFitForNHPhotoCapture:)]) {
+                 imageSizeToFit = [weakSelf.nhDelegate imageSizeToFitForNHPhotoCapture:weakSelf];
+             }
+             
+             if (CGSizeEqualToSize(imageSizeToFit, CGSizeZero)) {
+                 resultImage = processedImage;
+             }
+             else {
+                 resultImage = [processedImage nhr_rescaleToFit:imageSizeToFit];
+             }
+             
+             if (resultImage) {
+                 BOOL shouldEdit = YES;
+                 
+                 __weak __typeof(self) weakSelf = self;
+                 if ([weakSelf.nhDelegate respondsToSelector:@selector(nhPhotoCapture:shouldEditImage:)]) {
+                     shouldEdit = [weakSelf.nhDelegate nhPhotoCapture:weakSelf shouldEditImage:resultImage];
+                 }
+                 
+                 if (shouldEdit) {
+                     Class viewControllerClass = [[self class] nhPhotoEditorClass];
+                     
+                     if (![viewControllerClass isSubclassOfClass:[NHPhotoEditorViewController class]]) {
+                         viewControllerClass = [NHPhotoEditorViewController class];
+                     }
+                     
+                     NHPhotoEditorViewController *viewController = [[viewControllerClass alloc]
+                                                                    initWithUIImage:resultImage];
+                     [self.navigationController pushViewController:viewController animated:YES];
+                 }
+             }
+             
+             if ([weakSelf.nhDelegate respondsToSelector:@selector(photoCaptureDidFinishExporting:)]) {
+                 [weakSelf.nhDelegate photoCaptureDidFinishExporting:weakSelf];
+             }
+         }
+     }];
 }
 - (void)switchCameraPosition {
     [self.photoCamera rotateCamera];

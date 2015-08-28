@@ -67,18 +67,18 @@ table, \
                      [[GPUImageToneCurveFilter alloc] initWithACV:@"mayfair"],
                      [[GPUImageToneCurveFilter alloc] initWithACV:@"nashville"],
                      [[GPUImageToneCurveFilter alloc] initWithACV:@"valencia"],
-                      ];
+                     ];
     
     self.outFilters = @[
-                         [[GPUImageFilter alloc] init],
-                         [[GPUImageToneCurveFilter alloc] initWithACV:@"1977"],
-                         [[GPUImageToneCurveFilter alloc] initWithACV:@"amaro"],
-                         [[GPUImageGrayscaleFilter alloc] init],
-                         [[GPUImageToneCurveFilter alloc] initWithACV:@"hudson"],
-                         [[GPUImageToneCurveFilter alloc] initWithACV:@"mayfair"],
-                         [[GPUImageToneCurveFilter alloc] initWithACV:@"nashville"],
-                         [[GPUImageToneCurveFilter alloc] initWithACV:@"valencia"],
-                         ];
+                        [[GPUImageFilter alloc] init],
+                        [[GPUImageToneCurveFilter alloc] initWithACV:@"1977"],
+                        [[GPUImageToneCurveFilter alloc] initWithACV:@"amaro"],
+                        [[GPUImageGrayscaleFilter alloc] init],
+                        [[GPUImageToneCurveFilter alloc] initWithACV:@"hudson"],
+                        [[GPUImageToneCurveFilter alloc] initWithACV:@"mayfair"],
+                        [[GPUImageToneCurveFilter alloc] initWithACV:@"nashville"],
+                        [[GPUImageToneCurveFilter alloc] initWithACV:@"valencia"],
+                        ];
     
     self.filterNames = @[
                          localization(@"NHRecorder.filter.none", @"NHRecorder"),
@@ -155,7 +155,7 @@ table, \
     if (index >= self.outFilters.count) {
         return;
     }
-
+    
     GPUImageFilter *filter = self.outFilters[index];
     
     __weak __typeof(self) weakSelf = self;

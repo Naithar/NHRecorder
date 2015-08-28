@@ -53,7 +53,7 @@
     }
     
     self.editorView = [[viewClass alloc] initWithEditorViewController:self andAssetURL:self.assetURL];
-
+    
     __weak __typeof(self) weakSelf = self;
     self.enterForegroundNotification = [[NSNotificationCenter defaultCenter]
                                         addObserverForName:UIApplicationWillEnterForegroundNotification
@@ -90,7 +90,7 @@
                                   }
                               }];
     
-
+    
 }
 
 - (void)viewDidLoad {
@@ -129,7 +129,7 @@
     [self.editorView hideView];
 }
 
-- (void)deviceOrientationChange {    
+- (void)deviceOrientationChange {
     UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
     [UIView animateWithDuration:0.3
                           delay:0
@@ -162,75 +162,76 @@
     
     __weak __typeof(self) weakSelf = self;
     
-    [self.editorView.videoEditorView processVideoToPath:[self filteredVideoPath]
-                             withBlock:^(NSURL *videoURL) {
-        weakSelf.navigationController.view.userInteractionEnabled = YES;
-        
-                                 
-                                 if (!videoURL) {
+    [self.editorView.videoEditorView
+     processVideoToPath:[self filteredVideoPath]
+     withBlock:^(NSURL *videoURL) {
+         weakSelf.navigationController.view.userInteractionEnabled = YES;
+         
+         
+         if (!videoURL) {
 #ifdef DEBUG
-                                     NSLog(@"video url is nil");
+             NSLog(@"video url is nil");
 #endif
-                                     return;
-                                 }
-        
-        BOOL shouldSave = YES;
-        NSURL *outputURL = videoURL;
-        
-        if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:shouldSaveFilteredVideoAtURL:)]) {
-            shouldSave = [weakSelf.nhDelegate nhVideoEditor:weakSelf shouldSaveFilteredVideoAtURL:outputURL];
-        }
-        
-        if (shouldSave) {
-            ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
-            if ([library videoAtPathIsCompatibleWithSavedPhotosAlbum:outputURL]) {
-                [library writeVideoAtPathToSavedPhotosAlbum:outputURL completionBlock:^(NSURL *assetURL, NSError *error){
-                    if (!error
-                        && assetURL) {
+             return;
+         }
+         
+         BOOL shouldSave = YES;
+         NSURL *outputURL = videoURL;
+         
+         if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:shouldSaveFilteredVideoAtURL:)]) {
+             shouldSave = [weakSelf.nhDelegate nhVideoEditor:weakSelf shouldSaveFilteredVideoAtURL:outputURL];
+         }
+         
+         if (shouldSave) {
+             ALAssetsLibrary *library = [[ALAssetsLibrary alloc] init];
+             if ([library videoAtPathIsCompatibleWithSavedPhotosAlbum:outputURL]) {
+                 [library writeVideoAtPathToSavedPhotosAlbum:outputURL completionBlock:^(NSURL *assetURL, NSError *error){
+                     if (!error
+                         && assetURL) {
 #ifdef DEBUG
-                        NSLog(@"saved");
+                         NSLog(@"saved");
 #endif
-                        if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didSaveAtURL:)]) {
-                            [weakSelf.nhDelegate nhVideoEditor:weakSelf didSaveAtURL:assetURL];
-                        }
-                        
-                        if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didFinishExportingAtURL:)]) {
-                            [weakSelf.nhDelegate nhVideoEditor:weakSelf didFinishExportingAtURL:assetURL];
-                        }
-                    }
-                    else {
+                         if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didSaveAtURL:)]) {
+                             [weakSelf.nhDelegate nhVideoEditor:weakSelf didSaveAtURL:assetURL];
+                         }
+                         
+                         if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didFinishExportingAtURL:)]) {
+                             [weakSelf.nhDelegate nhVideoEditor:weakSelf didFinishExportingAtURL:assetURL];
+                         }
+                     }
+                     else {
 #ifdef DEBUG
-                        NSLog(@"error = %@", error);
+                         NSLog(@"error = %@", error);
 #endif
-                        
-                        if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didFailWithError:)]) {
-                            [weakSelf.nhDelegate nhVideoEditor:weakSelf didFailWithError:error];
-                        }
-                        
-                        BOOL shouldContinue = YES;
-                        
-                        if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditorShouldContinueAfterSaveFail:)]) {
-                            shouldContinue = [weakSelf.nhDelegate nhVideoEditorShouldContinueAfterSaveFail:weakSelf];
-                        }
-                        
-                        if (shouldContinue) {
-                            if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didFinishExportingAtURL:)]) {
-                                [weakSelf.nhDelegate nhVideoEditor:weakSelf
-                                           didFinishExportingAtURL:outputURL];
-                            }
-                        }
-                    }
-                }];
-            }
-            
-        }
-        else {
-            
-            if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didFinishExportingAtURL:)]) {
-                [weakSelf.nhDelegate nhVideoEditor:weakSelf didFinishExportingAtURL:outputURL];
-            }
-        }
-    }];
+                         
+                         if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didFailWithError:)]) {
+                             [weakSelf.nhDelegate nhVideoEditor:weakSelf didFailWithError:error];
+                         }
+                         
+                         BOOL shouldContinue = YES;
+                         
+                         if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditorShouldContinueAfterSaveFail:)]) {
+                             shouldContinue = [weakSelf.nhDelegate nhVideoEditorShouldContinueAfterSaveFail:weakSelf];
+                         }
+                         
+                         if (shouldContinue) {
+                             if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didFinishExportingAtURL:)]) {
+                                 [weakSelf.nhDelegate nhVideoEditor:weakSelf
+                                            didFinishExportingAtURL:outputURL];
+                             }
+                         }
+                     }
+                 }];
+             }
+             
+         }
+         else {
+             
+             if ([weakSelf.nhDelegate respondsToSelector:@selector(nhVideoEditor:didFinishExportingAtURL:)]) {
+                 [weakSelf.nhDelegate nhVideoEditor:weakSelf didFinishExportingAtURL:outputURL];
+             }
+         }
+     }];
 }
 
 - (void)processVideo {

@@ -150,9 +150,9 @@
 
 - (void)startCamera {
     [self.captureManager.session setSessionPreset:AVCaptureSessionPresetHigh];
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    //    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
     
-        [self.captureManager.session startRunning];
+    [self.captureManager.session startRunning];
 }
 
 - (void)stopCamera {
@@ -230,7 +230,7 @@
 - (void)deviceOrientationChange {
     
     UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
-
+    
     switch (deviceOrientation) {
         case UIDeviceOrientationPortrait:
             self.captureManager.orientation = AVCaptureVideoOrientationPortrait;
@@ -253,7 +253,7 @@
                         options:UIViewAnimationOptionBeginFromCurrentState
                      animations:^{
                          [self.captureView changeOrientationTo:deviceOrientation];
-
+                         
                      } completion:nil];
 }
 

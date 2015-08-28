@@ -80,7 +80,7 @@ pathForResource:name ofType:@"png"]]
             }
             
             viewController = [[viewControllerClass alloc] init];
-//            ((NHVideoCaptureViewController*)viewController).firstController = YES;
+            //            ((NHVideoCaptureViewController*)viewController).firstController = YES;
         } break;
         case NHCaptureTypeMediaPicker: {
             Class viewControllerClass = [[self class] nhMediaPickerClass];
@@ -90,7 +90,7 @@ pathForResource:name ofType:@"png"]]
             }
             
             viewController = [[viewControllerClass alloc] init];
-//            ((NHMediaPickerViewController*)viewController).firstController = YES;
+            //            ((NHMediaPickerViewController*)viewController).firstController = YES;
             ((NHMediaPickerViewController*)viewController).linksToCamera = YES;
         } break;
         default:
@@ -139,8 +139,8 @@ pathForResource:name ofType:@"png"]]
     if (self.view.window
         && ([self respondsToSelector:@selector(interactivePopGestureRecognizer)]
             && self.interactivePopGestureRecognizer.state == UIGestureRecognizerStatePossible)) {
-        self.view.userInteractionEnabled = NO;
-    }
+            self.view.userInteractionEnabled = NO;
+        }
 }
 
 - (void)navigationController:(UINavigationController *)navigationController didShowViewController:(UIViewController *)viewController animated:(BOOL)animated {

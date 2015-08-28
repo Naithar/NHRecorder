@@ -9,7 +9,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "NHRecorder"
-  s.version          = "0.6.8"
+  s.version          = "0.7.0"
   s.summary          = "Custom ios camera"
 #  s.description      = <<-DESC
 #                       An optional longer description of NHRecorder

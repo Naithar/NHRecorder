@@ -124,7 +124,7 @@ pathForResource:name ofType:@"png"]]
     
     [self setupBottomContainerViewContraints];
     [self setupCameraViewConstraints];
-
+    
 }
 
 - (void)setupFocusAndGridView {
@@ -157,7 +157,7 @@ pathForResource:name ofType:@"png"]]
     [self setupNavigationItem];
     [self setupCameraView];
     [self setupFocusAndGridView];
-
+    
     self.captureButton = [UIButton buttonWithType:UIButtonTypeCustom];
     self.captureButton.translatesAutoresizingMaskIntoConstraints = NO;
     [self.captureButton setTitle:nil forState:UIControlStateNormal];
@@ -234,25 +234,25 @@ pathForResource:name ofType:@"png"]]
 
 - (void)setupBottomContainerViewContraints {
     [self.viewController.view addConstraint:[NSLayoutConstraint constraintWithItem:self.bottomContainerView
-                                                          attribute:NSLayoutAttributeBottom
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.viewController.view
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1.0 constant:0]];
+                                                                         attribute:NSLayoutAttributeBottom
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.viewController.view
+                                                                         attribute:NSLayoutAttributeBottom
+                                                                        multiplier:1.0 constant:0]];
     
     [self.viewController.view addConstraint:[NSLayoutConstraint constraintWithItem:self.bottomContainerView
-                                                          attribute:NSLayoutAttributeLeft
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.viewController.view
-                                                          attribute:NSLayoutAttributeLeft
-                                                         multiplier:1.0 constant:0]];
+                                                                         attribute:NSLayoutAttributeLeft
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.viewController.view
+                                                                         attribute:NSLayoutAttributeLeft
+                                                                        multiplier:1.0 constant:0]];
     
     [self.viewController.view addConstraint:[NSLayoutConstraint constraintWithItem:self.bottomContainerView
-                                                          attribute:NSLayoutAttributeRight
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.viewController.view
-                                                          attribute:NSLayoutAttributeRight
-                                                         multiplier:1.0 constant:0]];
+                                                                         attribute:NSLayoutAttributeRight
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.viewController.view
+                                                                         attribute:NSLayoutAttributeRight
+                                                                        multiplier:1.0 constant:0]];
     
     [self.bottomContainerView addConstraint:[NSLayoutConstraint constraintWithItem:self.bottomContainerView
                                                                          attribute:NSLayoutAttributeHeight
@@ -264,92 +264,92 @@ pathForResource:name ofType:@"png"]]
 
 - (void)setupCameraViewConstraints {
     [self.viewController.view addConstraint:[NSLayoutConstraint constraintWithItem:self.photoView
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.viewController.view
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1.0 constant:-1]];
+                                                                         attribute:NSLayoutAttributeTop
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.viewController.view
+                                                                         attribute:NSLayoutAttributeTop
+                                                                        multiplier:1.0 constant:-1]];
     
     [self.viewController.view addConstraint:[NSLayoutConstraint constraintWithItem:self.photoView
-                                                          attribute:NSLayoutAttributeLeft
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.viewController.view
-                                                          attribute:NSLayoutAttributeLeft
-                                                         multiplier:1.0 constant:0]];
+                                                                         attribute:NSLayoutAttributeLeft
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.viewController.view
+                                                                         attribute:NSLayoutAttributeLeft
+                                                                        multiplier:1.0 constant:0]];
     
     [self.viewController.view addConstraint:[NSLayoutConstraint constraintWithItem:self.photoView
-                                                          attribute:NSLayoutAttributeRight
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.viewController.view
-                                                          attribute:NSLayoutAttributeRight
-                                                         multiplier:1.0 constant:0]];
+                                                                         attribute:NSLayoutAttributeRight
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.viewController.view
+                                                                         attribute:NSLayoutAttributeRight
+                                                                        multiplier:1.0 constant:0]];
     
     [self.viewController.view addConstraint:[NSLayoutConstraint constraintWithItem:self.photoView
-                                                          attribute:NSLayoutAttributeBottom
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.bottomContainerView
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1.0 constant:0]];
+                                                                         attribute:NSLayoutAttributeBottom
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.bottomContainerView
+                                                                         attribute:NSLayoutAttributeTop
+                                                                        multiplier:1.0 constant:0]];
 }
 
 - (void)setupCameraFocusViewConstraints {
     [self.viewController.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraFocusView
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.photoView
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1.0 constant:0]];
+                                                                         attribute:NSLayoutAttributeTop
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.photoView
+                                                                         attribute:NSLayoutAttributeTop
+                                                                        multiplier:1.0 constant:0]];
     
     [self.viewController.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraFocusView
-                                                          attribute:NSLayoutAttributeLeft
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.photoView
-                                                          attribute:NSLayoutAttributeLeft
-                                                         multiplier:1.0 constant:0]];
+                                                                         attribute:NSLayoutAttributeLeft
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.photoView
+                                                                         attribute:NSLayoutAttributeLeft
+                                                                        multiplier:1.0 constant:0]];
     
     [self.viewController.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraFocusView
-                                                          attribute:NSLayoutAttributeRight
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.photoView
-                                                          attribute:NSLayoutAttributeRight
-                                                         multiplier:1.0 constant:0]];
+                                                                         attribute:NSLayoutAttributeRight
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.photoView
+                                                                         attribute:NSLayoutAttributeRight
+                                                                        multiplier:1.0 constant:0]];
     
     [self.viewController.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraFocusView
-                                                          attribute:NSLayoutAttributeBottom
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.photoView
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1.0 constant:0]];
+                                                                         attribute:NSLayoutAttributeBottom
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.photoView
+                                                                         attribute:NSLayoutAttributeBottom
+                                                                        multiplier:1.0 constant:0]];
 }
 
 - (void)setupCameraGridViewConstraints {
     [self.viewController.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraGridView
-                                                          attribute:NSLayoutAttributeTop
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.photoView
-                                                          attribute:NSLayoutAttributeTop
-                                                         multiplier:1.0 constant:0]];
+                                                                         attribute:NSLayoutAttributeTop
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.photoView
+                                                                         attribute:NSLayoutAttributeTop
+                                                                        multiplier:1.0 constant:0]];
     
     [self.viewController.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraGridView
-                                                          attribute:NSLayoutAttributeLeft
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.photoView
-                                                          attribute:NSLayoutAttributeLeft
-                                                         multiplier:1.0 constant:0]];
+                                                                         attribute:NSLayoutAttributeLeft
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.photoView
+                                                                         attribute:NSLayoutAttributeLeft
+                                                                        multiplier:1.0 constant:0]];
     
     [self.viewController.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraGridView
-                                                          attribute:NSLayoutAttributeRight
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.photoView
-                                                          attribute:NSLayoutAttributeRight
-                                                         multiplier:1.0 constant:0]];
+                                                                         attribute:NSLayoutAttributeRight
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.photoView
+                                                                         attribute:NSLayoutAttributeRight
+                                                                        multiplier:1.0 constant:0]];
     
     [self.viewController.view addConstraint:[NSLayoutConstraint constraintWithItem:self.cameraGridView
-                                                          attribute:NSLayoutAttributeBottom
-                                                          relatedBy:NSLayoutRelationEqual
-                                                             toItem:self.photoView
-                                                          attribute:NSLayoutAttributeBottom
-                                                         multiplier:1.0 constant:0]];
+                                                                         attribute:NSLayoutAttributeBottom
+                                                                         relatedBy:NSLayoutRelationEqual
+                                                                            toItem:self.photoView
+                                                                         attribute:NSLayoutAttributeBottom
+                                                                        multiplier:1.0 constant:0]];
 }
 
 - (void)setupCaptureButtonConstraints {
