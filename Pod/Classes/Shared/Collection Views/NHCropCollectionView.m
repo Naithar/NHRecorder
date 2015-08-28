@@ -46,7 +46,7 @@
     
     Class cellClass = [[self class] nhCropCollectionViewCellClass];
     
-    if ([cellClass isSubclassOfClass:[NHCropCollectionViewCell class]]) {
+    if (![cellClass isSubclassOfClass:[NHCropCollectionViewCell class]]) {
         cellClass = [NHCropCollectionDefaultViewCell class];
     }
     

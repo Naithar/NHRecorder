@@ -39,4 +39,7 @@ typedef NS_ENUM(NSUInteger, NHFilterType) {
 - (void)setSelected:(NSInteger)index;
 
 + (GPUImageFilter*)filterForType:(NHFilterType)type;
+
++ (Class)nhFilterCollectionViewCellClass;
+
 @end

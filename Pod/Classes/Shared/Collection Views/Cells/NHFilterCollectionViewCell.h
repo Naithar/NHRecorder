@@ -2,7 +2,7 @@
 //  NHFilterCollectionViewCell.h
 //  Pods
 //
-//  Created by Sergey Minakov on 11.06.15.
+//  Created by Sergey Minakov on 28.08.15.
 //
 //
 
@@ -20,4 +20,5 @@
               andFilter:(GPUImageFilter*)filter
                 andName:(NSString*)name
              isSelected:(BOOL)selected;
+
 @end

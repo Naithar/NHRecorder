@@ -7,7 +7,7 @@
 //
 
 #import "NHFilterCollectionView.h"
-#import "NHFilterCollectionViewCell.h"
+#import "NHFilterCollectionDefaultViewCell.h"
 #import "UIImage+Resize.h"
 
 
@@ -27,6 +27,10 @@ table, \
 @end
 
 @implementation NHFilterCollectionView
+
++ (Class)nhFilterCollectionViewCellClass {
+    return [NHFilterCollectionDefaultViewCell class];
+}
 
 - (instancetype)initWithImage:(UIImage*)image {
     self = [super init];
@@ -95,7 +99,13 @@ table, \
     self.showsVerticalScrollIndicator = NO;
     self.showsHorizontalScrollIndicator = NO;
     
-    [self registerClass:[NHFilterCollectionViewCell class] forCellWithReuseIdentifier:@"cell"];
+    Class cellClass = [[self class] nhFilterCollectionViewCellClass];
+    
+    if (![cellClass isSubclassOfClass:[NHFilterCollectionViewCell class]]) {
+        cellClass = [NHFilterCollectionDefaultViewCell class];
+    }
+    
+    [self registerClass:cellClass forCellWithReuseIdentifier:@"cell"];
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
