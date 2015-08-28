@@ -16,5 +16,7 @@
 
 - (instancetype)initWithCaptureViewController:(NHVideoCaptureViewController*)videoCapture;
 
-
+- (void)startedCapture;
+- (void)stopedCapture;
+- (BOOL)canCaptureVideo;
 @end

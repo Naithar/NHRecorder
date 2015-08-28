@@ -15,10 +15,7 @@
 @class NHVideoCaptureViewController;
 @class NHRecorderProgressView;
 @class NHCameraCropView;
-
-extern const NSTimeInterval kNHVideoTimerInterval;
-extern const NSTimeInterval kNHVideoMaxDuration;
-extern const NSTimeInterval kNHVideoMinDuration;
+@class NHVideoCaptureView;
 
 @protocol NHVideoCaptureViewControllerDelegate <NSObject>
 
@@ -46,30 +43,23 @@ extern const NSTimeInterval kNHVideoMinDuration;
 
 @property (nonatomic, weak) id<NHVideoCaptureViewControllerDelegate> nhDelegate;
 
-@property (nonatomic, strong) UIColor *barTintColor;
-@property (nonatomic, strong) UIColor *barButtonTintColor;
-
 @property (nonatomic, readonly, strong) CaptureManager *captureManager;
-@property (nonatomic, readonly, strong) UIView *videoCameraView;
-@property (nonatomic, readonly, strong) NHCameraGridView *cameraGridView;
-
-@property (nonatomic, readonly, strong) UIView *bottomContainerView;
-@property (nonatomic, readonly, strong) NHRecorderButton *removeFragmentButton;
-@property (nonatomic, readonly, strong) UIButton *captureButton;
-
-@property (nonatomic, readonly, strong) NHRecorderButton *libraryButton;
-
-@property (nonatomic, readonly, strong) NHRecorderButton *closeButton;
-@property (nonatomic, readonly, strong) NHRecorderButton *gridButton;
-@property (nonatomic, readonly, strong) NHRecorderButton *switchButton;
-
-@property (nonatomic, readonly, strong) NHRecorderProgressView *durationProgressView;
-
-@property (nonatomic, readonly, strong) NHCameraCropView *cropView;
-
-@property (nonatomic, assign) BOOL firstController;
+@property (nonatomic, readonly, strong) NHVideoCaptureView *captureView;
 
 + (Class)nhPhotoCaptureClass;
 + (Class)nhVideoEditorClass;
 + (Class)nhMediaPickerClass;
+
++ (Class)nhVideoCaptureViewClass;
+
+
+- (void)closeController;
+- (void)startCapture;
+- (void)stopCapture;
+- (void)switchCamera;
+
+- (void)processCapturedVideo;
+- (void)openVideoPicker;
+- (void)deleteVideoFragment;
+
 @end

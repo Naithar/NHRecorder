@@ -107,6 +107,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
                                             if (strongSelf
                                                 && strongSelf.view.window) {
                                                 [strongSelf startCamera];
+                                                [strongSelf.captureView showView];
                                             }
                                         }];
     

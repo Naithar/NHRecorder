@@ -75,9 +75,9 @@
 
 @implementation CustomNHPhotoCaptureViewController
 
-+ (Class)nhPhotoCaptureViewClass {
-    return [CustomNHPhotoCaptureView class];
-}
+//+ (Class)nhPhotoCaptureViewClass {
+//    return [CustomNHPhotoCaptureView class];
+//}
 
 @end
 

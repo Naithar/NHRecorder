@@ -80,7 +80,7 @@ pathForResource:name ofType:@"png"]]
             }
             
             viewController = [[viewControllerClass alloc] init];
-            ((NHVideoCaptureViewController*)viewController).firstController = YES;
+//            ((NHVideoCaptureViewController*)viewController).firstController = YES;
         } break;
         case NHCaptureTypeMediaPicker: {
             Class viewControllerClass = [[self class] nhMediaPickerClass];

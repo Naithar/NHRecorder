@@ -559,6 +559,11 @@ table, \
     return self.photoView;
 }
 
+- (BOOL)canProcessPhoto {
+    return self.photoView.panGestureRecognizer.state == UIGestureRecognizerStatePossible
+    && self.photoView.pinchGestureRecognizer.state == UIGestureRecognizerStatePossible;
+}
+
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations {
     return UIInterfaceOrientationMaskPortrait;
 }

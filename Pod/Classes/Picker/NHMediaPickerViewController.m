@@ -14,6 +14,7 @@
 #import "UIImage+Resize.h"
 #import "NHVideoEditorViewController.h"
 #import "NHVideoCaptureViewController.h"
+#import "NHVideoCaptureDefaultView.h"
 
 #define image(name) \
 [UIImage imageWithContentsOfFile: \
@@ -51,6 +52,9 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
 }
 + (Class)nhVideoEditorClass {
     return [NHVideoEditorViewController class];
+}
++ (NSTimeInterval)miniumVideoDuration {
+    return kNHVideoMinDuration;
 }
 
 - (instancetype)initWithMediaType:(NHMediaPickerType)type {
@@ -256,7 +260,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
                                                    break;
                                                case NHMediaPickerTypeVideo:
                                                    if ([type isEqualToString:ALAssetTypeVideo]
-                                                       && [[result valueForProperty:ALAssetPropertyDuration] doubleValue] >= kNHVideoMinDuration) {
+                                                       && [[result valueForProperty:ALAssetPropertyDuration] doubleValue] >= [[self class] miniumVideoDuration]) {
                                                        [newArray insertObject:result atIndex:0];
                                                    }
                                                    break;
@@ -371,7 +375,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
             }
             
             viewController = [[viewControllerClass alloc] init];
-            ((NHVideoCaptureViewController*)viewController).firstController = NO;
+//            ((NHVideoCaptureViewController*)viewController).firstController = NO;
         }
         else {
             Class viewControllerClass = [[self class] nhPhotoCaptureClass];

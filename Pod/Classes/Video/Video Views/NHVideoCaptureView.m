@@ -10,7 +10,6 @@
 
 @implementation NHVideoCaptureView
 
-
 - (instancetype)initWithCaptureViewController:(NHVideoCaptureViewController *)videoCapture {
     self = [super init];
     
@@ -20,4 +19,17 @@
     
     return self;
 }
+
+- (void)startedCapture {
+    
+}
+
+- (void)stopedCapture {
+    
+}
+
+- (BOOL)canCaptureVideo {
+    return YES;
+}
+
 @end
