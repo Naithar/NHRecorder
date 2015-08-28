@@ -10,7 +10,7 @@
 #import "NHPhotoFocusView.h"
 #import "NHCameraGridView.h"
 #import "NHPhotoEditorViewController.h"
-#import "NHPhotoDefaultCaptureView.h"
+#import "NHPhotoCaptureDefaultView.h"
 #import "NHVideoCaptureViewController.h"
 #import <AssetsLibrary/AssetsLibrary.h>
 
@@ -53,7 +53,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 }
 
 + (Class)nhPhotoCaptureViewClass {
-    return [NHPhotoDefaultCaptureView class];
+    return [NHPhotoCaptureDefaultView class];
 }
 
 - (id)initWithCoder:(NSCoder *)aDecoder {
@@ -92,7 +92,7 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
     Class viewClass = [[self class] nhPhotoCaptureViewClass];
     
     if (![viewClass isSubclassOfClass:[NHPhotoCaptureView class]]) {
-        viewClass = [NHPhotoDefaultCaptureView class];
+        viewClass = [NHPhotoCaptureDefaultView class];
     }
     
     self.captureView = [[viewClass alloc] initWithCaptureViewController:self];

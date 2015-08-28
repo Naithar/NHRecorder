@@ -8,7 +8,7 @@
 
 #import "NHPhotoEditorView.h"
 
-@interface NHPhotoDefaultEditorView : NHPhotoEditorView
+@interface NHPhotoEditorDefaultView : NHPhotoEditorView
 
 @property (nonatomic, strong) UIColor *barTintColor;
 @property (nonatomic, strong) UIColor *barButtonTintColor;

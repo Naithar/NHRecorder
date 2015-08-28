@@ -6,17 +6,17 @@
 //
 //
 
-#import "NHPhotoDefaultCaptureView.h"
+#import "NHPhotoCaptureDefaultView.h"
 #import "NHCameraGridView.h"
 #import "NHPhotoFocusView.h"
 @import AssetsLibrary;
 
 #define image(name) \
 [UIImage imageWithContentsOfFile: \
-[[NSBundle bundleForClass:[NHPhotoDefaultCaptureView class]]\
+[[NSBundle bundleForClass:[NHPhotoCaptureDefaultView class]]\
 pathForResource:name ofType:@"png"]]
 
-@interface NHPhotoDefaultCaptureView ()
+@interface NHPhotoCaptureDefaultView ()
 
 @property (nonatomic, strong) GPUImageView *photoView;
 
@@ -37,7 +37,7 @@ pathForResource:name ofType:@"png"]]
 
 @end
 
-@implementation NHPhotoDefaultCaptureView
+@implementation NHPhotoCaptureDefaultView
 
 - (void)setupNavigationItem {
     self.closeButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];

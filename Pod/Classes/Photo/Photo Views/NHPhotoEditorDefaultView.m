@@ -6,20 +6,20 @@
 //
 //
 
-#import "NHPhotoDefaultEditorView.h"
+#import "NHPhotoEditorDefaultView.h"
 
 
 #define image(name) \
 [UIImage imageWithContentsOfFile: \
-[[NSBundle bundleForClass:[NHPhotoDefaultEditorView class]]\
+[[NSBundle bundleForClass:[NHPhotoEditorDefaultView class]]\
 pathForResource:name ofType:@"png"]]
 
 #define localization(name, table) \
 NSLocalizedStringFromTableInBundle(name, \
 table, \
-[NSBundle bundleForClass:[NHPhotoDefaultEditorView class]], nil)
+[NSBundle bundleForClass:[NHPhotoEditorDefaultView class]], nil)
 
-@interface NHPhotoDefaultEditorView ()<NHFilterCollectionViewDelegate, NHCropCollectionViewDelegate>
+@interface NHPhotoEditorDefaultView ()<NHFilterCollectionViewDelegate, NHCropCollectionViewDelegate>
 
 @property (nonatomic, strong) NHPhotoView *photoView;
 
@@ -40,7 +40,7 @@ table, \
 
 @end
 
-@implementation NHPhotoDefaultEditorView
+@implementation NHPhotoEditorDefaultView
 
 - (void)setupView {
     

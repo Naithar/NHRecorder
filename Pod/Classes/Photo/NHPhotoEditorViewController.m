@@ -8,7 +8,7 @@
 
 #import "NHPhotoEditorViewController.h"
 #import "UIImage+Resize.h"
-#import "NHPhotoDefaultEditorView.h"
+#import "NHPhotoEditorDefaultView.h"
 
 const CGFloat kNHRecorderSelectorViewHeight = 40;
 const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
@@ -26,7 +26,7 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
 @implementation NHPhotoEditorViewController
 
 + (Class)nhPhotoEditorViewClass {
-    return [NHPhotoDefaultEditorView class];
+    return [NHPhotoEditorDefaultView class];
 }
 
 - (instancetype)initWithUIImage:(UIImage*)image {
@@ -45,7 +45,7 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
     Class viewClass = [[self class] nhPhotoEditorViewClass];
     
     if (![viewClass isSubclassOfClass:[NHPhotoEditorView class]]) {
-        viewClass = [NHPhotoDefaultEditorView class];
+        viewClass = [NHPhotoEditorDefaultView class];
     }
     
     self.editorView = [[viewClass alloc] initWithEditorViewController:self andImage:self.image];

@@ -23,14 +23,13 @@ To run the example project, clone the repo, and run `pod install` from the Examp
   * [x] Navigation 
   * [x] Photo capture
   * [x] Media picker
-  * [x] Media picker cell
   * [x] Video capture
 - [ ] Custom Views
   * [x] Photo capture
   * [x] Photo editor
   * [ ] Video capture
   * [ ] Video editor
-  * [x] Media picker collection view cells
+  * [x] Media picker collection cell
 
 ## Installation
 
