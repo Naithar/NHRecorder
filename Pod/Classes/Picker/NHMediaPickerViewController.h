@@ -33,7 +33,7 @@ typedef NS_ENUM(NSUInteger, NHMediaPickerType) {
 
 @property (nonatomic, assign) NHMediaPickerType mediaType;
 
-@property (nonatomic, assign) BOOL firstController;
+//@property (nonatomic, assign) BOOL firstController;
 
 @property (nonatomic, strong) UIColor *barTintColor;
 @property (nonatomic, strong) UIColor *barButtonTintColor;

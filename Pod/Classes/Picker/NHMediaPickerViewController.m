@@ -93,7 +93,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     self.closeButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
     self.closeButton.frame = CGRectMake(0, 0, 44, 44);
     self.closeButton.tintColor = [UIColor blackColor];
-    [self.closeButton setImage:image(@"NHRecorder.close") forState:UIControlStateNormal];
+    [self.closeButton setImage:([self.navigationController.viewControllers count] == 1 ? image(@"NHRecorder.close") : image(@"NHRecorder.back")) forState:UIControlStateNormal];
     self.closeButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
     [self.closeButton addTarget:self action:@selector(closeButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     
@@ -283,7 +283,7 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
 //MARK: buttons
 
 - (void)closeButtonTouch:(id)sender {
-    if (self.firstController) {
+    if ([self.navigationController.viewControllers count] == 1) {
         [self dismissViewControllerAnimated:YES completion:nil];
     }
     else {
@@ -494,13 +494,13 @@ const CGFloat kNHRecorderCollectionViewSpace = 1;
     [self didChangeValueForKey:@"barTintColor"];
 }
 
-- (void)setFirstController:(BOOL)firstController {
-    [self willChangeValueForKey:@"firstController"];
-    _firstController = firstController;
-    
-    [self.closeButton setImage:(firstController ? image(@"NHRecorder.close") : image(@"NHRecorder.back")) forState:UIControlStateNormal];
-    [self didChangeValueForKey:@"firstController"];
-}
+//- (void)setFirstController:(BOOL)firstController {
+//    [self willChangeValueForKey:@"firstController"];
+//    _firstController = firstController;
+//    
+//    [self.closeButton setImage:(firstController ? image(@"NHRecorder.close") : image(@"NHRecorder.back")) forState:UIControlStateNormal];
+//    [self didChangeValueForKey:@"firstController"];
+//}
 
 //MARK: view overrides
 

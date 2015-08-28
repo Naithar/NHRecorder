@@ -90,7 +90,7 @@ pathForResource:name ofType:@"png"]]
             }
             
             viewController = [[viewControllerClass alloc] init];
-            ((NHMediaPickerViewController*)viewController).firstController = YES;
+//            ((NHMediaPickerViewController*)viewController).firstController = YES;
             ((NHMediaPickerViewController*)viewController).linksToCamera = YES;
         } break;
         default:

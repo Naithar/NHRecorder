@@ -10,4 +10,14 @@
 
 @implementation NHVideoCaptureView
 
+
+- (instancetype)initWithCaptureViewController:(NHVideoCaptureViewController *)videoCapture {
+    self = [super init];
+    
+    if (self) {
+        _viewController = videoCapture;
+    }
+    
+    return self;
+}
 @end

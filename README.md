@@ -30,6 +30,8 @@ To run the example project, clone the repo, and run `pod install` from the Examp
   * [ ] Video capture
   * [ ] Video editor
   * [x] Media picker collection cell
+  * [ ] Filter collection view cell
+  * [ ] Crop collection view cell
 
 ## Installation
 
