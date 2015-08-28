@@ -9,7 +9,13 @@
 #import "NHPhotoCaptureDefaultView.h"
 #import "NHCameraGridView.h"
 #import "NHPhotoFocusView.h"
+
 @import AssetsLibrary;
+
+const CGFloat kNHRecorderBottomViewHeight = 90;
+const CGFloat kNHRecorderCaptureButtonHeight = 60;
+const CGFloat kNHRecorderSideButtonHeight = 50;
+const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 
 #define image(name) \
 [UIImage imageWithContentsOfFile: \
@@ -143,6 +149,8 @@ pathForResource:name ofType:@"png"]]
 }
 
 - (void)setupView {
+    self.viewController.view.backgroundColor = [UIColor blackColor];
+    
     self.photoCropFilter = [[GPUImageCropFilter alloc] initWithCropRegion:CGRectMake(0, 0, 1, 1)];
     [self.viewController.photoCamera addTarget:self.photoCropFilter];
     

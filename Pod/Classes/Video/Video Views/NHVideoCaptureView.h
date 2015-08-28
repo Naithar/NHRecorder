@@ -19,4 +19,5 @@
 - (void)startedCapture;
 - (void)stopedCapture;
 - (BOOL)canCaptureVideo;
+
 @end

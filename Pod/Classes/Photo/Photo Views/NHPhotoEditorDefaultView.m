@@ -43,6 +43,7 @@ table, \
 @implementation NHPhotoEditorDefaultView
 
 - (void)setupView {
+    self.viewController.view.backgroundColor = [UIColor blackColor];
     
         _forcedCropType = NHPhotoCropTypeNone;
     

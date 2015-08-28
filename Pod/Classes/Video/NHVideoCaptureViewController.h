@@ -29,7 +29,7 @@
 - (BOOL)nhVideoCapture:(NHVideoCaptureViewController*)videoCapture shouldEditVideoAtURL:(NSURL *)videoURL;
 - (BOOL)nhVideoCapture:(NHVideoCaptureViewController*)videoCapture cameraAvailability:(AVAuthorizationStatus)status;
 
-- (void)nhVideoCaptureDidReset:(NHVideoCaptureViewController*)videoCapture;
+//- (void)nhVideoCaptureDidReset:(NHVideoCaptureViewController*)videoCapture;
 
 - (BOOL)nhVideoCaptureShouldSaveNonFilteredVideo:(NHVideoCaptureViewController*)videoCapture;
 
@@ -56,6 +56,6 @@
 
 - (void)processCapturedVideo;
 - (void)openVideoPicker;
-- (void)deleteVideoFragment;
+- (void)removeVideoFragment;
 
 @end

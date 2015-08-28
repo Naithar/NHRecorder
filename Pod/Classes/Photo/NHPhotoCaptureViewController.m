@@ -22,12 +22,6 @@
 [[NSBundle bundleForClass:[NHPhotoCaptureViewController class]]\
 pathForResource:name ofType:@"png"]]
 
-
-const CGFloat kNHRecorderBottomViewHeight = 90;
-const CGFloat kNHRecorderCaptureButtonHeight = 60;
-const CGFloat kNHRecorderSideButtonHeight = 50;
-const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
-
 @interface NHPhotoCaptureViewController ()
 
 @property (nonatomic, strong) GPUImageStillCamera *photoCamera;
@@ -191,8 +185,6 @@ const CGFloat kNHRecorderCaptureButtonBorderOffset = 5;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.view.backgroundColor = [UIColor blackColor];
     
     [self.captureView setupView];
     

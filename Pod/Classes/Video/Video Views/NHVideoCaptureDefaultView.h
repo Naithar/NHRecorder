@@ -7,6 +7,7 @@
 //
 
 #import "NHVideoCaptureView.h"
+#import "CaptureManager.h"
 
 @class NHRecorderButton;
 @class NHCameraGridView;
@@ -25,7 +26,7 @@ extern const NSTimeInterval kNHVideoMinDuration;
 
 @property (nonatomic, readonly, strong) UIView *bottomContainerView;
 @property (nonatomic, readonly, strong) NHRecorderButton *removeFragmentButton;
-@property (nonatomic, readonly, strong) UIButton *captureButton;
+@property (nonatomic, readonly, strong) UIView *captureView;
 
 @property (nonatomic, readonly, strong) NHRecorderButton *libraryButton;
 

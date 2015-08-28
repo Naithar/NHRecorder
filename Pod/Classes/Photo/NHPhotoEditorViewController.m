@@ -157,9 +157,7 @@ const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    
-    self.view.backgroundColor = [UIColor blackColor];
-    
+
     [self.editorView setupView];
     
     [self.view setNeedsLayout];

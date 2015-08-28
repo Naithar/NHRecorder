@@ -8,8 +8,14 @@
 
 #import "NHPhotoCaptureView.h"
 
+extern const CGFloat kNHRecorderBottomViewHeight;
+extern const CGFloat kNHRecorderCaptureButtonHeight;
+extern const CGFloat kNHRecorderSideButtonHeight;
+extern const CGFloat kNHRecorderCaptureButtonBorderOffset;
+
 @class NHCameraGridView;
 @class NHPhotoFocusView;
+@class NHRecorderButton;
 
 @interface NHPhotoCaptureDefaultView : NHPhotoCaptureView
 

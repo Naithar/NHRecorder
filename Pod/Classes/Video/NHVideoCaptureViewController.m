@@ -70,7 +70,8 @@
 }
 
 - (void)commonInit {
-    self.view.backgroundColor = [UIColor blackColor];
+    self.captureManager = [[CaptureManager alloc] init];
+    self.captureManager.delegate = self;
     
     Class viewClass = [[self class] nhVideoCaptureViewClass];
     
@@ -80,6 +81,19 @@
     
     self.captureView = [[viewClass alloc] initWithCaptureViewController:self];
     
+    
+    
+    if ([self.captureManager setupSession]) {
+        self.videoPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:self.captureManager.session];
+        
+        if ([self.videoPreviewLayer.connection isVideoOrientationSupported]) {
+            self.videoPreviewLayer.connection.videoOrientation = AVCaptureVideoOrientationPortrait;
+        }
+        
+        [self.videoPreviewLayer setVideoGravity:AVLayerVideoGravityResizeAspectFill];
+        
+        
+    }
     
     __weak __typeof(self) weakSelf = self;
     self.enterForegroundNotification = [[NSNotificationCenter defaultCenter]
@@ -124,6 +138,13 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    [self.captureView setupView];
+    
+    [self.captureView.videoCaptureView.layer insertSublayer:self.videoPreviewLayer atIndex:0];
+    
+    [self.view setNeedsLayout];
+    [self.view layoutIfNeeded];
 }
 
 
@@ -162,8 +183,6 @@
     if ([self.captureManager.recorder isRecording]) {
         [self.captureManager stopRecording];
     }
-    
-    [self.captureView stopedCapture];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -199,6 +218,7 @@
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
+    
     self.videoPreviewLayer.frame = self.captureView.videoCaptureView.bounds;
 }
 
@@ -211,6 +231,22 @@
     
     UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
 
+    switch (deviceOrientation) {
+        case UIDeviceOrientationPortrait:
+            self.captureManager.orientation = AVCaptureVideoOrientationPortrait;
+            break;
+        case UIDeviceOrientationLandscapeLeft:
+            self.captureManager.orientation = AVCaptureVideoOrientationLandscapeRight;
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            self.captureManager.orientation = AVCaptureVideoOrientationLandscapeLeft;
+            break;
+        case UIDeviceOrientationPortraitUpsideDown:
+            self.captureManager.orientation = AVCaptureVideoOrientationPortraitUpsideDown;
+            break;
+        default:
+            return;
+    }
     
     [UIView animateWithDuration:0.3
                           delay:0
@@ -304,8 +340,11 @@
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
-- (void)deleteVideoFragment {
+- (void)removeVideoFragment {
     [self.captureManager deleteLastAsset];
+}
+
+- (void)removeTimeFromDuration:(float)removeTime {
 }
 
 - (void)captureManagerRecordingBegan:(CaptureManager *)captureManager {

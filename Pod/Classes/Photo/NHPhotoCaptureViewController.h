@@ -10,12 +10,6 @@
 #import <GPUImage/GPUImage.h>
 #import "NHRecorderButton.h"
 
-
-extern const CGFloat kNHRecorderBottomViewHeight;
-extern const CGFloat kNHRecorderCaptureButtonHeight;
-extern const CGFloat kNHRecorderSideButtonHeight;
-extern const CGFloat kNHRecorderCaptureButtonBorderOffset;
-
 @class NHPhotoCaptureViewController;
 @class NHPhotoCaptureView;
 
