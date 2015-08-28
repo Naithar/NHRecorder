@@ -21,7 +21,7 @@ extern const NSTimeInterval kNHVideoMinDuration;
 
 @interface NHVideoCaptureDefaultView : NHVideoCaptureView
 
-@property (nonatomic, readonly, strong) UIView *videoCameraView;
+//@property (nonatomic, readonly, strong) UIView *videoCameraView;
 @property (nonatomic, readonly, strong) NHCameraGridView *cameraGridView;
 
 @property (nonatomic, readonly, strong) UIView *bottomContainerView;
@@ -37,8 +37,6 @@ extern const NSTimeInterval kNHVideoMinDuration;
 @property (nonatomic, readonly, strong) NHRecorderProgressView *durationProgressView;
 
 @property (nonatomic, readonly, strong) NHCameraCropView *cropView;
-
-@property (nonatomic, assign) BOOL firstController;
 
 @property (nonatomic, strong) UIColor *barTintColor;
 @property (nonatomic, strong) UIColor *barButtonTintColor;

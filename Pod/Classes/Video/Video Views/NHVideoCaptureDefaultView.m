@@ -199,7 +199,7 @@ table, \
         self.closeButton = [NHRecorderButton buttonWithType:UIButtonTypeSystem];
         self.closeButton.frame = CGRectMake(0, 0, 44, 44);
         self.closeButton.tintColor = [UIColor whiteColor];
-        [self.closeButton setImage:(self.firstController ? image(@"NHRecorder.close") : image(@"NHRecorder.back")) forState:UIControlStateNormal];
+        [self.closeButton setImage:([self.viewController.navigationController.viewControllers count] == 1 ? image(@"NHRecorder.close") : image(@"NHRecorder.back")) forState:UIControlStateNormal];
         self.closeButton.contentHorizontalAlignment = UIControlContentHorizontalAlignmentLeft;
         [self.closeButton addTarget:self action:@selector(closeButtonTouch:) forControlEvents:UIControlEventTouchUpInside];
     
