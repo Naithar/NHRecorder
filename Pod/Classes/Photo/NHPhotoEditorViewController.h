@@ -14,8 +14,7 @@
 #import "NHRecorderButton.h"
 
 
-extern const CGFloat kNHRecorderSelectorViewHeight;
-extern const CGFloat kNHRecorderSelectionContainerViewHeight;
+
 
 @class NHPhotoEditorViewController;
 @class NHPhotoEditorView;

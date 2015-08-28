@@ -10,9 +10,6 @@
 #import "UIImage+Resize.h"
 #import "NHPhotoEditorDefaultView.h"
 
-const CGFloat kNHRecorderSelectorViewHeight = 40;
-const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
-
 @interface NHPhotoEditorViewController ()
 
 @property (nonatomic, strong) UIImage *image;

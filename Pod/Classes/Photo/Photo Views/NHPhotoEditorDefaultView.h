@@ -8,6 +8,9 @@
 
 #import "NHPhotoEditorView.h"
 
+extern const CGFloat kNHRecorderSelectorViewHeight;
+extern const CGFloat kNHRecorderSelectionContainerViewHeight;
+
 @interface NHPhotoEditorDefaultView : NHPhotoEditorView
 
 @property (nonatomic, strong) UIColor *barTintColor;

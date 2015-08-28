@@ -254,9 +254,7 @@
                      animations:^{
                          [self.captureView changeOrientationTo:deviceOrientation];
 
-                     } completion:^(BOOL finished) {
-                         
-                     }];
+                     } completion:nil];
 }
 
 - (void)closeController {

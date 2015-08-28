@@ -8,6 +8,8 @@
 
 #import "NHPhotoEditorDefaultView.h"
 
+const CGFloat kNHRecorderSelectorViewHeight = 40;
+const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
 
 #define image(name) \
 [UIImage imageWithContentsOfFile: \
@@ -553,7 +555,7 @@ table, \
 }
 
 - (void)setForcedCrop:(NHPhotoCropType)cropType {
-    _forcedCropType = cropType;
+    self.forcedCropType = cropType;
 }
 
 - (NHPhotoView *)photoEditorView {
