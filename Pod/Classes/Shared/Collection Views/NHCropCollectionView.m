@@ -7,7 +7,7 @@
 //
 
 #import "NHCropCollectionView.h"
-#import "NHCropCollectionViewCell.h"
+#import "NHCropCollectionDefaultViewCell.h"
 
 @interface NHCropCollectionView ()<UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 
@@ -15,6 +15,10 @@
 @end
 
 @implementation NHCropCollectionView
+
++ (Class)nhCropCollectionViewCellClass {
+    return [NHCropCollectionDefaultViewCell class];
+}
 
 - (instancetype)initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewLayout *)layout {
     
@@ -39,7 +43,14 @@
     self.showsVerticalScrollIndicator = NO;
     self.showsHorizontalScrollIndicator = NO;
     
-    [self registerClass:[NHCropCollectionViewCell class] forCellWithReuseIdentifier:@"cell"];
+    
+    Class cellClass = [[self class] nhCropCollectionViewCellClass];
+    
+    if ([cellClass isSubclassOfClass:[NHCropCollectionViewCell class]]) {
+        cellClass = [NHCropCollectionDefaultViewCell class];
+    }
+    
+    [self registerClass:cellClass forCellWithReuseIdentifier:@"cell"];
 }
 
 - (CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {

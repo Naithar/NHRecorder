@@ -2,7 +2,7 @@
 //  NHCropCollectionViewCell.h
 //  Pods
 //
-//  Created by Sergey Minakov on 15.06.15.
+//  Created by Sergey Minakov on 28.08.15.
 //
 //
 
@@ -13,4 +13,5 @@
 
 - (void)reloadWithType:(NHPhotoCropType)type;
 - (void)reloadWithType:(NHPhotoCropType)type andSelected:(BOOL)selected;
+
 @end

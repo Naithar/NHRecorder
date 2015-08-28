@@ -23,4 +23,6 @@
 
 - (void)setSelected:(NSInteger)index;
 
++ (Class)nhCropCollectionViewCellClass;
+
 @end
