@@ -10,4 +10,18 @@
 
 @implementation NHVideoEditorView
 
+
+- (instancetype)initWithEditorViewController:(NHVideoEditorViewController*)editorController {
+    self = [super init];
+    
+    if (self) {
+        _viewController = editorController;
+    }
+    
+    return self;
+}
+
+- (BOOL)canProcessVideo {
+    return YES;
+}
 @end
