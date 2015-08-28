@@ -10,20 +10,10 @@
 #import "UIImage+Resize.h"
 #import "NHPhotoDefaultEditorView.h"
 
-#define image(name) \
-[UIImage imageWithContentsOfFile: \
-[[NSBundle bundleForClass:[NHPhotoEditorViewController class]]\
-pathForResource:name ofType:@"png"]]
-
-#define localization(name, table) \
-NSLocalizedStringFromTableInBundle(name, \
-table, \
-[NSBundle bundleForClass:[NHPhotoEditorViewController class]], nil)
-
 const CGFloat kNHRecorderSelectorViewHeight = 40;
 const CGFloat kNHRecorderSelectionContainerViewHeight = 80;
 
-@interface NHPhotoEditorViewController ()<NHFilterCollectionViewDelegate, NHCropCollectionViewDelegate>
+@interface NHPhotoEditorViewController ()
 
 @property (nonatomic, strong) UIImage *image;
 

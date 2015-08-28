@@ -27,9 +27,11 @@ To run the example project, clone the repo, and run `pod install` from the Examp
   * [x] Video capture
 - [ ] Custom Views
   * [x] Photo capture
-  * [ ] Photo editor
+  * [x] Photo editor
   * [ ] Video capture
   * [ ] Video editor
+  * [ ] Media picker
+  * [ ] Collection view cells
 
 ## Installation
 
