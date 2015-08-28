@@ -8,11 +8,7 @@
 
 #import "NHVideoCaptureViewController.h"
 #import "CaptureManager.h"
-#import "NHRecorderButton.h"
-#import "NHCameraGridView.h"
 #import "NHPhotoCaptureViewController.h"
-#import "NHCameraCropView.h"
-#import "NHVideoFocusView.h"
 #import "AVCamRecorder.h"
 #import "NHVideoEditorViewController.h"
 #import "NHRecorderProgressView.h"

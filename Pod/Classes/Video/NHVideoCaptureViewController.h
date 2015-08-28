@@ -9,12 +9,8 @@
 @import UIKit;
 @import AVFoundation;
 
-@class NHRecorderButton;
 @class CaptureManager;
-@class NHCameraGridView;
 @class NHVideoCaptureViewController;
-@class NHRecorderProgressView;
-@class NHCameraCropView;
 @class NHVideoCaptureView;
 
 @protocol NHVideoCaptureViewControllerDelegate <NSObject>

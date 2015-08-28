@@ -7,6 +7,10 @@
 //
 
 #import "NHVideoCaptureDefaultView.h"
+#import "NHVideoFocusView.h"
+#import "NHCameraGridView.h"
+#import "NHRecorderProgressView.h"
+#import "NHCameraCropView.h"
 
 const NSTimeInterval kNHVideoTimerInterval = 0.05;
 const NSTimeInterval kNHVideoMaxDuration = 15.0;
@@ -24,31 +28,31 @@ table, \
 
 @interface NHVideoCaptureDefaultView ()
 
-//@property (nonatomic, strong) UIView *videoCameraView;
-//@property (nonatomic, strong) NHCameraGridView *cameraGridView;
+@property (nonatomic, strong) UIView *videoCameraView;
+@property (nonatomic, strong) NHCameraGridView *cameraGridView;
 
 
-//@property (nonatomic, strong) UIView *bottomContainerView;
-//@property (nonatomic, strong) NHRecorderButton *removeFragmentButton;
-//@property (nonatomic, strong) UIButton *captureButton;
-//
-//@property (nonatomic, strong) NHRecorderButton *libraryButton;
-//
-//@property (nonatomic, strong) NHRecorderButton *closeButton;
-//@property (nonatomic, strong) NHRecorderButton *gridButton;
-//@property (nonatomic, strong) NHRecorderButton *switchButton;
-//
-//@property (nonatomic, strong) NHRecorderProgressView *durationProgressView;
-//
-//@property (nonatomic, assign) NSTimeInterval currentDuration;
-//
-//@property (nonatomic, strong) NHCameraCropView *cropView;
-//
-//@property (nonatomic, strong) NHVideoFocusView *cameraFocusView;
-//
-//@property (nonatomic, strong) NSTimer *recordTimer;
-//
-//@property (nonatomic, strong) UILongPressGestureRecognizer *longGestureRecognizer;
+@property (nonatomic, strong) UIView *bottomContainerView;
+@property (nonatomic, strong) NHRecorderButton *removeFragmentButton;
+@property (nonatomic, strong) UIButton *captureButton;
+
+@property (nonatomic, strong) NHRecorderButton *libraryButton;
+
+@property (nonatomic, strong) NHRecorderButton *closeButton;
+@property (nonatomic, strong) NHRecorderButton *gridButton;
+@property (nonatomic, strong) NHRecorderButton *switchButton;
+
+@property (nonatomic, strong) NHRecorderProgressView *durationProgressView;
+
+@property (nonatomic, assign) NSTimeInterval currentDuration;
+
+@property (nonatomic, strong) NHCameraCropView *cropView;
+
+@property (nonatomic, strong) NHVideoFocusView *cameraFocusView;
+
+@property (nonatomic, strong) NSTimer *recordTimer;
+
+@property (nonatomic, strong) UILongPressGestureRecognizer *longGestureRecognizer;
 
 @end
 
@@ -704,6 +708,20 @@ table, \
 //- (BOOL)nextButtonEnabled {
 //    return self.currentDuration >= kNHVideoMinDuration;
 //}
+
+- (void)setBarTintColor:(UIColor *)barTintColor {
+    [self willChangeValueForKey:@"barTintColor"];
+    _barTintColor = barTintColor;
+    self.viewController.navigationController.navigationBar.barTintColor = barTintColor ?: [UIColor blackColor];
+    [self didChangeValueForKey:@"barTintColor"];
+}
+
+- (void)setBarButtonTintColor:(UIColor *)barButtonTintColor {
+    [self willChangeValueForKey:@"barTintColor"];
+    _barButtonTintColor = barButtonTintColor;
+    self.viewController.navigationController.navigationBar.tintColor = barButtonTintColor ?: [UIColor whiteColor];
+    [self didChangeValueForKey:@"barTintColor"];
+}
 
 - (BOOL)statusBarHidden {
     return YES;
