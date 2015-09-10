@@ -136,9 +136,14 @@ pathForResource:name ofType:@"png"]]
 }
 
 - (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated {
+    BOOL nonInteractiveDismissal = YES;
+    
+    if ([self respondsToSelector:@selector(interactivePopGestureRecognizer)]) {
+        nonInteractiveDismissal = self.interactivePopGestureRecognizer.state == UIGestureRecognizerStatePossible;
+    }
+    
     if (self.view.window
-        && ([self respondsToSelector:@selector(interactivePopGestureRecognizer)]
-            && self.interactivePopGestureRecognizer.state == UIGestureRecognizerStatePossible)) {
+        && nonInteractiveDismissal) {
             self.view.userInteractionEnabled = NO;
         }
 }
